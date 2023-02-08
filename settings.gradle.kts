@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "TinyTask"
 include(":androidApp")
 include(":shared")
+include(":shared:core")
