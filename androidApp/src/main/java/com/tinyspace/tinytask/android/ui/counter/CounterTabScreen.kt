@@ -4,25 +4,39 @@ import CounterView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tinyspace.tinytask.android.R
+import com.tinyspace.tinytask.android.common.RingIndicator
+import com.tinyspace.tinytask.android.common.TagIcon
+import com.tinyspace.tinytask.android.fromHexToColor
 import com.tinyspace.tinytask.android.ui.theme.TinyTaskTheme
 
+@ExperimentalMaterial3Api
 @Composable
 fun CounterTabScreen(
-    tab: Int,
-    viewModel: CounterViewModel = viewModel()
+    tab: Int, viewModel: CounterViewModel = viewModel()
 ) {
     val isVisible = tab == 0
 
@@ -32,64 +46,114 @@ fun CounterTabScreen(
         isVisible,
         enter = fadeIn(initialAlpha = 0.3f),
         exit = fadeOut(),
-
+    ) {
+        Scaffold(
+            topBar = { AppBar() }
         ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(
-                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                Category()
+
                 CounterView(time = uiState.timer, progress = uiState.progress)
 
-                Box(modifier = Modifier.height(16.dp))
-
-                if (uiState.finish) {
-                    OutlinedButton(onClick = {
-
-                    }, modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
-                        Text(stringResource(R.string.finish))
-                    }
-
-                } else {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-
-                        ActionButton(onClick = {
-                            if (viewModel.modelState.value.stop) {
-                                viewModel.resume()
-                            } else viewModel.start()
-                        }, title = stringResource(R.string.resume)) {
-                            Icon(
-                                painterResource(id = R.drawable.ic_play),
-                                contentDescription = stringResource(R.string.resume)
-                            )
-                        }
-                        ActionButton(onClick = {
-                            viewModel.stop()
-                        }, title = stringResource(R.string.pause)) {
-                            Icon(
-                                painterResource(id = R.drawable.ic_pause),
-                                contentDescription = stringResource(R.string.pause)
-                            )
-                        }
-                    }
-                }
+                Actions(uiState.stop, uiState.finish, uiState.initial, viewModel)
             }
         }
     }
 }
 
 @Composable
-fun ActionButton(title: String, onClick: () -> Unit, icon: @Composable () -> Unit) {
+private fun Actions(
+    stop: Boolean,
+    finish: Boolean,
+    initial: Boolean,
+    viewModel: CounterViewModel
+) {
+    if (finish) {
+        Column(verticalArrangement = Arrangement.Center) {
+            Button(
+                onClick = { viewModel.onEvent(CounterEvent.Finish) },
+                modifier = Modifier.width(width = 256.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            ) {
+                Text(stringResource(R.string.finish))
+            }
+            TextButton(
+                onClick = { viewModel.onEvent(CounterEvent.Restart) },
+                modifier = Modifier.width(width = 256.dp),
+                shape = RoundedCornerShape(12.dp),
+            ) {
+                Text(stringResource(R.string.restart))
+            }
+        }
+
+    } else {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ActionButton(
+                enabled = stop,
+                onClick = {
+                    if (initial) viewModel.onEvent(CounterEvent.Start)
+                    else viewModel.onEvent(CounterEvent.Resume)
+                },
+                title = if (initial) stringResource(id = R.string.start) else stringResource(R.string.resume)
+            ) {
+                Icon(
+                    painterResource(id = R.drawable.ic_play),
+                    contentDescription = stringResource(R.string.resume)
+                )
+            }
+            ActionButton(onClick = {
+                viewModel.onEvent(CounterEvent.Stop)
+            }, title = stringResource(R.string.pause), enabled = !stop) {
+                Icon(
+                    painterResource(id = R.drawable.ic_pause),
+                    contentDescription = stringResource(R.string.pause)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Category() {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        RingIndicator(size = 16f)
+        Box(Modifier.width(12.dp))
+        Text("UI Design")
+    }
+}
+
+
+@Composable
+fun ActionButton(
+    title: String,
+    onClick: () -> Unit,
+    enabled: Boolean,
+    icon: @Composable () -> Unit
+) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
     ) {
         FilledIconButton(
-            onClick = onClick,
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            enabled = enabled,
+            onClick = onClick, colors = IconButtonDefaults.iconButtonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             )
         ) {
             icon()
@@ -101,14 +165,51 @@ fun ActionButton(title: String, onClick: () -> Unit, icon: @Composable () -> Uni
 }
 
 
+@ExperimentalMaterial3Api
+@Composable
+private fun AppBar() {
+    TopAppBar(
+        navigationIcon = {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Default.ArrowBack, "Back Button")
+            }
+        },
+        title = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Rasion project", fontWeight = FontWeight.Medium)
+            }
+        },
+        actions = {
+            TagIcon(title = "Work", code = 2)
+        },
 
+        )
+}
 
+@ExperimentalMaterial3Api
 @Preview
 @Composable
 fun TimerTabPreview() {
     TinyTaskTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            CounterTabScreen(0)
+            CounterTabScreen(
+                0,
+                viewModel = CounterViewModel()
+            )
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Preview
+@Composable
+fun ActionsTabPreview() {
+    TinyTaskTheme {
+        Surface {
+            Actions(stop = true, finish = false, initial = true, viewModel = viewModel())
         }
     }
 }

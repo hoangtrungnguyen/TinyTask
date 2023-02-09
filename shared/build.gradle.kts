@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    kotlin(cocopods)
     id("com.android.library")
 }
 
@@ -11,6 +12,7 @@ kotlin {
             }
         }
     }
+
     
     listOf(
         iosX64(),
@@ -27,6 +29,8 @@ kotlin {
             dependencies {
 //                api("io.insert-koin:koin-core:3.1.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
+                implementation("io.insert-koin:koin-core:${rootProject.extra["koinVersion"]}")
             }
         }
 
@@ -35,14 +39,31 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-
+                implementation("io.insert-koin:koin-test:${rootProject.ext["koinVersion"]}")
             }
         }
+
+
+        cocoapods {
+            summary = "Some description for the Shared Module"
+            homepage = "Link to the Shared Module homepage"
+            ios.deploymentTarget = "14.1"
+            podfile = project.file("../iosApp/Podfile")
+            framework {
+                baseName = "shared"
+            }
+            version = "1.11.3"
+        }
+
         val androidMain by getting
         val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
+        val iosSimulatorArm64Main by getting {
+            dependencies{
+                implementation("io.insert-koin:koin-core:${rootProject.ext["koinVersion"]}")
+            }
+        }
         val iosMain by creating {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)
@@ -63,9 +84,17 @@ kotlin {
 
 android {
     namespace = "com.tinyspace.tinytask"
-    compileSdk = 33
+    compileSdk = Versions.compile_sdk
     defaultConfig {
-        minSdk = 30
-        targetSdk = 33
+        minSdk = Versions.min_sdk
+        targetSdk = Versions.target_sdk
     }
 }
+
+//multiplatformSwiftPackage {
+//    swiftToolsVersion("5.3")
+//    targetPlatforms {
+//        iOS { v("14.1") }
+//    }
+//    packageName("shared")
+//}

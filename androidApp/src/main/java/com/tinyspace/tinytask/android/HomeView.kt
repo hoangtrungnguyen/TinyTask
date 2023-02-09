@@ -10,8 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.tinyspace.tinytask.android.ui.TasksTab
 import com.tinyspace.tinytask.android.ui.counter.CounterTabScreen
+import com.tinyspace.tinytask.android.ui.task.TasksTabScreen
 import com.tinyspace.tinytask.android.ui.theme.TinyTaskTheme
 
 
@@ -38,7 +38,7 @@ fun HomeView(
         Surface(modifier = Modifier.padding(it)) {
             when (tab) {
                 0 -> CounterTabScreen(tab)
-                1 -> TasksTab()
+                1 -> TasksTabScreen()
                 else -> throw IllegalArgumentException()
             }
         }

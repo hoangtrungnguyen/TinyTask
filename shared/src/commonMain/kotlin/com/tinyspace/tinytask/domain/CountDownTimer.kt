@@ -17,7 +17,6 @@ interface CountDownTimer {
 }
 
 object AppCountDownTimer : CountDownTimer {
-
     override fun create(total: Duration, interval: Duration): Flow<Duration> = CountDownFlow(total, interval)
 }
 
@@ -57,7 +56,6 @@ class CountDownFlow(
         } else {
            interval - tickDuration % interval
         }
-
         delay(delayTime)
     }
 

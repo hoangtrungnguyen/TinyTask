@@ -7,4 +7,6 @@
     <string name="pause">Pause</string>
     <string name="ui_design">UI Design</string>
     <string name="work">Work</string>
+    <string name="start">Start</string>
+    <string name="restart">Re-start</string>
 </resources>

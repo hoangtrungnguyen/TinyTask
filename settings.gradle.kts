@@ -17,3 +17,4 @@ rootProject.name = "TinyTask"
 include(":androidApp")
 include(":shared")
 include(":shared:core")
+include(":shared:localsource")

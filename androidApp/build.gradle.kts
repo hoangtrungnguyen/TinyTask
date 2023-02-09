@@ -40,14 +40,18 @@ android {
 
 dependencies {
     implementation(project(":shared"))
-    implementation("androidx.compose.ui:ui:1.3.1")
-    implementation("androidx.compose.ui:ui-tooling:1.3.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.3.1")
+    implementation("androidx.compose.ui:ui:${Versions.compose_ui_tool}")
+    implementation("androidx.compose.ui:ui-tooling:${Versions.compose_ui_tool}")
+    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.compose_ui_tool}")
     implementation("androidx.compose.foundation:foundation:1.3.1")
     implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.compose.material3:material3:1.0.1")
     implementation("androidx.compose.material3:material3-window-size-class:1.0.1")
 
+    implementation("io.insert-koin:koin-android:${rootProject.ext["koinVersion"]}")
+    implementation("io.insert-koin:koin-androidx-compose:${rootProject.ext["koinVersion"]}")
+
     implementation("androidx.navigation:navigation-compose:2.5.3")
+//    implementation("androidx.navigation:navigation-compose:2.5.3")
 
 }

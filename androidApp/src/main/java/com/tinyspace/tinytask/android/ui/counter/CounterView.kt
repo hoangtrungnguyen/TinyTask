@@ -26,6 +26,7 @@ import com.tinyspace.tinytask.android.ui.theme.TinyTaskTheme
 fun CounterView(
     modifier: Modifier = Modifier,
     time: String,
+    size: Float = 220f,
     progress: Float = 0.0f,
 ) {
     Box(contentAlignment = Alignment.Center) {
@@ -33,7 +34,8 @@ fun CounterView(
             modifier,
             progress = progress,
             primaryColor = MaterialTheme.colorScheme.primary,
-            background = MaterialTheme.colorScheme.primaryContainer.copy(0.5f)
+            background = MaterialTheme.colorScheme.primaryContainer.copy(0.5f),
+            size = size
         )
         Text(time, style = MaterialTheme.typography.displayMedium, fontWeight = FontWeight.Medium)
     }
@@ -43,13 +45,14 @@ fun CounterView(
 fun CircularProgress(
     modifier: Modifier,
     background: Color = Color.LightGray,
-    progress: Float = 0.2f,
+    progress: Float = 1f,
     primaryColor: Color,
+    size: Float,
 ) {
     Canvas(
         modifier
             .progressSemantics(progress)
-            .size(220.dp)
+            .size(size.dp)
     ) {
         // Start at 12 O'clock
         val startAngle = 270f
@@ -130,7 +133,7 @@ fun CounterViewPreview() {
 
     TinyTaskTheme {
         Surface(color = Color.White) {
-            CounterView(time = "23:00", modifier = Modifier, progress = 0.3f)
+            CounterView(time = "23:00", modifier = Modifier, progress = 0.3f,)
         }
     }
 }

@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tinyspace.tinytask.android.formatSeconds
 import com.tinyspace.tinytask.domain.AppCountDownTimer
+import com.tinyspace.tinytask.domain.SaveTaskUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlin.math.ceil
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -16,13 +19,18 @@ import kotlin.time.toDuration
 
 val INTERVAL = 1.toDuration(DurationUnit.SECONDS)
 val ZERO = 0.toDuration(DurationUnit.SECONDS)
-val TOTAL = 1.toDuration(DurationUnit.MINUTES)
+//val TOTAL = 1.toDuration(DurationUnit.MINUTES)
+val TOTAL = 10.toDuration(DurationUnit.SECONDS)
 
 const val TAG = "CounterViewModel"
 
-class CounterViewModel() : ViewModel() {
+private val initialState = CounterViewModelState(stop = true, current = TOTAL)
 
-    val modelState = MutableStateFlow(CounterViewModelState(stop = true, current = TOTAL))
+class CounterViewModel(
+    private val saveTaskUseCase:SaveTaskUseCase = SaveTaskUseCase()
+) : ViewModel() {
+
+    private val modelState = MutableStateFlow(initialState)
 
     val uiState  = modelState.map (CounterViewModelState::toUiState)
         .stateIn(viewModelScope,
@@ -30,28 +38,42 @@ class CounterViewModel() : ViewModel() {
         modelState.value.toUiState())
 
     private var counterJob: Job = Job().apply { complete() }
+    private var countDownFlow: Flow<Duration>
 
-    fun start() {
-        if (counterJob.isActive) return
-        if (counterJob.isCompleted && modelState.value.finish) return
-        counterJob = createCountDownJob(modelState.value.total)
+    init {
+        countDownFlow = createCountDownJob(modelState.value.total)
     }
 
-    fun stop() {
+    private fun start() {
+        //initial start
+        counterJob = countDownFlow.launchIn(viewModelScope)
+    }
+
+    private fun stop() {
         counterJob.cancel("Counter Stop")
     }
 
-    fun resume() {
-        counterJob = createCountDownJob(this.modelState.value.current)
+    private fun resume() {
+        countDownFlow = createCountDownJob(this.modelState.value.current)
+        counterJob = countDownFlow.launchIn(viewModelScope)
     }
 
-    private fun createCountDownJob(started: Duration) : Job{
+    private fun createCountDownJob(started: Duration) : Flow<Duration> {
       return AppCountDownTimer.create(
             started,
             INTERVAL
-        ).onCompletion {
-            if(it != null) return@onCompletion
-            Log.d(TAG, "Counter finished")
+        ).onStart {
+          modelState.update { state ->
+              state.copy(stop = false)
+          }
+        }.onCompletion {
+            if(it != null) {
+                modelState.update { state ->
+                    state.copy(stop = true)
+                }
+            } else {
+                Log.d(TAG, "Counter finished")
+            }
         }.onEach {
             modelState.update { state ->
                 state.copy(current = it)
@@ -60,7 +82,23 @@ class CounterViewModel() : ViewModel() {
             if (it is CancellationException) {
                 Log.d(TAG, "Counter stopped")
             }
-        }.launchIn(viewModelScope)
+        }
+    }
+
+    private fun finish() {
+        viewModelScope.launch {
+            //TODO: Save data
+        }
+    }
+
+    fun onEvent(event:CounterEvent) = when(event){
+        CounterEvent.Finish -> finish()
+        CounterEvent.Start -> start()
+        CounterEvent.Resume -> resume()
+        CounterEvent.Stop -> stop()
+        CounterEvent.Restart -> {
+            modelState.update { initialState }
+        }
     }
 }
 
@@ -68,37 +106,40 @@ data class CounterViewModelState(
     val total: Duration = TOTAL,
     val current: Duration,
     val stop: Boolean,
+    val taskId: String = "",
     ) {
 
-    val initial: Boolean get() = total == current
-    val progress : Float get() = (current / total).toFloat()
-    val finish: Boolean get() = current <= ZERO
+    private val initial: Boolean get() = total == current
+    private val progress : Float get() = (current / total).toFloat()
+    private val finish: Boolean get() = current <= ZERO
 
-    fun toUiState(): CounterUiState {
-        if (finish) return CounterUiState.Finish(0)
+    fun toUiState(): CounterUiState = when {
+        finish -> CounterUiState.Finish(ceil(current.toDouble(DurationUnit.SECONDS)).toInt())
+        stop -> CounterUiState.Pause(ceil(current.toDouble(DurationUnit.SECONDS)).toInt(), progress)
+        initial -> CounterUiState.Initial(total.toInt(DurationUnit.SECONDS), progress)
+        else -> CounterUiState.Counting(ceil(current.toDouble(DurationUnit.SECONDS)).toInt(), progress)
+    }
 
-        if(stop) return CounterUiState.Pause(current.toInt(DurationUnit.SECONDS), progress)
-
-        if(initial) return CounterUiState.Initial(total.toInt(DurationUnit.SECONDS), progress)
-
-        return CounterUiState.Counting(  current.toInt(DurationUnit.SECONDS), progress)
+    fun toDomainModel() {
+        TODO("Not in progress")
     }
 }
 
-sealed interface CounterUiState {
-
-    val counter: Int
-    val progress: Float
+sealed class CounterUiState(
+    val stop: Boolean = false,
+) {
+    abstract val counter: Int
+    abstract val progress: Float
     val finish: Boolean get () = counter <= 0
     val timer: String get() = counter.formatSeconds()
+    val initial get() = progress >= 1f
+    data class Counting( override val counter: Int, override val progress: Float) : CounterUiState()
 
-    data class Counting( override val counter: Int, override val progress: Float ) : CounterUiState
+    data class Initial(override val counter: Int, override val progress: Float ) :CounterUiState(stop = true)
 
-    data class Initial(override val counter: Int, override val progress: Float ) :CounterUiState
+    class Pause(override val counter: Int, override val progress: Float) : CounterUiState(stop = true)
 
-    class Pause(override val counter: Int, override val progress: Float) :CounterUiState
-
-    class Finish(override val counter: Int, override val progress: Float = 0f) : CounterUiState
+    class Finish(override val counter: Int, override val progress: Float = 0f) : CounterUiState()
 
 }
 

@@ -1,0 +1,5 @@
+CREATE TABLE Task (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL
+);
+

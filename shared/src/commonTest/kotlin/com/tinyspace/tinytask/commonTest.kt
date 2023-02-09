@@ -1,14 +1,10 @@
 package com.tinyspace.tinytask
 
-import com.tinyspace.tinytask.domain.Counter
-import com.tinyspace.tinytask.domain.CounterUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class CommonGreetingTest {
 

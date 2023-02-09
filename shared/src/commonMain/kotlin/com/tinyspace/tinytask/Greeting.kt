@@ -1,5 +1,7 @@
 package com.tinyspace.tinytask
 
-class Greeting {
 
-}
+// KMP Class Definition
+//expect class Platform() {
+//    val name: String
+//}
