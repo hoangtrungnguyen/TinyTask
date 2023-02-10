@@ -1,11 +1,11 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.tinyspace.tinytask.android.ui.counter
 
 import CounterView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -16,11 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Transparent
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,25 +25,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tinyspace.tinytask.android.R
 import com.tinyspace.tinytask.android.common.RingIndicator
 import com.tinyspace.tinytask.android.common.TagIcon
-import com.tinyspace.tinytask.android.fromHexToColor
 import com.tinyspace.tinytask.android.ui.theme.TinyTaskTheme
 
-@ExperimentalMaterial3Api
-@Composable
-fun CounterTabScreen(
-    tab: Int, viewModel: CounterViewModel = viewModel()
-) {
-    val isVisible = tab == 0
 
+@Composable
+fun CounterScreen(
+    viewModel: CounterViewModel = viewModel(),
+    onNavigateBack: () -> Boolean
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     AnimatedVisibility(
-        isVisible,
+        true,
         enter = fadeIn(initialAlpha = 0.3f),
         exit = fadeOut(),
     ) {
         Scaffold(
-            topBar = { AppBar() }
+            topBar = { CounterTopAppBar(
+                onNavigateBack = onNavigateBack
+            ) }
         ) {
             Column(
                 modifier = Modifier
@@ -167,10 +162,12 @@ fun ActionButton(
 
 @ExperimentalMaterial3Api
 @Composable
-private fun AppBar() {
+private fun CounterTopAppBar(
+    onNavigateBack: () -> Boolean
+) {
     TopAppBar(
         navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { onNavigateBack() }) {
                 Icon(Icons.Default.ArrowBack, "Back Button")
             }
         },
@@ -195,10 +192,11 @@ private fun AppBar() {
 fun TimerTabPreview() {
     TinyTaskTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            CounterTabScreen(
-                0,
+            CounterScreen(
                 viewModel = CounterViewModel()
-            )
+            ) {
+              true
+            }
         }
     }
 }

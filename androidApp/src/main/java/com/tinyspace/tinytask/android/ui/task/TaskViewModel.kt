@@ -1,25 +1,26 @@
 package com.tinyspace.tinytask.android.ui.task
 
 import androidx.lifecycle.ViewModel
+import com.tinyspace.tinytask.domain.model.Task
 import kotlin.time.Duration
 
 class TaskViewModel: ViewModel() {
 
 
-    fun loadTasks(){
-
-    }
-
 }
 
 
-
-data class TaskUiState(
-    val tasks: List<Task>,
-    val currentTask: Task
+private data class ViewModelState(
+    val tasks: List<Task>
 )
 
-data class Task(
+data class TaskScreenUiState(
+    val tasks: List<TaskUi>,
+    val currentTask: TaskUi
+)
+
+data class TaskUi(
+    val id: String,
     val code: Int,
     val title: String,
     val tags: List<Tag>,

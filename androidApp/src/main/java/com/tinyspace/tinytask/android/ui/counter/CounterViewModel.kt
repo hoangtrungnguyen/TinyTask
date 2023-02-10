@@ -17,10 +17,10 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-val INTERVAL = 1.toDuration(DurationUnit.SECONDS)
-val ZERO = 0.toDuration(DurationUnit.SECONDS)
+private val INTERVAL = 1.toDuration(DurationUnit.SECONDS)
+private val ZERO = 0.toDuration(DurationUnit.SECONDS)
 //val TOTAL = 1.toDuration(DurationUnit.MINUTES)
-val TOTAL = 10.toDuration(DurationUnit.SECONDS)
+private val TOTAL = 10.toDuration(DurationUnit.SECONDS)
 
 const val TAG = "CounterViewModel"
 
@@ -38,14 +38,10 @@ class CounterViewModel(
         modelState.value.toUiState())
 
     private var counterJob: Job = Job().apply { complete() }
-    private var countDownFlow: Flow<Duration>
-
-    init {
-        countDownFlow = createCountDownJob(modelState.value.total)
-    }
+    private lateinit var countDownFlow: Flow<Duration>
 
     private fun start() {
-        //initial start
+        countDownFlow = createCountDownJob(modelState.value.total)
         counterJob = countDownFlow.launchIn(viewModelScope)
     }
 
@@ -54,13 +50,13 @@ class CounterViewModel(
     }
 
     private fun resume() {
-        countDownFlow = createCountDownJob(this.modelState.value.current)
+        countDownFlow = createCountDownJob(modelState.value.current)
         counterJob = countDownFlow.launchIn(viewModelScope)
     }
 
-    private fun createCountDownJob(started: Duration) : Flow<Duration> {
+    private fun createCountDownJob(total: Duration) : Flow<Duration> {
       return AppCountDownTimer.create(
-            started,
+            total,
             INTERVAL
         ).onStart {
           modelState.update { state ->
@@ -97,7 +93,9 @@ class CounterViewModel(
         CounterEvent.Resume -> resume()
         CounterEvent.Stop -> stop()
         CounterEvent.Restart -> {
-            modelState.update { initialState }
+            modelState.update {
+                it.copy(total = TOTAL,current = TOTAL, stop = false )
+            }
         }
     }
 }
