@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tinyspace.tinytask.android.formatSeconds
-import com.tinyspace.tinytask.domain.AppCountDownTimer
-import com.tinyspace.tinytask.domain.SaveTaskUseCase
+import com.tinyspace.tinytask.AppCountDownTimer
+//import com.tinyspace.tinytask.domain.SaveTaskUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -27,12 +27,12 @@ const val TAG = "CounterViewModel"
 private val initialState = CounterViewModelState(stop = true, current = TOTAL)
 
 class CounterViewModel(
-    private val saveTaskUseCase:SaveTaskUseCase = SaveTaskUseCase()
+//    private val saveTaskUseCase:SaveTaskUseCase = SaveTaskUseCase()
 ) : ViewModel() {
 
     private val modelState = MutableStateFlow(initialState)
 
-    val uiState  = modelState.map (CounterViewModelState::toUiState)
+    internal val uiState  = modelState.map (CounterViewModelState::toUiState)
         .stateIn(viewModelScope,
             SharingStarted.Eagerly,
         modelState.value.toUiState())
@@ -100,7 +100,7 @@ class CounterViewModel(
     }
 }
 
-data class CounterViewModelState(
+private data class CounterViewModelState(
     val total: Duration = TOTAL,
     val current: Duration,
     val stop: Boolean,
@@ -123,7 +123,7 @@ data class CounterViewModelState(
     }
 }
 
-sealed class CounterUiState(
+internal sealed class CounterUiState(
     val stop: Boolean = false,
 ) {
     abstract val counter: Int

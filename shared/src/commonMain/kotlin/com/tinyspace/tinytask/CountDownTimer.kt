@@ -1,6 +1,5 @@
-package com.tinyspace.tinytask.domain
+package com.tinyspace.tinytask
 
-import com.tinyspace.tinytask.SystemClock
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.AbstractFlow
 import kotlinx.coroutines.flow.Flow

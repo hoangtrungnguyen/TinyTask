@@ -1,4 +1,4 @@
-package com.tinyspace.tinytask.domain.model
+package com.tinyspace.domain.model
 
 
 data class Task(

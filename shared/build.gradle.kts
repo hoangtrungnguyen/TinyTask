@@ -30,7 +30,7 @@ kotlin {
 //                api("io.insert-koin:koin-core:3.1.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
-                implementation("io.insert-koin:koin-core:${rootProject.extra["koinVersion"]}")
+                implementation(Koin.koin_core)
             }
         }
 
@@ -39,7 +39,8 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-                implementation("io.insert-koin:koin-test:${rootProject.ext["koinVersion"]}")
+
+                implementation(Koin.koin_test)
             }
         }
 
@@ -91,6 +92,8 @@ android {
     }
 }
 
+dependencies {
+}
 //multiplatformSwiftPackage {
 //    swiftToolsVersion("5.3")
 //    targetPlatforms {

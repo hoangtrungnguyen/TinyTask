@@ -11,4 +11,8 @@
     <string name="restart">Re-start</string>
     <string name="stat">Stat</string>
     <string name="tasks">Tasks</string>
+    <string name="create">Create</string>
+    <string name="tags">Tags</string>
+    <string name="duration">Duration</string>
+    <string name="task">Task</string>
 </resources>

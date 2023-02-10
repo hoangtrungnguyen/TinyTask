@@ -30,7 +30,8 @@ val destinations = listOf<Destination>(
 
 @Composable
 fun HomeView(
-    onTaskClick: (TaskUi) -> Unit
+    onTaskClick: (TaskUi) -> Unit,
+    navigateToTaskForm: () -> Unit
 ) {
     var tab by rememberSaveable {
         mutableStateOf(0)
@@ -43,7 +44,7 @@ fun HomeView(
             })
         },
         floatingActionButton = {
-            if (tab == 0) FloatingActionButton(onClick = { }) {
+            if (tab == 0) FloatingActionButton(onClick = { navigateToTaskForm() }) {
                 Icon(painterResource(id = R.drawable.add_24), contentDescription = "Adding")
             }
         }
@@ -99,7 +100,9 @@ fun HomeBottomAppBar(tab: Int, onChangeTab: (tab: Int) -> Unit) {
 @Composable
 fun HomeScreenPreview() {
     TinyTaskTheme {
-        HomeView(onTaskClick = {})
+        HomeView(onTaskClick = {}) {
+
+        }
     }
 }
 
@@ -107,6 +110,7 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreenDarkModePreview() {
     TinyTaskTheme {
-        HomeView(onTaskClick = {})
+        HomeView(onTaskClick = {}) {
+        }
     }
 }

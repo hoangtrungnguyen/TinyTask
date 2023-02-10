@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tinyspace.tinytask.android.ui.counter.CounterScreen
 import com.tinyspace.tinytask.android.ui.onboard.OnBoardingScreen
+import com.tinyspace.tinytask.android.ui.task_form.TaskFormScreen
 import com.tinyspace.tinytask.android.ui.theme.TinyTaskTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,7 +67,15 @@ fun TinyTaskApp(
                 onTaskClick = {
                     navController.navigate("$counter/${it.id}")
                 }
-            )
+            ) {
+                navController.navigate(taskForm)
+            }
+        }
+
+        composable(taskForm){
+            TaskFormScreen {
+                navController.navigateUp()
+            }
         }
 
     }

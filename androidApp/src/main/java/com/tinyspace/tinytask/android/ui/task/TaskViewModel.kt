@@ -1,7 +1,7 @@
 package com.tinyspace.tinytask.android.ui.task
 
 import androidx.lifecycle.ViewModel
-import com.tinyspace.tinytask.domain.model.Task
+import com.tinyspace.domain.model.Task
 import kotlin.time.Duration
 
 class TaskViewModel: ViewModel() {
