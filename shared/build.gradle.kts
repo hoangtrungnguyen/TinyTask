@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin(cocopods)
     id("com.android.library")
+    id("com.chromaticnoise.multiplatform-swiftpackage") version "2.0.3"
 }
 
 kotlin {
@@ -13,7 +14,7 @@ kotlin {
         }
     }
 
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -24,13 +25,15 @@ kotlin {
         }
     }
 
+
     sourceSets {
         val commonMain by getting {
             dependencies {
 //                api("io.insert-koin:koin-core:3.1.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
-                implementation("io.insert-koin:koin-core:${rootProject.extra["koinVersion"]}")
+                implementation(Koin.koin_core)
+                api(project(":shared:domain"))
             }
         }
 
@@ -39,7 +42,8 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-                implementation("io.insert-koin:koin-test:${rootProject.ext["koinVersion"]}")
+
+                implementation(Koin.koin_test)
             }
         }
 
@@ -57,13 +61,23 @@ kotlin {
 
         val androidMain by getting
         val androidUnitTest by getting
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting {
-            dependencies{
-                implementation("io.insert-koin:koin-core:${rootProject.ext["koinVersion"]}")
+        val iosX64Main by getting {
+            dependencies {
+
             }
         }
+        val iosArm64Main by getting {
+            dependencies{
+                implementation(Koin.koin_core)
+            }
+        }
+        val iosSimulatorArm64Main by getting {
+            dependencies{
+                implementation(Koin.koin_core)
+            }
+        }
+
+
         val iosMain by creating {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)
@@ -91,10 +105,17 @@ android {
     }
 }
 
-//multiplatformSwiftPackage {
-//    swiftToolsVersion("5.3")
-//    targetPlatforms {
-//        iOS { v("14.1") }
-//    }
-//    packageName("shared")
-//}
+dependencies {
+//    commonMainApi(project(":shared:domain"))
+}
+
+
+multiplatformSwiftPackage {
+    swiftToolsVersion("5.3")
+    targetPlatforms {
+        iOS { v("14.1") }
+    }
+    packageName("shared")
+}
+
+
