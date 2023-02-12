@@ -1,4 +1,5 @@
-package com.tinyspace.tinytask.android.ui.theme
+package com.tinyspace.compose
+
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +35,7 @@ private val LightColors = lightColorScheme(
     inverseOnSurface = md_theme_light_inverseOnSurface,
     inverseSurface = md_theme_light_inverseSurface,
     inversePrimary = md_theme_light_inversePrimary,
-    surfaceTint = md_theme_light_surfaceTint,
+    surfaceTint =  md_theme_light_surfaceTint,
     outlineVariant = md_theme_light_outlineVariant,
     scrim = md_theme_light_scrim,
 )
@@ -74,17 +75,17 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun TinyTaskTheme(
-  useDarkTheme: Boolean = isSystemInDarkTheme(),
-  content: @Composable() () -> Unit
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable() () -> Unit
 ) {
-  val colors = if (!useDarkTheme) {
-    LightColors
-  } else {
-    DarkColors
-  }
+    val colors = if (!useDarkTheme) {
+        LightColors
+    } else {
+        DarkColors
+    }
 
-  MaterialTheme(
-    colorScheme = colors,
-    content = content
-  )
+    MaterialTheme(
+        colorScheme = colors,
+        content = content
+    )
 }

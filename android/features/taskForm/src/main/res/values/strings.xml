@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="duration">Duration</string>
+    <string name="tags">Tags</string>
+    <string name="create">Create</string>
+    <string name="task">Task</string>
+</resources>

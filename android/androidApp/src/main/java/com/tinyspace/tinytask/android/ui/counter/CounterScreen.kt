@@ -25,7 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tinyspace.tinytask.android.R
 import com.tinyspace.tinytask.android.common.RingIndicator
 import com.tinyspace.tinytask.android.common.TagIcon
-import com.tinyspace.tinytask.android.ui.theme.TinyTaskTheme
+import com.tinyspace.compose.TinyTaskTheme
 
 
 @Composable

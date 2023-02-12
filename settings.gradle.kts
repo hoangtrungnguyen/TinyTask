@@ -14,15 +14,18 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "TinyTask"
-include(":android:androidApp")
-include(":shared")
-include(":shared:domain")
 
 include(
-    ":android:features:counter"
+    ":android:androidApp",
+":android:features:taskForm",
+":android:features:counter",
+":android:core:compose"
+
 )
 
+
 include(
+    ":shared",
     ":shared:datalayer:repository",
     ":shared:domain",
     ":shared:core",

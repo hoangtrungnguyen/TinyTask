@@ -1,6 +1,7 @@
-package com.tinyspace.tinytask.android.ui.theme
+package com.tinyspace.compose
 
 import androidx.compose.ui.graphics.Color
+
 
 val md_theme_light_primary = Color(0xFF8135C5)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)

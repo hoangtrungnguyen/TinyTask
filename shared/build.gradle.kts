@@ -33,7 +33,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
                 implementation(Koin.koin_core)
-                api(project(":shared:domain"))
+                implementation(fileTree("domain"))
             }
         }
 
@@ -68,12 +68,11 @@ kotlin {
         }
         val iosArm64Main by getting {
             dependencies{
-                implementation(Koin.koin_core)
+
             }
         }
         val iosSimulatorArm64Main by getting {
             dependencies{
-                implementation(Koin.koin_core)
             }
         }
 
@@ -101,14 +100,8 @@ android {
     compileSdk = Versions.compile_sdk
     defaultConfig {
         minSdk = Versions.min_sdk
-        targetSdk = Versions.target_sdk
     }
 }
-
-dependencies {
-//    commonMainApi(project(":shared:domain"))
-}
-
 
 multiplatformSwiftPackage {
     swiftToolsVersion("5.3")

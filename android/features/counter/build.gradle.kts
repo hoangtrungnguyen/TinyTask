@@ -4,24 +4,16 @@ plugins {
 }
 
 android {
-    namespace = "com.tinyspace.features"
-    compileSdk = 33
+    namespace = "com.tinyspace.counter"
+    compileSdk = Versions.compile_sdk
 
     defaultConfig {
-        minSdk = 30
-        targetSdk = 33
-
+        minSdk = Versions.min_sdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
         }
     }
     compileOptions {
@@ -30,6 +22,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.compose_complier
     }
 }
 

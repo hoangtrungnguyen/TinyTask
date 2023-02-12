@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.tinyspace.tinytask.android.R
 import com.tinyspace.tinytask.android.common.TagIcon
 import com.tinyspace.tinytask.android.home
-import com.tinyspace.tinytask.android.ui.theme.TinyTaskTheme
+import com.tinyspace.compose.TinyTaskTheme
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

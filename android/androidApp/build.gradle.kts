@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace = "com.tinyspace.tinytask.android"
-    compileSdk = 33
+    compileSdk = Versions.compile_sdk
     defaultConfig {
         applicationId = "com.tinyspace.tinytask.android"
-        minSdk = 30
-        targetSdk = 33
+        minSdk = Versions.min_sdk
+        targetSdk = Versions.target_sdk
         versionCode = 1
         versionName = "1.0"
     }
@@ -17,7 +17,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0"
+        kotlinCompilerExtensionVersion = Versions.compose_complier
     }
     packagingOptions {
         resources {
@@ -40,11 +40,12 @@ android {
 
 dependencies {
     implementation(project(":shared"))
-    implementation("androidx.compose.ui:ui:${Versions.compose_version}")
-    implementation("androidx.compose.ui:ui-tooling:${Versions.compose_version}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.compose_version}")
-    implementation("androidx.compose.foundation:foundation:${Versions.compose_version}")
-    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation(project(":shared:domain"))
+    implementation(project(":android:features:counter"))
+    implementation(project(":android:features:taskForm"))
+    implementation(project(":android:core:compose"))
+
+
 
     with(Koin){
         implementation(Koin.koin_core)
@@ -56,6 +57,11 @@ dependencies {
         implementation(navigation)
         implementation(Compose.material3)
         implementation(Compose.material3_window)
+        implementation(ui)
+        implementation(Compose.ui_tooling)
+        implementation(ui_tooling_preview)
+        implementation(Compose.foundation)
+        implementation(Compose.activity)
     }
 
 }

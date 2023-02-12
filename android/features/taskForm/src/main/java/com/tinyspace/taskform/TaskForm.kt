@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.tinyspace.tinytask.android.ui.task_form
+package com.tinyspace.taskform
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -17,11 +17,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.tinyspace.tinytask.android.R
-import com.tinyspace.compose.TinyTaskTheme
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+
+import com.tinyspace.compose.TinyTaskTheme
 
 
 private val durationOptions = listOf<Duration>(
@@ -175,7 +175,9 @@ fun GroupProjectOption() {
 
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         projectOptions.forEachIndexed { index, option ->
-            InputChip(selected = true, onClick = { /*TODO*/ }, label = { Text(option) })
+            InputChip(selected = true, onClick = {
+
+            }, label = { Text(option) })
         }
     }
 
