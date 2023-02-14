@@ -32,25 +32,31 @@ android {
 dependencies {
 
     implementation(project(":android:core:compose"))
+    implementation(project(":shared:domain"))
 
     with(Test){
-        androidTestImplementation(Test.androidx)
-        androidTestImplementation(Test.espresso)
-        testImplementation(Test.junit4)
+        androidTestImplementation(androidx)
+        androidTestImplementation(espresso)
+        testImplementation(junit4)
     }
 
     with(Compose){
         implementation(material_icons)
-        implementation(Compose.material3)
-        implementation(Compose.material3_window)
+        implementation(material3)
+        implementation(material3_window)
         implementation(ui)
-        implementation(Compose.ui_tooling)
+        implementation(ui_tooling)
         implementation(ui_tooling_preview)
-        implementation(Compose.foundation)
-        implementation(Compose.activity)
+        implementation(foundation)
+        implementation(activity)
     }
 
     with(ViewModel){
-        implementation(ViewModel.life_cycle)
+        implementation(life_cycle)
+    }
+
+    with(Koin){
+        implementation(koin_core)
+        implementation(koin_compose)
     }
 }

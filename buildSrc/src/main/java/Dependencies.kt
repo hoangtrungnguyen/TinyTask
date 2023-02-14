@@ -1,9 +1,20 @@
+import com.moandjiezana.toml.Toml
+import java.io.File
+
 
 const val cocopods = "native.cocoapods"
 
+object Libs {
+    private val toml = Toml().read(File("libs.toml"))
+
+//    val retrofit = toml.getTable("retrofit").getString("version")
+//    val okHttp = toml.getTable("okhttp").getString("version")
+    // Add more libraries here
+}
 object Versions {
 
 
+    const val rushwolf: String = "1.0.0"
     const val view_model: String = "2.5.1"
     const val espresso: String = "3.5.1"
     const val androidx: String = "1.1.5"
@@ -24,6 +35,8 @@ object Versions {
     const val compose_activity = "1.6.1"
 
     const val compose_complier = "1.4.0"
+
+    const val sqlDelightVersion = "2.0.0-alpha05"
 }
 
 class Dependencies {
@@ -66,8 +79,19 @@ object Coroutine{
 
 }
 
+object SQLDelight {
+    const val slq_delight_android =  "app.cash.sqldelight:android-driver:${Versions.sqlDelightVersion}"
+    const val slq_delight_native =  "app.cash.sqldelight:native-driver:${Versions.sqlDelightVersion}"
+    const val sql_delight = "app.cash.sqldelight:sqlite-driver:${Versions.sqlDelightVersion}"
+}
+
 object Koin{
     const val koin_compose = "io.insert-koin:koin-androidx-compose:${Versions.koin}"
     const val koin_core = "io.insert-koin:koin-core:${Versions.koin}"
     const val koin_test = "io.insert-koin:koin-test:${Versions.koin}"
+}
+
+
+object SharedPref{
+    const val rushwolf = "com.russhwolf:multiplatform-settings:${Versions.rushwolf}"
 }

@@ -6,6 +6,8 @@ pluginManagement {
     }
 }
 
+
+
 dependencyResolutionManagement {
     repositories {
         google()
@@ -16,19 +18,21 @@ dependencyResolutionManagement {
 rootProject.name = "TinyTask"
 
 include(
-    ":android:androidApp",
-":android:features:taskForm",
-":android:features:counter",
-":android:core:compose"
-
+    ":shared:core",
+    ":shared:datalayer:local",
+    ":shared:datalayer:network" ,
+    ":shared:datalayer:repository",
+    ":shared:domain",
+    ":shared",
 )
 
 
 include(
-    ":shared",
-    ":shared:datalayer:repository",
-    ":shared:domain",
-    ":shared:core",
-    ":shared:datalayer:local",
-    ":shared:datalayer:network"
+    ":android:androidApp",
+    ":android:features:taskForm",
+    ":android:features:counter",
+    ":android:core:compose"
 )
+
+
+include(":shared:common")
