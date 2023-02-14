@@ -22,6 +22,11 @@ kotlin{
     sourceSets{
         val commonMain by getting {
             dependencies {
+                implementation(Koin.koin_core)
+                implementation(project(":shared:datalayer:repository"))
+                implementation(project(":shared:datalayer:local"))
+                implementation(project(":shared:datalayer:network"))
+                implementation(UUID.benasher44)
             }
         }
     }
@@ -49,7 +54,7 @@ android {
 
 dependencies {
 //    implementation(project(":shared:datalayer:repository"))
-    implementation(project(mapOf("path" to ":shared:datalayer:repository")))
+
 //    implementation(project(":shared:datalayer:local"))
 //    implementation(project(":shared:datalayer:network"))
 //    commonMainImplementation(project(":shared:core:database"))

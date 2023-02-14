@@ -22,10 +22,15 @@ kotlin{
     }
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+           dependencies {
+               implementation(Koin.koin_core)
+           }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+
             }
         }
         val androidMain by getting
@@ -72,5 +77,5 @@ android {
 dependencies {
     commonMainApi(project(":shared:datalayer:local"))
     commonMainApi(project(":shared:datalayer:network"))
-    implementation(Koin.koin_core)
+
 }

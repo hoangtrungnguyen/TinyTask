@@ -3,7 +3,6 @@ plugins {
     kotlin(cocopods)
     id("com.android.library")
     id("com.chromaticnoise.multiplatform-swiftpackage") version "2.0.3"
-//    id("app.cash.sqldelight")
 }
 
 kotlin {

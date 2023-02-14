@@ -36,3 +36,4 @@ include(
 
 
 include(":shared:common")
+include(":shared:datalayer:model")

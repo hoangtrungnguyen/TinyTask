@@ -10,7 +10,6 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-
 interface CountDownTimer {
     fun create(total: Duration, interval: Duration): Flow<Duration>
 }

@@ -48,20 +48,21 @@ dependencies {
 
 
     with(Koin){
-        implementation(Koin.koin_core)
-        implementation(Koin.koin_compose)
+        implementation(koin_core)
+        implementation(koin_android)
+        implementation(koin_compose)
     }
 
     with(Compose){
         implementation(material_icons)
         implementation(navigation)
-        implementation(Compose.material3)
-        implementation(Compose.material3_window)
+        implementation(material3)
+        implementation(material3_window)
         implementation(ui)
-        implementation(Compose.ui_tooling)
+        implementation(ui_tooling)
         implementation(ui_tooling_preview)
-        implementation(Compose.foundation)
-        implementation(Compose.activity)
+        implementation(foundation)
+        implementation(activity)
     }
 
 }

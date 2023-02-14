@@ -2,21 +2,22 @@ package com.tinyspace.taskform
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tinyspace.domain.SaveTaskUseCase
+import com.tinyspace.domain.model.Task
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-class TaskFormViewModel(
+class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), KoinComponent {
 
-) : ViewModel() {
-//    final val saveTaskUseCase: SaveTaskUseCase by inject(
-//
-//    )
     private val initialState: ViewModelState = ViewModelState(
-        0 to 0.toDuration(DurationUnit.MINUTES), "", "", emptyList()
+        0 to 0.toDuration(DurationUnit.MINUTES), "", "", emptyList(),
+        isLoading = false
     )
 
     private val modelState = MutableStateFlow(initialState)
@@ -31,7 +32,20 @@ class TaskFormViewModel(
 
     private fun create() {
         viewModelScope.launch {
-//            saveTaskUseCase(Any())
+            modelState.update {
+                it.copy(
+                    isLoading =  true
+                )
+            }
+            delay(2000)
+            saveTaskUseCase(Task.createNew(modelState.value.title, modelState.value.description))
+        }.invokeOnCompletion {completable ->
+            modelState.update {
+                it.copy(
+                    isLoading =  false,
+                    isDone = completable == null
+                )
+            }
         }
     }
 
@@ -58,26 +72,29 @@ class TaskFormViewModel(
             val tagOption = event.tagOption
 
             modelState.update {
-                val innerTags = mutableListOf<Tag>()
+                val innerTagUis = mutableListOf<TagUi>()
                 var isContain = false
-                for (tag: Tag in it.tags) {
-                    if (tag != defaultTags[tagOption]) {
-                        innerTags.add(tag)
+                for (tagUi: TagUi in it.tagUis) {
+                    if (tagUi != defaultTagUis[tagOption]) {
+                        innerTagUis.add(tagUi)
                     } else {
                         isContain = true
                     }
                 }
                 if (!isContain) {
-                    innerTags.add(defaultTags[tagOption])
+                    innerTagUis.add(defaultTagUis[tagOption])
                 }
 
-                it.copy(tags = innerTags)
+                it.copy(tagUis = innerTagUis)
             }
         }
         is TaskFormEvent.TitleInput -> {
             modelState.update {
                 it.copy(title = event.title)
             }
+        }
+        TaskFormEvent.Done -> {
+
         }
     }
 }
@@ -87,21 +104,25 @@ private data class ViewModelState(
     val durationOption: Pair<Int, Duration>,
     val title: String,
     val description: String,
-    val tags: List<Tag>
+    val tagUis: List<TagUi>,
+    val isLoading: Boolean,
+    val isDone: Boolean = false,
 ) {
 
     fun toUiState(): TaskFormUiState {
         return TaskFormUiState(
             durationOption = durationOption.first,
             description = description,
-            tags = tags,
-            title = title
+            tagUis = tagUis,
+            title = title,
+            isLoading = isLoading,
+            isDone = isDone
         )
     }
 }
 
 
-data class Tag(
+data class TagUi(
     val name: String,
     val code: Int
 )
@@ -110,18 +131,21 @@ data class TaskFormUiState(
     val durationOption: Int = 0,
     val title: String = "",
     val description: String = "",
-    val tags: List<Tag> = emptyList()
+    val tagUis: List<TagUi> = emptyList(),
+    val isLoading : Boolean = false,
+    val isDone: Boolean = false
 ) {
+
 
 
 }
 
 
-internal val defaultTags = listOf(
-    Tag("Work", 1),
-    Tag("Personal", 2),
-    Tag("Workout", 3),
-    Tag("Coding", 4),
+internal val defaultTagUis = listOf(
+    TagUi("Work", 1),
+    TagUi("Personal", 2),
+    TagUi("Workout", 3),
+    TagUi("Coding", 4),
 )
 
 

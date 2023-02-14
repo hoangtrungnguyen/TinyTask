@@ -1,31 +1,43 @@
 package com.tinyspace.tinytask.di
 
-import com.tinyspace.datalayer.repository.Repository
-import com.tinyspace.domain.SaveTaskUseCase
 import com.tinyspace.datalayer.repository.TaskRepository
+import com.tinyspace.datalayer.repository.TaskRepositoryImpl
+import com.tinyspace.domain.SaveTaskUseCase
+import com.tinyspace.datalayer.repository.repositoryModules
+import com.tinyspace.tinytask.Platform
+import org.koin.core.KoinApplication
 
 import org.koin.core.context.startKoin
+import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 
-private val useCaseModules = module {
-    factory {
-        SaveTaskUseCase()
+object Modules {
+    val core = module {
+        factory { Platform() }
     }
+
+    val repositories = module {
+        factory { TaskRepositoryImpl() }
+    }
+
+    val useCases = module {
+        factory { SaveTaskUseCase(get()) }
+    }
+
 }
-val repositoryModule = module {
-    single { TaskRepository() as Repository }
-}
-
-private val sharedModules = listOf(useCaseModules)
 
 
-fun initKoin(koinAppDeclaration: KoinAppDeclaration = {}) =
+fun initKoin(koinAppDeclaration: Module = module {},
+viewModel: Module = module {  }) : KoinApplication =
     startKoin {
-        koinAppDeclaration()
-        modules(sharedModules)
-        modules(repositoryModule)
+        modules(
+            Modules.repositories,
+            Modules.useCases,
+            koinAppDeclaration,
+            viewModel
+        )
     }
 
 

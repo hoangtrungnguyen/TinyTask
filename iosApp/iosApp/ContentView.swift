@@ -4,7 +4,7 @@ import shared
 struct ContentView: View {
 	
 	var body: some View {
-		Text("Nguyen xin chao bạn")
+		Text("Nguyen xin chao bạn eee")
 	}
 }
 

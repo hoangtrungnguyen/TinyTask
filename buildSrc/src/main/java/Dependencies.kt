@@ -87,6 +87,7 @@ object SQLDelight {
 
 object Koin{
     const val koin_compose = "io.insert-koin:koin-androidx-compose:${Versions.koin}"
+    const val koin_android = "io.insert-koin:koin-android:${Versions.koin}"
     const val koin_core = "io.insert-koin:koin-core:${Versions.koin}"
     const val koin_test = "io.insert-koin:koin-test:${Versions.koin}"
 }
@@ -94,4 +95,8 @@ object Koin{
 
 object SharedPref{
     const val rushwolf = "com.russhwolf:multiplatform-settings:${Versions.rushwolf}"
+}
+
+object UUID {
+    const val benasher44 = "com.benasher44:uuid:0.6.0"
 }

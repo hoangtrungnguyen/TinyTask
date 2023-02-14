@@ -8,8 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Task
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,6 +20,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 import com.tinyspace.compose.TinyTaskTheme
+import org.koin.androidx.compose.koinViewModel
 
 
 private val durationOptions = listOf<Duration>(
@@ -36,18 +36,40 @@ private val projectOptions = listOf(
 
 @Composable
 fun TaskFormScreen(
-    viewModel: TaskFormViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+//    viewModel: TaskFormViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: TaskFormViewModel = koinViewModel(),
     navigateBack: () -> Boolean,
 ) {
 
+    val snackBarNavHostState: SnackbarHostState = remember { SnackbarHostState() }
     val state = viewModel.uiState.collectAsState()
+
+    if (state.value.isLoading) {
+        LaunchedEffect(snackBarNavHostState) {
+
+            snackBarNavHostState.showSnackbar(
+                "Loading ... "
+            )
+        }
+    }
+
+    if(state.value.isDone){
+        navigateBack()
+    }
     Scaffold(
         topBar = {
             TaskFormAppBar(
                 navigateBack
             )
         },
+
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackBarNavHostState
+            )
+        },
     ) {
+
         Column(
             modifier = Modifier
                 .padding(it)
@@ -62,33 +84,30 @@ fun TaskFormScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
 
-                TaskDescription(
-                    { title ->
-                        viewModel.onEvent(TaskFormEvent.TitleInput(title))
-                    },
-                    { description ->
-                        viewModel.onEvent(TaskFormEvent.DescriptionInput(description))
-                    },
-                    uiState = state.value
+                TaskDescription({ title ->
+                    viewModel.onEvent(TaskFormEvent.TitleInput(title))
+                }, { description ->
+                    viewModel.onEvent(TaskFormEvent.DescriptionInput(description))
+                }, uiState = state.value
                 )
                 Box(Modifier.height(8.dp))
                 Title(title = stringResource(R.string.tags))
-                TagOptions(state.value.tags, onTagSelected = { tagOption ->
+                TagOptions(state.value.tagUis, onTagSelected = { tagOption ->
                     viewModel.onEvent(TaskFormEvent.OnTagSelected(tagOption))
                 })
                 Box(Modifier.height(16.dp))
                 Title(stringResource(R.string.duration))
-                DurationOptions(
-                    selectedOption = state.value.durationOption,
+                DurationOptions(selectedOption = state.value.durationOption,
                     onOptionSelected = { option ->
                         viewModel.onEvent(TaskFormEvent.DurationSelected(option))
 
-                    }
-                )
+                    })
                 Text("${state.value}")
             }
 
-            Button(onClick = { viewModel.onEvent(TaskFormEvent.Create) }) {
+            Button(onClick = {
+
+                viewModel.onEvent(TaskFormEvent.Create) }) {
                 Text(stringResource(R.string.create))
             }
         }
@@ -147,8 +166,7 @@ private fun TaskDescription(
 ) {
     Column(modifier = Modifier.padding(horizontal = 32.dp)) {
         //Title
-        OutlinedTextField(
-            value = uiState.title,
+        OutlinedTextField(value = uiState.title,
             onValueChange = { onTitleChanged(it) },
             label = { Text(stringResource(R.string.title)) },
             modifier = Modifier.fillMaxWidth()
@@ -197,11 +215,11 @@ fun LabelledCheckbox(
 
 
 @Composable
-fun TagOptions(selectedTags: List<Tag>, onTagSelected: (index: Int) -> Unit) {
+fun TagOptions(selectedTagUis: List<TagUi>, onTagSelected: (index: Int) -> Unit) {
 
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         projectOptions.forEachIndexed { index, option ->
-            InputChip(selected = selectedTags.contains(defaultTags[index]), onClick = {
+            InputChip(selected = selectedTagUis.contains(defaultTagUis[index]), onClick = {
                 onTagSelected(index)
             }, label = { Text(option) })
         }
