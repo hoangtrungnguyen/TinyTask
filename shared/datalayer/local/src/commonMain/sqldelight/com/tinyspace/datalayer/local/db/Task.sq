@@ -1,0 +1,24 @@
+CREATE TABLE Task (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    completed INTEGER NOT NULL DEFAULT 0,
+    createdDate INTEGER NOT NULL,
+    duration INTEGER NOT NULL,
+    dueDate INTEGER
+);
+
+selectAll:
+SELECT * FROM Task LIMIT(4);
+
+
+getMostRecent:
+SELECT * FROM Task ORDER BY createdDate DESC LIMIT(1);
+
+insertTask:
+INSERT OR IGNORE INTO Task(id, title, description, completed, createdDate, duration)
+VALUES (?,?, ?,?,?, ?);
+
+setDueDate:
+UPDATE Task SET dueDate = ? WHERE id = ? ;
+

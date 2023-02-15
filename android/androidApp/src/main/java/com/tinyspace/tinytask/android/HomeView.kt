@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.tinyspace.tinytask.android
+
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -13,9 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.tinyspace.compose.TinyTaskTheme
 import com.tinyspace.tinytask.android.ui.stat.StatScreen
-import com.tinyspace.tinytask.android.ui.task.TaskUi
-import com.tinyspace.tinytask.android.ui.task.TasksTabScreen
-
+import com.tinyspace.todolist.TodoListScreen
 
 
 class Destination(
@@ -30,21 +29,22 @@ val destinations = listOf<Destination>(
 
 @Composable
 fun HomeView(
-    onTaskClick: (TaskUi) -> Unit,
+    onTaskClick: (taskId: String) -> Unit,
+    onNavigateHistoryScreen: () -> Unit,
     navigateToTaskForm: () -> Unit
 ) {
     var tab by rememberSaveable {
         mutableStateOf(0)
     }
     Scaffold(
-        topBar = { HomeTopAppBar(tab) },
+        topBar = { HomeTopAppBar(tab, onNavigateHistoryScreen) },
         bottomBar = {
             HomeBottomAppBar(tab, onChangeTab = {
                 tab = it
             })
         },
         floatingActionButton = {
-            if (tab == 0) FloatingActionButton(onClick = { navigateToTaskForm() }) {
+            if (tab == 1) FloatingActionButton(onClick = { navigateToTaskForm() }) {
                 Icon(painterResource(id = R.drawable.add_24), contentDescription = "Adding")
             }
         }
@@ -52,7 +52,7 @@ fun HomeView(
         Surface(modifier = Modifier.padding(it)) {
 
             when (tab) {
-                0 -> TasksTabScreen(onTaskClick = onTaskClick)
+                0 -> TodoListScreen()
                 1 -> StatScreen()
                 else -> throw IllegalArgumentException()
             }
@@ -61,12 +61,25 @@ fun HomeView(
 }
 
 @Composable
-fun HomeTopAppBar(tab: Int) {
+fun HomeTopAppBar(
+    tab: Int,
+    onNavigateHistoryScreen: () -> Unit = {}
+) {
     TopAppBar(
         title = {
-            when(tab){
+            when (tab) {
                 0 -> Text("Tiny Task")
                 else -> Text("Tiny Task")
+            }
+        },
+        actions = {
+            if (tab != 0) {
+                IconButton(onClick = { onNavigateHistoryScreen() }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_checklist_24),
+                        contentDescription = "Task History Icon"
+                    )
+                }
             }
         }
     )
@@ -100,7 +113,7 @@ fun HomeBottomAppBar(tab: Int, onChangeTab: (tab: Int) -> Unit) {
 @Composable
 fun HomeScreenPreview() {
     TinyTaskTheme {
-        HomeView(onTaskClick = {}) {
+        HomeView(onTaskClick = {} , onNavigateHistoryScreen = {}) {
 
         }
     }
@@ -110,7 +123,15 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreenDarkModePreview() {
     TinyTaskTheme {
-        HomeView(onTaskClick = {}) {
+        HomeView(onTaskClick = {}, onNavigateHistoryScreen = {}) {
         }
+    }
+}
+
+@Preview
+@Composable
+fun HomeTopAppBarPreview() {
+    TinyTaskTheme {
+        HomeTopAppBar(tab = 0)
     }
 }

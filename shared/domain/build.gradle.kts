@@ -27,6 +27,7 @@ kotlin{
                 implementation(project(":shared:datalayer:local"))
                 implementation(project(":shared:datalayer:network"))
                 implementation(UUID.benasher44)
+                implementation(JetBrains.kotlin_time)
             }
         }
     }

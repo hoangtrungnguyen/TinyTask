@@ -69,11 +69,14 @@ object ViewModel {
 }
 
 
-object Test {
+object AndroidTest {
 
-    const val junit4 = "junit:junit:${Versions.junit4}"
     const val androidx = "androidx.test.ext:junit:${Versions.androidx}"
     const val espresso = "androidx.test.espresso:espresso-core:${Versions.espresso}"
+}
+
+object Junit {
+    const val junit4 = "junit:junit:${Versions.junit4}"
 }
 object Coroutine{
 
@@ -93,10 +96,18 @@ object Koin{
 }
 
 
-object SharedPref{
-    const val rushwolf = "com.russhwolf:multiplatform-settings:${Versions.rushwolf}"
+object Rushwolf{
+    const val settings = "com.russhwolf:multiplatform-settings:${Versions.rushwolf}"
 }
 
 object UUID {
     const val benasher44 = "com.benasher44:uuid:0.6.0"
+}
+
+object JetBrains {
+    val kotlin_coroutine_test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
+    const val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC"
+    const val kotlin_coroutine = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    const val kotlin_coroutine_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    const val kotlin_time =   "org.jetbrains.kotlinx:kotlinx-datetime:0.4.0"
 }

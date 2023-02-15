@@ -4,6 +4,8 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
     }
+
+
 }
 
 
@@ -14,6 +16,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 
 rootProject.name = "TinyTask"
 
@@ -37,3 +40,5 @@ include(
 
 include(":shared:common")
 include(":shared:datalayer:model")
+include(":android:features:todolist")
+include(":android:features:taskHistory")

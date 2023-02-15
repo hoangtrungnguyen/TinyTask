@@ -44,23 +44,3 @@ fun RingIndicator(
     }
 }
 
-
-@Composable
-fun TagIcon(title: String, code: Int) {
-    return Box(
-
-        modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center
-    ) {
-        Surface(
-            modifier = Modifier.clip(RoundedCornerShape(6.dp)),
-            color = "FFEFF1".fromHexToColor(),
-        ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
-                text = title, color = Color.Red, style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-            )
-        }
-
-    }
-}

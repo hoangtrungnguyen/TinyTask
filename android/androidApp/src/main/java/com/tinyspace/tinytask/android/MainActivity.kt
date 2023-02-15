@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+
 package com.tinyspace.tinytask.android
 
 import android.os.Bundle
@@ -5,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -13,18 +17,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.tinyspace.compose.TinyTaskTheme
+import com.tinyspace.compose.*
 import com.tinyspace.taskform.TaskFormScreen
+import com.tinyspace.taskhistory.TaskHistoryScreen
 import com.tinyspace.tinytask.android.ui.counter.CounterScreen
 import com.tinyspace.tinytask.android.ui.onboard.OnBoardingScreen
+import com.tinyspace.todolist.TodoListScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         setContent {
+
             TinyTaskTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    TinyTaskApp()
+                    TinyTaskApp(
+                    )
                 }
             }
         }
@@ -36,7 +46,7 @@ class MainActivity : ComponentActivity() {
 fun TinyTaskApp(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = onboard
+    startDestination: String = onboard,
 ) {
     NavHost(
         navController = navController,
@@ -65,9 +75,11 @@ fun TinyTaskApp(
         composable(home) {
             HomeView(
                 onTaskClick = {
-                    navController.navigate("$counter/${it.id}")
-                }
-            ) {
+                    navController.navigate("$counter/${it}")
+                },
+            onNavigateHistoryScreen = {
+                navController.navigate(history)
+            }) {
                 navController.navigate(taskForm)
             }
         }
@@ -76,6 +88,18 @@ fun TinyTaskApp(
             TaskFormScreen {
                 navController.navigateUp()
             }
+        }
+        composable(history){
+            TaskHistoryScreen(onTaskClick = {
+
+            }, onNavigateBack = {
+                navController.navigateUp()
+            })
+        }
+        composable(todoList){
+            TodoListScreen (onPopBack = {
+                navController.navigateUp()
+            })
         }
 
     }

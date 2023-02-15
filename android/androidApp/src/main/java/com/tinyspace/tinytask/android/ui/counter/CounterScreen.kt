@@ -22,9 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tinyspace.compose.TagIcon
 import com.tinyspace.tinytask.android.R
 import com.tinyspace.tinytask.android.common.RingIndicator
-import com.tinyspace.tinytask.android.common.TagIcon
 import com.tinyspace.compose.TinyTaskTheme
 
 

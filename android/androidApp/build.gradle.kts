@@ -43,6 +43,8 @@ dependencies {
     implementation(project(":shared:domain"))
     implementation(project(":android:features:counter"))
     implementation(project(":android:features:taskForm"))
+    implementation(project(":android:features:todolist"))
+    implementation(project(":android:features:taskHistory"))
     implementation(project(":android:core:compose"))
 
 

@@ -14,28 +14,33 @@ kotlin {
         }
     }
 
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "shared"
+    ios {
+        binaries {
+            framework {
+                baseName = "shared"
+            }
         }
     }
 
+
+    iosSimulatorArm64(){
+            binaries.framework {
+                baseName = "shared"
+            }
+    }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
 //                api("io.insert-koin:koin-core:3.1.2")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
-                implementation(Koin.koin_core)
-                implementation(SharedPref.rushwolf)
+                implementation(JetBrains.kotlin_coroutine)
+                implementation(JetBrains.serialization)
+                implementation(JetBrains.kotlin_time)
+
                 implementation(project(":shared:domain"))
                 implementation(project(":shared:datalayer:repository"))
+                implementation(Rushwolf.settings)
+                implementation(Koin.koin_core)
             }
         }
 
@@ -43,7 +48,7 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+                implementation(JetBrains.kotlin_coroutine_test)
                 implementation(Koin.koin_test)
             }
         }
@@ -63,45 +68,27 @@ kotlin {
         val androidMain by getting{
             dependencies {
                 implementation(SQLDelight.slq_delight_android)
+                implementation(Koin.koin_android)
             }
         }
         val androidUnitTest by getting
-        val iosX64Main by getting {
-            dependencies {
 
-            }
-        }
-        val iosArm64Main by getting {
-            dependencies{
-
-            }
-        }
         val iosSimulatorArm64Main by getting {
             dependencies{
-
-            }
-        }
-
-
-        val iosMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                implementation(SQLDelight.slq_delight_native)
                 implementation(Koin.koin_core)
+                implementation(SQLDelight.slq_delight_native)
             }
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
-        val iosX64Test by getting
-        val iosArm64Test by getting
+
+        val iosMain by getting {
+            dependencies{
+                implementation(Koin.koin_core)
+                implementation(SQLDelight.slq_delight_native)
+            }
+        }
+
         val iosSimulatorArm64Test by getting
-        val iosTest by creating {
-            dependsOn(commonTest)
-            iosX64Test.dependsOn(this)
-            iosArm64Test.dependsOn(this)
-            iosSimulatorArm64Test.dependsOn(this)
-        }
+        val iosTest by getting {}
     }
 
 //
@@ -136,4 +123,8 @@ multiplatformSwiftPackage {
         iOS { v("14.1") }
     }
     packageName("shared")
+}
+
+dependencies {
+//    commonMainApi(project(":shared:domain"))
 }

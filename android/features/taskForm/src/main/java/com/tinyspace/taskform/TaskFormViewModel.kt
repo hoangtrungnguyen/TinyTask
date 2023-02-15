@@ -3,7 +3,10 @@ package com.tinyspace.taskform
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tinyspace.domain.SaveTaskUseCase
+import com.tinyspace.domain.exception.InsertErrorException
 import com.tinyspace.domain.model.Task
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -38,14 +41,39 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                 )
             }
             delay(2000)
-            saveTaskUseCase(Task.createNew(modelState.value.title, modelState.value.description))
-        }.invokeOnCompletion {completable ->
-            modelState.update {
-                it.copy(
-                    isLoading =  false,
-                    isDone = completable == null
-                )
+
+            val task = modelState.value.run {
+                Task.createNew(title, description, durations[durationOption.first])
             }
+            saveTaskUseCase(task)
+        }.invokeOnCompletion {completable ->
+
+            when(completable){
+                null -> {
+                    modelState.update {
+                        it.copy(
+                            isLoading =  false,
+                        ).apply {
+                            isDone = true
+                        }
+                    }
+                }
+                is InsertErrorException -> {
+                    modelState.update {
+                        it.copy(
+                            isLoading =  false,
+                        )
+                    }
+                }
+                is CancellationException -> {
+
+                }
+                else -> {
+
+                }
+            }
+
+
         }
     }
 
@@ -106,8 +134,18 @@ private data class ViewModelState(
     val description: String,
     val tagUis: List<TagUi>,
     val isLoading: Boolean,
-    val isDone: Boolean = false,
+    private var _isDone: Boolean = false
+
 ) {
+
+
+    // can only call one time
+    var isDone: Boolean
+        set(value)  {
+            assert(!_isDone)
+            _isDone = true
+        }
+    get() = _isDone
 
     fun toUiState(): TaskFormUiState {
         return TaskFormUiState(

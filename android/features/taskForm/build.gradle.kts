@@ -34,11 +34,11 @@ dependencies {
     implementation(project(":android:core:compose"))
     implementation(project(":shared:domain"))
 
-    with(Test){
+    with(AndroidTest){
         androidTestImplementation(androidx)
         androidTestImplementation(espresso)
-        testImplementation(junit4)
     }
+    testImplementation(Junit.junit4)
 
     with(Compose){
         implementation(material_icons)
