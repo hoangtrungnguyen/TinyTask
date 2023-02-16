@@ -15,12 +15,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tinyspace.compose.TinyTaskTheme
+import org.koin.androidx.compose.koinViewModel
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-
-import com.tinyspace.compose.TinyTaskTheme
-import org.koin.androidx.compose.koinViewModel
 
 
 private val durationOptions = listOf<Duration>(
@@ -85,21 +84,21 @@ fun TaskFormScreen(
             ) {
 
                 TaskDescription({ title ->
-                    viewModel.onEvent(TaskFormEvent.TitleInput(title))
+                    viewModel.onEvent(TaskFormEvent.InputTitle(title))
                 }, { description ->
-                    viewModel.onEvent(TaskFormEvent.DescriptionInput(description))
+                    viewModel.onEvent(TaskFormEvent.InputDescription(description))
                 }, uiState = state.value
                 )
                 Box(Modifier.height(8.dp))
                 Title(title = stringResource(R.string.tags))
                 TagOptions(state.value.tagUis, onTagSelected = { tagOption ->
-                    viewModel.onEvent(TaskFormEvent.OnTagSelected(tagOption))
+                    viewModel.onEvent(TaskFormEvent.SelectTag(tagOption))
                 })
                 Box(Modifier.height(16.dp))
                 Title(stringResource(R.string.duration))
                 DurationOptions(selectedOption = state.value.durationOption,
                     onOptionSelected = { option ->
-                        viewModel.onEvent(TaskFormEvent.DurationSelected(option))
+                        viewModel.onEvent(TaskFormEvent.SelectDuration(option))
 
                     })
                 Text("${state.value}")
@@ -107,7 +106,8 @@ fun TaskFormScreen(
 
             Button(onClick = {
 
-                viewModel.onEvent(TaskFormEvent.Create) }) {
+                viewModel.onEvent(TaskFormEvent.CreateTask)
+            }) {
                 Text(stringResource(R.string.create))
             }
         }
