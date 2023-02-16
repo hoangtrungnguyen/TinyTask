@@ -1,8 +1,10 @@
 package com.tinyspace.datalayer.local
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.db.SqlDriver
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.tinyspace.datalayer.local.db.Task
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 
 class DatabaseHelper(
@@ -13,7 +15,8 @@ class DatabaseHelper(
 
 
     fun insertTask(id: String, title: String, description: String,
-                   completed: Long, createdTime: Long, duration: Long){
+                   completed: Long, createdTime: Long, duration: Long
+    ) {
 
         //TODO: Handle exception here
         runBlocking(IOScope) {
@@ -22,6 +25,18 @@ class DatabaseHelper(
                 id, title, description, completed, createdTime, duration
             )
         }
+    }
+
+    fun watchRecentTask(): Flow<List<Task>> {
+        // Launch a coroutine to perform the I/O operation
+        return dbRef.taskQueries.getMostRecent().asFlow().mapToList(
+            IOScope
+        )
+    }
+
+
+    fun getRecentTasks(): List<Task> {
+        return dbRef.taskQueries.getMostRecent().executeAsList()
     }
 }
 

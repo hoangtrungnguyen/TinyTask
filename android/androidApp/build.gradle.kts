@@ -32,6 +32,13 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+//
+//        coreLibraryDesugaringEnabled = true
+//        experimentalFeatures = listOf("material3")
+    }
+
+    kotlinOptions {
+
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -46,6 +53,7 @@ dependencies {
     implementation(project(":android:features:todolist"))
     implementation(project(":android:features:taskHistory"))
     implementation(project(":android:core:compose"))
+    implementation(project(":android:core:common"))
 
 
 

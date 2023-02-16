@@ -52,7 +52,9 @@ fun HomeView(
         Surface(modifier = Modifier.padding(it)) {
 
             when (tab) {
-                0 -> TodoListScreen()
+                0 -> TodoListScreen(onTaskSelected = { id ->
+                    onTaskClick(id)
+                })
                 1 -> StatScreen()
                 else -> throw IllegalArgumentException()
             }
@@ -88,7 +90,7 @@ fun HomeTopAppBar(
 
 @Composable
 fun HomeBottomAppBar(tab: Int, onChangeTab: (tab: Int) -> Unit) {
-    BottomAppBar() {
+    BottomAppBar {
         destinations.mapIndexed { index, value ->
             NavigationBarItem(
                 label = { Text(stringResource(value.nameId)) },

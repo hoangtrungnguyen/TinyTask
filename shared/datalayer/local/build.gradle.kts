@@ -25,6 +25,7 @@ kotlin{
             dependencies{
                 implementation(Rushwolf.settings)
                 implementation(JetBrains.kotlin_coroutine)
+                implementation(SQLDelight.sql_coroutine)
             }
         }
         val commonTest by getting {

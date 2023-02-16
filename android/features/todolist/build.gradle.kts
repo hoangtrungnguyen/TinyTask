@@ -32,6 +32,7 @@ android {
 dependencies {
 
     implementation(project(":android:core:compose"))
+    implementation(project(":android:core:common"))
     implementation(project(":shared:domain"))
 
     with(AndroidTest){
@@ -52,12 +53,17 @@ dependencies {
         implementation(activity)
     }
 
-    with(ViewModel){
+    with(ViewModel) {
         implementation(life_cycle)
     }
 
-    with(Koin){
+    with(Koin) {
         implementation(koin_core)
         implementation(koin_compose)
     }
+
+    implementation(Deps.coil)
+
+    implementation(JetBrains.kotlin_coroutine)
+
 }

@@ -2,30 +2,39 @@
 
 package com.tinyspace.todolist
 
-import android.graphics.Paint
 import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.flowWithLifecycle
+import coil.compose.AsyncImage
 import com.tinyspace.compose.TinyTaskTheme
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import org.koin.androidx.compose.koinViewModel
 import java.util.*
-
 
 @Composable
 fun TodoListScreen(
-    onPopBack: () -> Boolean = { false }
+    onPopBack: () -> Boolean = { false },
+    viewModel: ToDoListViewModel = koinViewModel(),
+    onTaskSelected: (taskId: String) -> Unit,
 ) {
 
 
@@ -33,132 +42,110 @@ fun TodoListScreen(
     val screenWidth = configuration.screenWidthDp
     val screenHeight = configuration.screenHeightDp
 
-    Scaffold {
+    val state = viewModel.uiState.collectAsState()
 
+
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+
+    Scaffold { padding ->
         Box(
             modifier = Modifier
-                .padding(it).fillMaxSize()
+                .padding(padding)
+                .fillMaxSize(), contentAlignment = BiasAlignment(0f, -0.35f)
         ) {
-            GroupTask(
-                onStart = {},
-                onSkip = {},
-                onEdit = {},
-                onHorizontalChanged = { },
-                screenSize = Size(screenWidth.toFloat(), screenHeight.toFloat())
-            )
-        }
-    }
-}
-
-
-@Composable
-fun GroupTask(
-    onStart: (taskId: Int) -> Unit,
-    onSkip: (taskId: Int) -> Unit,
-    onEdit: (taskId: Int) -> Unit,
-    onHorizontalChanged: (offset: Float) -> Unit = {},
-    screenSize: Size = Size.Zero
-) {
-//    val width = screenSize.width / 4 * 3
-//    val height = screenSize.height / 4 * 3
-//    println("${width} - $height")
-    val width = 300.dp
-    val height = 500.dp
-
-    var offset by remember { mutableStateOf(Offset.Zero) }
-
-
-    Surface(
-        Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-
-                detectDragGestures(
-                    onDrag = { pointer, dragAmount ->
-
-                    },
-                    onDragEnd = {
-//                        offset = Offset.Zero
-                    },
-                    onDragCancel = {
-                        offset = Offset.Zero
+            LazyRow(
+                Modifier.padding(),
+                contentPadding = PaddingValues(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                items(state.value.tasks) {
+                    TaskItemCard(it.title, it.description, it.taskId) { id ->
+                        viewModel.onEvent(TodoListEvent.StartTask(id))
                     }
-                )
-            }) {
-        TaskItemCard(
-            Modifier,
-            Color.LightGray,
-            width,
-            height,
-            position = 1,
-            onStart = {}
-        ) {
-            Text("${width} - $height")
-        }
-        TaskItemCard(
-            Modifier,
-            Color.Gray,
-            width,
-            height,
-            position = 2,
-            onStart = {}
-        ) {
-            Text("${width} - $height")
-        }
-        TaskItemCard(
-            Modifier
-                .graphicsLayer(
-                    translationY = offset.y
-                )
-                .offset(x = offset.y.dp),
-            Color.DarkGray,
-            width,
-            height,
-            offset = offset,
-            position = 3,
-            onStart = {}
-        ) {
-            Text("$width - $height")
-            Box(contentAlignment = Alignment.Center) {
-                Text("$offset")
+                }
             }
         }
+
+    }
+
+    LaunchedEffect(viewModel, lifecycle) {
+        // Whenever the uiState changes, check if the user is logged in and
+        // call the `onUserLogin` event when `lifecycle` is at least STARTED
+        snapshotFlow { state.value }
+            .filter { it.selectedTask != null }
+            .map { it.selectedTask }
+            .flowWithLifecycle(lifecycle)
+            .collect {
+                assert(it != null)
+                it?.let {
+                    onTaskSelected(it)
+                }
+            }
     }
 }
 
 @Composable
-fun TaskItemCard(
-    modifier: Modifier,
-    color: Color,
-    width: Dp,
-    height: Dp,
-    offset: Offset = Offset.Zero,
-    position: Int,
-    onStart: (taskId: Int) -> Unit = {},
-    onTouch: () -> Unit = {},
-    onMove: (offset: Offset) -> Unit = {},
-    onUnTouch: (offset: Offset) -> Unit = {},
-    content: @Composable () -> Unit
+private fun TaskItemCard(
+    title: String,
+    description: String,
+    taskId: String,
+    onStart: (id: String) -> Unit,
 ) {
-    Box(
-        contentAlignment =
-        BiasAlignment(0.2f - 0.1f * position, -0.4f + 0.05f * position),
+    ElevatedCard(
+        modifier = Modifier.size(
+            width = 350.dp,
+            height = 600.dp,
+        ),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Color.Red,
+
+            ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        ),
 
         ) {
-        Surface(
-            Modifier.size(
-                width = width,
-                height = height
-            ),
-            color = color
-        ) {
+
+        Surface {
+            AsyncImage(
+                model = "https://images.unsplash.com/photo-1676202731475-afd55cddb97a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=627&q=80",
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds,
+                colorFilter = ColorFilter.tint(
+                    MaterialTheme.colorScheme.background,
+                    if (isSystemInDarkTheme()) BlendMode.Lighten else BlendMode.Darken
+                ),
+                alpha = 0.4f
+            )
+
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
-            ){
-                content()
-                OutlinedButton(onClick = { onStart(2) }) {
-                    Text("Start")
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        vertical = 16.dp,
+                        horizontal = 16.dp
+                    ),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    IconButton(onClick = { onStart(taskId) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.PlayCircle, contentDescription = "Start",
+                            modifier = Modifier.size(80.dp),
+                        )
+                    }
+                }
+                Column {
+                    Text(description)
+                    Text("Tag")
                 }
             }
         }
@@ -167,38 +154,11 @@ fun TaskItemCard(
 
 
 @Composable
-@Preview
-fun TaskItemCardPreview() {
-    TinyTaskTheme {
-        TaskItemCard(Modifier, Color.Gray, 200.dp, 300.dp, position = 0, onStart = {}) {
-
-        }
-    }
-}
-
-@Composable
-@Preview(
-    name = "Group Task Preview"
-)
-fun GroupTaskItemPreview() {
-    TinyTaskTheme {
-        GroupTask(
-            {},
-            {},
-            {},
-            screenSize = Size.Zero,
-        )
-    }
-}
-
-@Composable
 @Preview(
     name = "Screen Preview"
 )
 fun TodoListPreview() {
     TinyTaskTheme {
-        TodoListScreen {
-            true
-        }
+//        TodoListScreen({},{})
     }
 }

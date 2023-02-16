@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.tinyspace.taskform.TaskFormViewModel
 import com.tinyspace.tinytask.initKoin
+import com.tinyspace.todolist.ToDoListViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 
@@ -17,7 +19,10 @@ class TinyTaskApplication: Application() {
         initKoin(
             viewModel =
                module {
-                   viewModel { TaskFormViewModel(get()) }
+                   viewModel {
+                       TaskFormViewModel(get())
+                   }
+                   viewModelOf(::ToDoListViewModel)
                },
             koinAppDeclaration = module {
                 single<Context> { this@TinyTaskApplication }

@@ -39,12 +39,12 @@ object Versions {
     const val sqlDelightVersion = "2.0.0-alpha05"
 }
 
-class Dependencies {
-}
+class Dependencies
 
 object Deps {
 
 
+    const val coil = "io.coil-kt:coil-compose:2.2.2"
 }
 
 
@@ -78,14 +78,13 @@ object AndroidTest {
 object Junit {
     const val junit4 = "junit:junit:${Versions.junit4}"
 }
-object Coroutine{
-
-}
+object Coroutine
 
 object SQLDelight {
     const val slq_delight_android =  "app.cash.sqldelight:android-driver:${Versions.sqlDelightVersion}"
     const val slq_delight_native =  "app.cash.sqldelight:native-driver:${Versions.sqlDelightVersion}"
     const val sql_delight = "app.cash.sqldelight:sqlite-driver:${Versions.sqlDelightVersion}"
+    const val sql_coroutine = "app.cash.sqldelight:coroutines-extensions:${Versions.sqlDelightVersion}"
 }
 
 object Koin{

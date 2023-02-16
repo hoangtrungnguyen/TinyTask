@@ -13,7 +13,7 @@ SELECT * FROM Task LIMIT(4);
 
 
 getMostRecent:
-SELECT * FROM Task ORDER BY createdDate DESC LIMIT(1);
+SELECT * FROM Task ORDER BY createdDate DESC LIMIT(4);
 
 insertTask:
 INSERT OR IGNORE INTO Task(id, title, description, completed, createdDate, duration)

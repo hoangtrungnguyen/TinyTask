@@ -2,6 +2,7 @@ package com.tinyspace.tinytask
 
 import com.tinyspace.datalayer.local.DatabaseHelper
 import com.tinyspace.datalayer.repository.TaskRepositoryImpl
+import com.tinyspace.domain.GetRecentTaskUseCase
 import com.tinyspace.domain.SaveTaskUseCase
 import org.koin.core.KoinApplication
 
@@ -26,6 +27,7 @@ object Modules {
 
     val useCases = module {
         factory { SaveTaskUseCase(get()) }
+        factory { GetRecentTaskUseCase(get()) }
     }
 
 }

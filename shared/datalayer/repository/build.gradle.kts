@@ -24,6 +24,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(Koin.koin_core)
+                implementation(JetBrains.kotlin_coroutine)
             }
         }
         val commonTest by getting {

@@ -28,6 +28,7 @@ kotlin{
                 implementation(project(":shared:datalayer:network"))
                 implementation(UUID.benasher44)
                 implementation(JetBrains.kotlin_time)
+                implementation(JetBrains.kotlin_coroutine)
             }
         }
     }

@@ -6,8 +6,6 @@ import com.tinyspace.domain.SaveTaskUseCase
 import com.tinyspace.domain.exception.InsertErrorException
 import com.tinyspace.domain.model.Task
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -25,7 +23,7 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
 
     private val modelState = MutableStateFlow(initialState)
 
-    val uiState = modelState.map(ViewModelState::toUiState)
+    val uiState: StateFlow<TaskFormUiState> = modelState.map(ViewModelState::toUiState)
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -40,8 +38,6 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                     isLoading =  true
                 )
             }
-            delay(2000)
-
             val task = modelState.value.run {
                 Task.createNew(title, description, durations[durationOption.first])
             }
@@ -79,15 +75,15 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
 
 
     internal fun onEvent(event: TaskFormEvent) = when (event) {
-        is TaskFormEvent.Create -> {
+        is TaskFormEvent.CreateTask -> {
             create()
         }
-        is TaskFormEvent.DescriptionInput -> {
+        is TaskFormEvent.InputDescription -> {
             modelState.update { state ->
                 state.copy(description = event.description)
             }
         }
-        is TaskFormEvent.DurationSelected -> {
+        is TaskFormEvent.SelectDuration -> {
             modelState.update { state ->
                 state.copy(
                     durationOption = Pair<Int, Duration>(
@@ -96,7 +92,7 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                 )
             }
         }
-        is TaskFormEvent.OnTagSelected -> {
+        is TaskFormEvent.SelectTag -> {
             val tagOption = event.tagOption
 
             modelState.update {
@@ -116,7 +112,7 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                 it.copy(tagUis = innerTagUis)
             }
         }
-        is TaskFormEvent.TitleInput -> {
+        is TaskFormEvent.InputTitle -> {
             modelState.update {
                 it.copy(title = event.title)
             }
@@ -172,11 +168,7 @@ data class TaskFormUiState(
     val tagUis: List<TagUi> = emptyList(),
     val isLoading : Boolean = false,
     val isDone: Boolean = false
-) {
-
-
-
-}
+)
 
 
 internal val defaultTagUis = listOf(
