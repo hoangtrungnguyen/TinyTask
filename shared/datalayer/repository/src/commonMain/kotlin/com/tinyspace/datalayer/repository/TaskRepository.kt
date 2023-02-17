@@ -9,7 +9,7 @@ interface TaskRepository {
 
     suspend fun delete(task: Task)
 
-    suspend fun getById(id: String)
+    suspend fun getById(id: String): Task
 
     suspend fun getLimit(count: Int)
 

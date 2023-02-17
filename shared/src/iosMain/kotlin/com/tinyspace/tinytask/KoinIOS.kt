@@ -2,7 +2,6 @@ package com.tinyspace.tinytask
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
-import com.russhwolf.settings.Settings
 import com.tinyspace.datalayer.local.TaskDb
 import kotlinx.cinterop.ObjCClass
 import kotlinx.cinterop.getOriginalKotlinClass

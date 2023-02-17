@@ -30,8 +30,10 @@ object Modules {
 
 
 
-fun initKoin(koinAppDeclaration: Module = module {},
-viewModel: Module = module {  }) : KoinApplication =
+fun initKoin(
+    koinAppDeclaration: Module = module {},
+    viewModel: Module = module { }
+): KoinApplication =
     startKoin {
         modules(
             Modules.core,

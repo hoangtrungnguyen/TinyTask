@@ -36,8 +36,8 @@ class TaskRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getById(id: String) {
-        TODO("Not yet implemented")
+    override suspend fun getById(id: String): Task {
+        return databaseHelper.getById(id)
     }
 
     override suspend fun getLimit(count: Int) {

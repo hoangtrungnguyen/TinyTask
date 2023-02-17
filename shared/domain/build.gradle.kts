@@ -31,6 +31,12 @@ kotlin{
                 implementation(JetBrains.kotlin_coroutine)
             }
         }
+
+        val iosSimulatorArm64Main by getting
+        val iosMain by getting {
+            dependsOn(commonMain)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
     }
 }
 

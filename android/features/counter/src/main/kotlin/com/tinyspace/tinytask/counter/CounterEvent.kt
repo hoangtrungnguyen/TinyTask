@@ -1,10 +1,12 @@
 package com.tinyspace.tinytask.counter
 
-sealed class CounterEvent {
-    object Finish: CounterEvent()
-    object Start: CounterEvent()
-    object Stop: CounterEvent()
-    object Resume: CounterEvent()
+import com.tinyspace.common.CommonEvent
+
+sealed class CounterEvent : CommonEvent {
+    object Finish : CounterEvent()
+    object Start : CounterEvent()
+    object Stop : CounterEvent()
+    object Resume : CounterEvent()
     object Restart : CounterEvent()
 }
 

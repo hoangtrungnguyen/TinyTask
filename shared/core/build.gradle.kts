@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
-    kotlin("native.cocoapods")
+    kotlin(cocopods)
 }
 
 kotlin {
@@ -16,7 +16,7 @@ kotlin {
         version = "1.0"
         ios.deploymentTarget = "14.1"
         framework {
-            baseName = "datalayer.local"
+            baseName = "core"
         }
     }
 
@@ -40,13 +40,16 @@ kotlin {
         }
         val androidUnitTest by getting
 
+        val iosSimulatorArm64Main by getting
+
         val iosMain by getting {
             dependsOn(commonMain)
+            dependencies {
+            }
+            iosSimulatorArm64Main.dependsOn(this)
         }
         val iosTest by getting
 
-//        val iosSimulatorArm64Test by getting
-//        val iosSimulatorArm64 by getting
     }
 
 }

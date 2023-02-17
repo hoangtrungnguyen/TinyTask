@@ -1,10 +1,13 @@
 package com.tinyspace.tinytask.counter
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tinyspace.common.BaseUiState
+import com.tinyspace.common.BaseViewModel
+import com.tinyspace.common.BaseViewModelState
 import com.tinyspace.common.formatSeconds
 import com.tinyspace.shared.core.AppCountDownTimer
+import com.tinyspace.shared.domain.GetTaskUseCase
 import com.tinyspace.shared.domain.UpdateTaskUseCase
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -23,17 +26,23 @@ private val TOTAL = 10.toDuration(DurationUnit.SECONDS)
 
 const val TAG = "CounterViewModel"
 
-private val initialState = CounterViewModelState(stop = true, current = TOTAL)
+const val EmptyMessage = ""
 
 class CounterViewModel(
     private val taskId: String,
     private val updateTaskUseCase: UpdateTaskUseCase,
-//    private val getTaskUseCase: GetTaskUseCase,
-) : ViewModel(), KoinComponent {
+    private val getTaskUseCase: GetTaskUseCase,
+) : BaseViewModel<CounterEvent, CounterUiState, CounterVMState>(), KoinComponent {
 
-    private val modelState = MutableStateFlow(initialState)
+    override val initialState: CounterVMState = CounterVMState(
+        stop = true, current = ZERO, total = ZERO, isLoading = true,
 
-    internal val uiState = modelState.map(CounterViewModelState::toUiState)
+        message = EmptyMessage
+    )
+
+    override val modelState = MutableStateFlow(initialState)
+
+    override val uiState = modelState.map(CounterVMState::toUiState)
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -48,7 +57,33 @@ class CounterViewModel(
         modelState.update {
             it.copy(taskId = taskId)
         }
+
+        viewModelScope.launch {
+            try {
+                val task = getTaskUseCase(taskId)
+                modelState.update {
+                    it.copy(
+                        total = task.duration,
+                        title = task.title,
+                        current = task.duration
+                    )
+                }
+            } catch (ex: Exception) {
+                modelState.update {
+                    it.copy(
+                        message = ex.toString(),
+                    )
+                }
+            } finally {
+                modelState.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
+            }
+        }
     }
+
 
     private fun start() {
         countDownFlow = createCountDownJob(modelState.value.total)
@@ -80,15 +115,19 @@ class CounterViewModel(
             } else {
                 Log.d(TAG, "Counter finished")
             }
-        }.onEach {
-            modelState.update { state ->
-                state.copy(current = it)
-            }
-        }.catch {
-            if (it is CancellationException) {
-                Log.d(TAG, "Counter stopped")
-            }
-        }
+      }.onEach {
+          modelState.update { state ->
+              state.copy(current = it)
+          }
+      }.catch {
+          if (it is CancellationException) {
+              Log.d(TAG, "Counter stopped")
+          }
+      }
+    }
+
+    private fun restart() {
+        TODO("I haven't think how I will implement this function")
     }
 
     private fun finish() {
@@ -101,7 +140,7 @@ class CounterViewModel(
         }
     }
 
-    fun onEvent(event: CounterEvent) = when (event) {
+    override fun onEvent(event: CounterEvent) = when (event) {
         CounterEvent.Finish -> finish()
         CounterEvent.Start -> start()
         CounterEvent.Resume -> resume()
@@ -114,28 +153,36 @@ class CounterViewModel(
     }
 }
 
-private data class CounterViewModelState(
+data class CounterVMState(
     val total: Duration = TOTAL,
     val current: Duration,
     val stop: Boolean,
     val taskId: String = "",
     val title: String = "",
-    val isNavigateBack: Boolean = false
-) {
+    val isNavigateBack: Boolean = false,
+    val isLoading: Boolean,
+    val message: String,
+) : BaseViewModelState<CounterUiState> {
 
-    private val initial: Boolean get() = total == current
-    private val progress : Float get() = (current / total).toFloat()
-    private val finish: Boolean get() = current <= ZERO
+    private val initial: Boolean get() = total == ZERO && current == ZERO
+    private val progress: Float get() = (current / total).toFloat()
+    private val finish: Boolean get() = total > ZERO && current <= ZERO
+    private val error: Boolean get() = message.isNotEmpty()
 
-    fun toUiState(): CounterUiState = when {
+    override fun toUiState(): CounterUiState = when {
         isNavigateBack -> CounterUiState.NavigateBack()
-        finish -> CounterUiState.Finish(ceil(current.toDouble(DurationUnit.SECONDS)).toInt())
-        stop -> CounterUiState.Pause(ceil(current.toDouble(DurationUnit.SECONDS)).toInt(), progress)
-        initial -> CounterUiState.Initial(total.toInt(DurationUnit.SECONDS), progress)
+        error -> CounterUiState.Error(message = message)
+        finish -> CounterUiState.Finish(current.durationToLong())
+        stop -> CounterUiState.Pause(current.durationToLong(), progress)
+        initial -> CounterUiState.Initial(total.durationToLong(), progress)
         else -> CounterUiState.Counting(
-            ceil(current.toDouble(DurationUnit.SECONDS)).toInt(),
+            current.durationToLong(),
             progress
         )
+    }
+
+    private fun Duration.durationToLong(): Int {
+        return ceil(this.toDouble(DurationUnit.SECONDS)).toInt()
     }
 
     fun toDomainModel(): DomainTask {
@@ -143,9 +190,10 @@ private data class CounterViewModelState(
     }
 }
 
-internal sealed class CounterUiState(
+sealed class CounterUiState(
     val stop: Boolean = false,
-) {
+    val message: String = ""
+) : BaseUiState {
     abstract val counter: Int
     abstract val progress: Float
     val finish: Boolean get() = counter <= 0
@@ -157,13 +205,22 @@ internal sealed class CounterUiState(
     data class Initial(override val counter: Int, override val progress: Float) :
         CounterUiState(stop = true)
 
-    class Pause(override val counter: Int, override val progress: Float) :
+    data class Pause(override val counter: Int, override val progress: Float) :
         CounterUiState(stop = true)
 
-    class Finish(override val counter: Int, override val progress: Float = 0f) : CounterUiState()
-    class NavigateBack(
+    data class Finish(override val counter: Int, override val progress: Float = 0f) :
+        CounterUiState()
+
+    data class NavigateBack(
         override val counter: Int = 0, override val progress: Float = 0f
     ) : CounterUiState()
+
+    class Error(
+        override val counter: Int = 0, override val progress: Float = 0f,
+        message: String
+    ) : CounterUiState(
+        message = message
+    )
 }
 
 

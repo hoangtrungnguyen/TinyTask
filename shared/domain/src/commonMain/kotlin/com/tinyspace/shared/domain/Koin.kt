@@ -8,6 +8,7 @@ class Koin {
             factory { GetRecentTaskUseCase(get()) }
             factory { SaveTaskUseCase(get()) }
             factory { UpdateTaskUseCase(get()) }
+            factory { GetTaskUseCase(get()) }
         }
     }
 }

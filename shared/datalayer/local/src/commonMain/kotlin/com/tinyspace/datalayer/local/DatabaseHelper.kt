@@ -45,6 +45,13 @@ class DatabaseHelper(
             completed = task.completed
         )
     }
+
+    fun getById(id: String): Task {
+        return runBlocking<Task>(IOScope) {
+            // Launch a coroutine to perform the I/O operation
+            dbRef.taskQueries.getById(id = id).executeAsOne()
+        }
+    }
 }
 
 

@@ -27,6 +27,7 @@ class TinyTaskApplication: Application() {
                    viewModel { (taskId: String) ->
                        CounterViewModel(
                            taskId = taskId,
+                           get(),
                            get()
                        )
                    }

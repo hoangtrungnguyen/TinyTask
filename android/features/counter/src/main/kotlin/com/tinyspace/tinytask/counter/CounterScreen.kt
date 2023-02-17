@@ -36,6 +36,7 @@ fun CounterScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     AnimatedVisibility(
         true,
@@ -59,19 +60,30 @@ fun CounterScreen(
 
                 Category()
 
-                CounterView(time = uiState.timer, progress = uiState.progress)
+                CounterView(time = uiState.timer, progress = uiState.progress.progress())
 
                 Actions(uiState.stop, uiState.finish, uiState.initial, viewModel)
             }
         }
     }
 
+    SnackbarHost(hostState = snackbarHostState)
+
+
     if (uiState is CounterUiState.NavigateBack) {
         LaunchedEffect(scope) {
             onNavigateBack()
         }
+    } else if (uiState is CounterUiState.Error) {
+        LaunchedEffect(scope) {
+            snackbarHostState.showSnackbar(
+                uiState.message
+            )
+        }
     }
 }
+
+private fun Float.progress(): Float = if (isNaN()) 0f else this
 
 @Composable
 private fun Actions(

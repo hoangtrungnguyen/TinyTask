@@ -3,6 +3,7 @@ plugins {
     kotlin(cocopods)
     id("com.android.library")
     id("com.chromaticnoise.multiplatform-swiftpackage") version "2.0.3"
+    id("app.cash.sqldelight")
 }
 
 kotlin {
@@ -23,11 +24,7 @@ kotlin {
     }
 
 
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = "shared"
-        }
-    }
+    iosSimulatorArm64()
 
     sourceSets {
         val commonMain by getting {
@@ -74,18 +71,14 @@ kotlin {
         }
         val androidUnitTest by getting
 
-        val iosSimulatorArm64Main by getting {
-            dependencies{
-                implementation(Koin.koin_core)
-                implementation(SQLDelight.slq_delight_native)
-            }
-        }
+        val iosSimulatorArm64Main by getting
 
         val iosMain by getting {
-            dependencies{
-                implementation(Koin.koin_core)
+            dependsOn(commonMain)
+            dependencies {
                 implementation(SQLDelight.slq_delight_native)
             }
+            iosSimulatorArm64Main.dependsOn(this)
         }
 
         val iosSimulatorArm64Test by getting
@@ -93,26 +86,27 @@ kotlin {
     }
 
 //
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
-            isStatic = false
-            linkerOpts.add("-lsqlite3")
+//    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+//        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
+//            isStatic = false
+//            linkerOpts.add("-lsqlite3")
+//
+////            export(project(":shared:datalayer:local"))
+////            export(project(":shared:datalayer:network"))
+////            export(project(":shared:datalayer:repository"))
+////            export(project(":shared:domain"))
+//            export(project(":shared:core"))
+//
+//            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.Framework.BitcodeEmbeddingMode.BITCODE)
+//
+//            transitiveExport = true
+//        }
+//    }
 
-//            export(project(":shared:datalayer:local"))
-//            export(project(":shared:datalayer:network"))
-//            export(project(":shared:datalayer:repository"))
-//            export(project(":shared:domain"))
-            export(project(":shared:core"))
-
-            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.Framework.BitcodeEmbeddingMode.BITCODE)
-
-            transitiveExport = true
-        }
-    }
 }
 
 android {
-    namespace = "com.tinyspace.tinytask"
+    namespace = "com.tinyspace.tinytask.android"
     compileSdk = Versions.compile_sdk
     defaultConfig {
         minSdk = Versions.min_sdk
