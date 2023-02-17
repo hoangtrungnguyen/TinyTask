@@ -23,10 +23,10 @@ kotlin {
     }
 
 
-    iosSimulatorArm64(){
-            binaries.framework {
-                baseName = "shared"
-            }
+    iosSimulatorArm64 {
+        binaries.framework {
+            baseName = "shared"
+        }
     }
 
     sourceSets {
@@ -39,6 +39,7 @@ kotlin {
 
                 implementation(project(":shared:domain"))
                 implementation(project(":shared:datalayer:repository"))
+                implementation(project(":shared:core"))
                 implementation(Rushwolf.settings)
                 implementation(Koin.koin_core)
             }
@@ -92,21 +93,22 @@ kotlin {
     }
 
 //
-//    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-//        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
-//            isStatic = false
-//            linkerOpts.add("-lsqlite3")
-//
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
+            isStatic = false
+            linkerOpts.add("-lsqlite3")
+
 //            export(project(":shared:datalayer:local"))
 //            export(project(":shared:datalayer:network"))
 //            export(project(":shared:datalayer:repository"))
 //            export(project(":shared:domain"))
-//
-//            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.Framework.BitcodeEmbeddingMode.BITCODE)
-//
-//            transitiveExport = true
-//        }
-//    }
+            export(project(":shared:core"))
+
+            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.Framework.BitcodeEmbeddingMode.BITCODE)
+
+            transitiveExport = true
+        }
+    }
 }
 
 android {
@@ -126,5 +128,5 @@ multiplatformSwiftPackage {
 }
 
 dependencies {
-//    commonMainApi(project(":shared:domain"))
+//    commonMainApi(project(":shared:core"))
 }

@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.tinyspace.common.BaseUiState
 import com.tinyspace.common.BaseViewModel
 import com.tinyspace.common.BaseViewModelState
-import com.tinyspace.domain.GetRecentTaskUseCase
-import com.tinyspace.domain.model.Task
+import com.tinyspace.shared.domain.GetRecentTaskUseCase
+import com.tinyspace.shared.domain.model.Task
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

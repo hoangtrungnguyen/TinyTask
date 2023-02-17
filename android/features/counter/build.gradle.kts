@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tinyspace.counter"
+    namespace = "com.tinyspace.tinytask.counter"
     compileSdk = Versions.compile_sdk
 
     defaultConfig {
@@ -24,6 +24,10 @@ android {
         jvmTarget = "1.8"
     }
 
+    buildFeatures {
+        compose = true
+    }
+
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.compose_complier
     }
@@ -31,10 +35,37 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.6.0")
-    implementation("com.google.android.material:material:1.8.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    // Must have section
+    implementation(project(":android:core:compose"))
+    implementation(project(":android:core:common"))
+    implementation(project(":shared:core"))
+    implementation(project(":shared:domain"))
+
+    with(AndroidTest) {
+        androidTestImplementation(androidx)
+        androidTestImplementation(espresso)
+    }
+    testImplementation(Junit.junit4)
+
+    //-------
+
+    with(Compose) {
+        implementation(material_icons)
+        implementation(material3)
+        implementation(material3_window)
+        implementation(ui)
+        implementation(ui_tooling)
+        implementation(ui_tooling_preview)
+        implementation(foundation)
+        implementation(activity)
+    }
+
+    with(ViewModel) {
+        implementation(life_cycle)
+    }
+
+    with(Koin) {
+        implementation(koin_core)
+        implementation(koin_compose)
+    }
 }

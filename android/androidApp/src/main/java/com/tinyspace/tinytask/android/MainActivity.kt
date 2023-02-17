@@ -19,8 +19,8 @@ import androidx.navigation.navArgument
 import com.tinyspace.compose.*
 import com.tinyspace.taskform.TaskFormScreen
 import com.tinyspace.taskhistory.TaskHistoryScreen
-import com.tinyspace.tinytask.android.ui.counter.CounterScreen
 import com.tinyspace.tinytask.android.ui.onboard.OnBoardingScreen
+import com.tinyspace.tinytask.counter.CounterScreen
 import com.tinyspace.todolist.TodoListScreen
 
 class MainActivity : ComponentActivity() {
@@ -66,7 +66,10 @@ fun TinyTaskApp(
                 type = NavType.StringType
             })
         ) {
-            CounterScreen {
+            val taskId = it.arguments?.getString("taskId") ?: ""
+            CounterScreen(
+                taskId = taskId
+            ) {
                 navController.navigateUp()
             }
         }

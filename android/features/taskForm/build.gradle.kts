@@ -32,6 +32,7 @@ android {
 dependencies {
 
     implementation(project(":android:core:compose"))
+    implementation(project(":android:core:common"))
     implementation(project(":shared:domain"))
 
     with(AndroidTest){

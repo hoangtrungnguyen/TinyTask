@@ -37,7 +37,7 @@ kotlin{
 android {
     compileSdk = Versions.compile_sdk
 
-    namespace = "com.tinyspace.domain"
+    namespace = "com.tinyspace.shared.domain"
 
     defaultConfig {
         minSdk = Versions.min_sdk

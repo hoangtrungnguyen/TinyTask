@@ -8,7 +8,7 @@ class TaskRepositoryImpl(
     private val databaseHelper: DatabaseHelper
 ) : TaskRepository{
 
-    fun save(task: Task) {
+    override suspend fun save(task: Task) {
         databaseHelper.insertTask(
             task.id,
             task.title,
@@ -19,12 +19,28 @@ class TaskRepositoryImpl(
         )
     }
 
-//    suspend fun getRecent(): List<Task>{
-//        return databaseHelper.getRecentTasks()
-//    }
 
     fun watchRecentTask(): Flow<List<Task>> = databaseHelper.watchRecentTask()
     suspend fun getRecentTasks(): List<Task> {
         return databaseHelper.getRecentTasks()
+    }
+
+    suspend fun setCompleted(task: Task) {
+        return databaseHelper.setCompleted(task)
+    }
+
+    override suspend fun update(task: Task) {
+    }
+
+    override suspend fun delete(task: Task) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getById(id: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getLimit(count: Int) {
+        TODO("Not yet implemented")
     }
 }

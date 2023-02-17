@@ -22,3 +22,9 @@ VALUES (?,?, ?,?,?, ?);
 setDueDate:
 UPDATE Task SET dueDate = ? WHERE id = ? ;
 
+setCompleted:
+UPDATE Task SET completed = ? WHERE id = ?;
+
+
+
+

@@ -38,6 +38,13 @@ class DatabaseHelper(
     fun getRecentTasks(): List<Task> {
         return dbRef.taskQueries.getMostRecent().executeAsList()
     }
+
+    fun setCompleted(task: Task) {
+        return dbRef.taskQueries.setCompleted(
+            id = task.id,
+            completed = task.completed
+        )
+    }
 }
 
 

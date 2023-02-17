@@ -2,9 +2,9 @@ package com.tinyspace.taskform
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tinyspace.domain.SaveTaskUseCase
-import com.tinyspace.domain.exception.InsertErrorException
-import com.tinyspace.domain.model.Task
+import com.tinyspace.shared.domain.SaveTaskUseCase
+import com.tinyspace.shared.domain.exception.InsertErrorException
+import com.tinyspace.shared.domain.model.Task
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -68,8 +68,6 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
 
                 }
             }
-
-
         }
     }
 

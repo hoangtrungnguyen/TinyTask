@@ -1,13 +1,10 @@
 package com.tinyspace.taskhistory
 
 import androidx.lifecycle.ViewModel
-import com.tinyspace.domain.model.Task
+import com.tinyspace.shared.domain.model.Task
 import kotlin.time.Duration
 
-class TaskViewModel: ViewModel() {
-
-
-}
+class TaskViewModel : ViewModel()
 
 
 private data class ViewModelState(
