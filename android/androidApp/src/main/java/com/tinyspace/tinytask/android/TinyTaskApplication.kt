@@ -3,6 +3,7 @@ package com.tinyspace.tinytask.android
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import com.tinyspace.android.stat.StatViewModel
 import com.tinyspace.shared.domain.GetRecentTaskUseCase
 import com.tinyspace.taskform.TaskFormViewModel
 import com.tinyspace.tinytask.counter.CounterViewModel
@@ -30,6 +31,9 @@ class TinyTaskApplication: Application() {
                            get(),
                            get()
                        )
+                   }
+                   viewModel {
+                       StatViewModel(get(), get())
                    }
                },
             koinAppDeclaration = module {

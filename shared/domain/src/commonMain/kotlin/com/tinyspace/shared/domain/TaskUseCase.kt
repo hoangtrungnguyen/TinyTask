@@ -1,3 +1,3 @@
-package com.tinyspace.domain.tinyspace.shared.domain
+package com.tinyspace.shared.domain
 
 interface TaskUseCase

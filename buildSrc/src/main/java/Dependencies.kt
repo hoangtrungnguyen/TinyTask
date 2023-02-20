@@ -69,6 +69,10 @@ object ViewModel {
 }
 
 
+object Ads {
+    const val admob = "com.google.android.gms:play-services-ads:21.5.0"
+}
+
 object AndroidTest {
 
     const val androidx = "androidx.test.ext:junit:${Versions.androidx}"

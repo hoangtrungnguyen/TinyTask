@@ -9,6 +9,8 @@ class Koin {
             factory { SaveTaskUseCase(get()) }
             factory { UpdateTaskUseCase(get()) }
             factory { GetTaskUseCase(get()) }
+            factory { CountTaskUseCase(get()) }
+            factory { GetTotalDurationTaskUseCase(get()) }
         }
     }
 }

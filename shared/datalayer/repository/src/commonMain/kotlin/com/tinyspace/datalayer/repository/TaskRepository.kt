@@ -1,6 +1,7 @@
 package com.tinyspace.datalayer.repository
 
 import com.tinyspace.datalayer.local.db.Task
+import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
     suspend fun update(task: Task)
@@ -13,5 +14,19 @@ interface TaskRepository {
 
     suspend fun getLimit(count: Int)
 
+    suspend fun countAll(): Long
+    suspend fun countCompleted(): Long
+    fun countCompletedAsFlow(): Flow<Long>
+    suspend fun countUnfinished(): Long
+    suspend fun getAllTask(): List<Task>
 
+    suspend fun getTotalDuration(): Long
+
+    fun getTotalDurationAsFlow(): Flow<Long>
+
+    fun watchRecentTask(): Flow<List<Task>>
+    suspend fun getRecentTasks(): List<Task>
+
+    suspend fun setCompleted(task: Task)
+    fun countAllAsFlow(): Flow<Long>
 }

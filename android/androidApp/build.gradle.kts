@@ -52,18 +52,20 @@ dependencies {
     implementation(project(":android:features:taskForm"))
     implementation(project(":android:features:todolist"))
     implementation(project(":android:features:taskHistory"))
+    implementation(project(":android:features:stat"))
     implementation(project(":android:core:compose"))
     implementation(project(":android:core:common"))
 
 
+//    implementation(Ads.admob)
 
-    with(Koin){
+    with(Koin) {
         implementation(koin_core)
         implementation(koin_android)
         implementation(koin_compose)
     }
 
-    with(Compose){
+    with(Compose) {
         implementation(material_icons)
         implementation(navigation)
         implementation(material3)

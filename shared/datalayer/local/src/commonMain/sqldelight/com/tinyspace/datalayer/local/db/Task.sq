@@ -28,6 +28,18 @@ UPDATE Task SET completed = ? WHERE id = ?;
 getById:
 SELECT * FROM Task WHERE id = ?;
 
+countAll:
+SELECT COUNT(id) FROM Task;
+
+countCompleted:
+SELECT COUNT(id) FROM Task WHERE completed = 1;
+
+countUnfinished:
+SELECT COUNT(id) FROM Task WHERE completed = 0;
+
+countTotalDuration:
+SELECT SUM(duration) FROM Task;
+
 
 
 

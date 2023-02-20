@@ -32,8 +32,7 @@ fun TaskHistoryScreen(
     onNavigateBack: () -> Unit = {}
 ) {
 
-    Scaffold(
-    ) {
+    Scaffold {
 
         Column(Modifier.padding(it)) {
             LazyColumn(

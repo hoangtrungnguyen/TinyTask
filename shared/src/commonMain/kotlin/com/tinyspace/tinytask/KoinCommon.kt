@@ -1,14 +1,12 @@
 package com.tinyspace.tinytask
 
 import com.tinyspace.datalayer.local.DatabaseHelper
-import com.tinyspace.datalayer.repository.TaskRepositoryImpl
+import com.tinyspace.datalayer.repository.repositoryModules
 import com.tinyspace.shared.domain.Koin
 import org.koin.core.KoinApplication
-
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
-
 
 
 //include sql driver module
@@ -20,9 +18,7 @@ object Modules {
         factory { DatabaseHelper(get()) }
     }
 
-    val repositories = module {
-        factory { TaskRepositoryImpl(get()) }
-    }
+    val repositories = repositoryModules
 
     val useCases = Koin.useCases
 }

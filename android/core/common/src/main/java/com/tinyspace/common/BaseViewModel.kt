@@ -1,7 +1,6 @@
 package com.tinyspace.common
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 abstract class BaseViewModel<T : CommonEvent, Ui : BaseUiState, S : BaseViewModelState<Ui>> :
@@ -9,7 +8,8 @@ abstract class BaseViewModel<T : CommonEvent, Ui : BaseUiState, S : BaseViewMode
 
     abstract val initialState: S
 
-    abstract val modelState: MutableStateFlow<S>
+    abstract val modelState: StateFlow<S>
+
 
     /**
      * @see android/features/taskForm/src/main/java/com/tinyspace/taskform/TaskFormViewModel.kt
