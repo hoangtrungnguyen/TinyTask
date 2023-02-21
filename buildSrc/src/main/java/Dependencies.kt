@@ -5,11 +5,8 @@ import java.io.File
 const val cocopods = "native.cocoapods"
 
 object Libs {
+    //Not use yet
     private val toml = Toml().read(File("libs.toml"))
-
-//    val retrofit = toml.getTable("retrofit").getString("version")
-//    val okHttp = toml.getTable("okhttp").getString("version")
-    // Add more libraries here
 }
 object Versions {
 

@@ -9,6 +9,7 @@ import com.tinyspace.common.formatSeconds
 import com.tinyspace.shared.core.AppCountDownTimer
 import com.tinyspace.shared.domain.GetTaskUseCase
 import com.tinyspace.shared.domain.UpdateTaskUseCase
+import com.tinyspace.shared.domain.model.Tag
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
@@ -36,7 +37,6 @@ class CounterViewModel(
 
     override val initialState: CounterVMState = CounterVMState(
         stop = true, current = ZERO, total = ZERO, isLoading = true,
-
         message = EmptyMessage
     )
 
@@ -65,7 +65,8 @@ class CounterViewModel(
                     it.copy(
                         total = task.duration,
                         title = task.title,
-                        current = task.duration
+                        current = task.duration,
+                        tags = task.tags
                     )
                 }
             } catch (ex: Exception) {
@@ -162,6 +163,7 @@ data class CounterVMState(
     val isNavigateBack: Boolean = false,
     val isLoading: Boolean,
     val message: String,
+    val tags: List<Tag> = emptyList()
 ) : BaseViewModelState<CounterUiState> {
 
     private val initial: Boolean get() = total == ZERO && current == ZERO
@@ -179,6 +181,9 @@ data class CounterVMState(
             current.durationToLong(),
             progress
         )
+    }.apply {
+        tags = this@CounterVMState.tags.map { it.name }
+        title = this@CounterVMState.title
     }
 
     private fun Duration.durationToLong(): Int {
@@ -192,7 +197,9 @@ data class CounterVMState(
 
 sealed class CounterUiState(
     val stop: Boolean = false,
-    val message: String = ""
+    val message: String = "",
+    var title: String = "",
+    var tags: List<String> = emptyList()
 ) : BaseUiState {
     abstract val counter: Int
     abstract val progress: Float

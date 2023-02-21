@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
 import coil.compose.AsyncImage
+import com.tinyspace.compose.TagIcon
 import com.tinyspace.compose.TinyTaskTheme
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -60,7 +61,7 @@ fun TodoListScreen(
                 horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 items(state.value.tasks) {
-                    TaskItemCard(it.title, it.description, it.taskId) { id ->
+                    TaskItemCard(it.title, it.description, it.taskId, it.tags) { id ->
                         viewModel.onEvent(TodoListEvent.StartTask(id))
                     }
                 }
@@ -90,6 +91,7 @@ private fun TaskItemCard(
     title: String,
     description: String,
     taskId: String,
+    tags: List<String>,
     onStart: (id: String) -> Unit,
 ) {
     ElevatedCard(
@@ -145,7 +147,13 @@ private fun TaskItemCard(
                 }
                 Column {
                     Text(description)
-                    Text("Tag")
+                    Row {
+                        Text("Tag")
+                        for (name in tags) {
+                            println("TAFFFFFFF $name")
+                            TagIcon(title = name)
+                        }
+                    }
                 }
             }
         }

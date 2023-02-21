@@ -45,6 +45,9 @@ kotlin{
         val iosSimulatorArm64Main by getting
         val iosMain by getting  {
             dependsOn(commonMain)
+            dependencies {
+                implementation(SQLDelight.slq_delight_native)
+            }
             iosSimulatorArm64Main.dependsOn(this)
         }
         val iosTest by getting
@@ -74,6 +77,8 @@ sqldelight {
         create("TaskDb") {
             packageName.set("com.tinyspace.datalayer.local")
             sourceFolders.set(listOf("sqldelight"))
+
+
             schemaOutputDirectory.set(file("src/main/sqldelight/databases"))
         }
     }

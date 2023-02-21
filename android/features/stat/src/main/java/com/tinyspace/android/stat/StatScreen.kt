@@ -22,7 +22,6 @@ fun StatScreen(
     viewModel: StatViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
 
     Scaffold { padding ->
         Box(
@@ -109,18 +108,14 @@ fun StatScreen(
                         )
                 ) {
 
-                    Text("Google Ad")
+                    Box(contentAlignment = Alignment.Center) {
+                        Text("Donation")
+                    }
                 }
             }
 
         }
     }
-
-    LaunchedEffect(Unit) {
-        // This block will execute only once, when the composable is first displayed
-        viewModel.initialize()
-    }
-
 }
 
 

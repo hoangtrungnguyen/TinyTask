@@ -1,0 +1,17 @@
+CREATE TABLE TaskTag (
+  taskId TEXT NOT NULL,
+  tagId Text NOT NULL
+);
+
+
+insertRelation:
+INSERT OR IGNORE INTO TaskTag(taskId, tagId) VALUES(
+? , ?
+);
+
+remove:
+DELETE FROM TaskTag WHERE taskId=? AND tagId = ?;
+
+
+getRelation:
+SELECT * FROM TaskTag WHERE taskId = ?;

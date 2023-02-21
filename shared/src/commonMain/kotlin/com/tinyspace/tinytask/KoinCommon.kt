@@ -24,8 +24,6 @@ object Modules {
 }
 
 
-
-
 fun initKoin(
     koinAppDeclaration: Module = module {},
     viewModel: Module = module { }

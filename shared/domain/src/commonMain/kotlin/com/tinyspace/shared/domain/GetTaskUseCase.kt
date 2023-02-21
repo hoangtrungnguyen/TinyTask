@@ -8,6 +8,6 @@ class GetTaskUseCase(
 ) {
 
     suspend operator fun invoke(taskId: String): Task {
-        return Task.fromDb(taskRepository.getById(taskId))
+        return Task.fromRepo(taskRepository.getById(taskId))
     }
 }

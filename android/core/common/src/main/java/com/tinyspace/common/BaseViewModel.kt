@@ -13,7 +13,6 @@ abstract class BaseViewModel<T : CommonEvent, Ui : BaseUiState, S : BaseViewMode
 
     /**
      * @see android/features/taskForm/src/main/java/com/tinyspace/taskform/TaskFormViewModel.kt
-
     Sample:
 
     val uiState : StateFlow<TaskFormUiState> = modelState.map(ViewModelState::toUiState)
@@ -23,7 +22,6 @@ abstract class BaseViewModel<T : CommonEvent, Ui : BaseUiState, S : BaseViewMode
     modelState.value.toUiState()
     )
 
-
      * **/
     abstract val uiState: StateFlow<Ui>
 
@@ -31,16 +29,11 @@ abstract class BaseViewModel<T : CommonEvent, Ui : BaseUiState, S : BaseViewMode
 
 }
 
-interface CommonEvent {
-//    object NavigateBack: CommonEvent
-}
+interface CommonEvent
 
 
 interface BaseViewModelState<Ui : BaseUiState> {
-
     fun toUiState(): Ui
-
-
 }
 
 interface BaseUiState

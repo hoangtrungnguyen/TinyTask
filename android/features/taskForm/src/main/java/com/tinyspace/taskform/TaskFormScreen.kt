@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tinyspace.compose.TinyTaskTheme
+import com.tinyspace.shared.domain.model.Tag
 import org.koin.androidx.compose.koinViewModel
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -29,32 +30,20 @@ private val durationOptions = listOf<Duration>(
     120.toDuration(DurationUnit.MINUTES),
 )
 
+
+//TODO Change to query from database later
 private val projectOptions = listOf(
     "Workout", "Personal", "Coding", "Teaching"
 )
 
 @Composable
 fun TaskFormScreen(
-//    viewModel: TaskFormViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     viewModel: TaskFormViewModel = koinViewModel(),
     navigateBack: () -> Boolean,
 ) {
-
     val snackBarNavHostState: SnackbarHostState = remember { SnackbarHostState() }
     val state = viewModel.uiState.collectAsState()
 
-    if (state.value.isLoading) {
-        LaunchedEffect(snackBarNavHostState) {
-
-            snackBarNavHostState.showSnackbar(
-                "Loading ... "
-            )
-        }
-    }
-
-    if(state.value.isDone){
-        navigateBack()
-    }
     Scaffold(
         topBar = {
             TaskFormAppBar(
@@ -101,19 +90,27 @@ fun TaskFormScreen(
                         viewModel.onEvent(TaskFormEvent.SelectDuration(option))
 
                     })
-                Text("${state.value}")
             }
 
             Button(onClick = {
-
                 viewModel.onEvent(TaskFormEvent.CreateTask)
             }) {
                 Text(stringResource(R.string.create))
             }
         }
-
     }
 
+    if (state.value.isLoading) {
+        LaunchedEffect(snackBarNavHostState) {
+            snackBarNavHostState.showSnackbar(
+                "Loading ... "
+            )
+        }
+    }
+
+    if (state.value.isDone) {
+        navigateBack()
+    }
 
 }
 
@@ -215,7 +212,7 @@ fun LabelledCheckbox(
 
 
 @Composable
-fun TagOptions(selectedTagUis: List<TagUi>, onTagSelected: (index: Int) -> Unit) {
+fun TagOptions(selectedTagUis: List<Tag>, onTagSelected: (index: Int) -> Unit) {
 
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         projectOptions.forEachIndexed { index, option ->

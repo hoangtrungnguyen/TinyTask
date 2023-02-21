@@ -16,7 +16,6 @@ import com.tinyspace.android.stat.StatScreen
 import com.tinyspace.compose.TinyTaskTheme
 import com.tinyspace.todolist.TodoListScreen
 
-
 class Destination(
     val nameId: Int,
     val iconId: Int
@@ -37,7 +36,7 @@ fun HomeView(
         mutableStateOf(0)
     }
     Scaffold(
-        topBar = { HomeTopAppBar(tab, onNavigateHistoryScreen) },
+        topBar = { HomeTopAppBar(tab) },
         bottomBar = {
             HomeBottomAppBar(tab, onChangeTab = {
                 tab = it
@@ -65,7 +64,6 @@ fun HomeView(
 @Composable
 fun HomeTopAppBar(
     tab: Int,
-    onNavigateHistoryScreen: () -> Unit = {}
 ) {
     TopAppBar(
         title = {
@@ -74,16 +72,6 @@ fun HomeTopAppBar(
                 else -> Text("Tiny Task")
             }
         },
-        actions = {
-            if (tab != 0) {
-                IconButton(onClick = { onNavigateHistoryScreen() }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_checklist_24),
-                        contentDescription = "Task History Icon"
-                    )
-                }
-            }
-        }
     )
 }
 

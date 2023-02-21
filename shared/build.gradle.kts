@@ -35,6 +35,7 @@ kotlin {
                 implementation(JetBrains.kotlin_time)
 
                 implementation(project(":shared:domain"))
+                implementation(project(":shared:datalayer:local"))
                 implementation(project(":shared:datalayer:repository"))
                 implementation(project(":shared:core"))
                 implementation(Rushwolf.settings)
@@ -84,25 +85,6 @@ kotlin {
         val iosSimulatorArm64Test by getting
         val iosTest by getting {}
     }
-
-//
-//    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-//        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
-//            isStatic = false
-//            linkerOpts.add("-lsqlite3")
-//
-////            export(project(":shared:datalayer:local"))
-////            export(project(":shared:datalayer:network"))
-////            export(project(":shared:datalayer:repository"))
-////            export(project(":shared:domain"))
-//            export(project(":shared:core"))
-//
-//            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.Framework.BitcodeEmbeddingMode.BITCODE)
-//
-//            transitiveExport = true
-//        }
-//    }
-
 }
 
 android {

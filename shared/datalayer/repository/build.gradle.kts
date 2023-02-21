@@ -65,7 +65,7 @@ android {
 
 
 dependencies {
-    commonMainApi(project(":shared:datalayer:local"))
-    commonMainApi(project(":shared:datalayer:network"))
+    commonMainImplementation(project(":shared:datalayer:local"))
+    commonMainImplementation(project(":shared:datalayer:network"))
 
 }

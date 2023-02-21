@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tinyspace.shared.domain.SaveTaskUseCase
 import com.tinyspace.shared.domain.exception.InsertErrorException
+import com.tinyspace.shared.domain.model.Tag
 import com.tinyspace.shared.domain.model.Task
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
@@ -39,7 +40,10 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                 )
             }
             val task = modelState.value.run {
-                Task.createNew(title, description, durations[durationOption.first])
+                Task.createNew(
+                    title, description, durations[durationOption.first],
+                    tags
+                )
             }
             saveTaskUseCase(task)
         }.invokeOnCompletion {completable ->
@@ -94,9 +98,9 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
             val tagOption = event.tagOption
 
             modelState.update {
-                val innerTagUis = mutableListOf<TagUi>()
+                val innerTagUis = mutableListOf<Tag>()
                 var isContain = false
-                for (tagUi: TagUi in it.tagUis) {
+                for (tagUi: Tag in it.tags) {
                     if (tagUi != defaultTagUis[tagOption]) {
                         innerTagUis.add(tagUi)
                     } else {
@@ -107,7 +111,7 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                     innerTagUis.add(defaultTagUis[tagOption])
                 }
 
-                it.copy(tagUis = innerTagUis)
+                it.copy(tags = innerTagUis)
             }
         }
         is TaskFormEvent.InputTitle -> {
@@ -126,7 +130,7 @@ private data class ViewModelState(
     val durationOption: Pair<Int, Duration>,
     val title: String,
     val description: String,
-    val tagUis: List<TagUi>,
+    val tags: List<Tag>,
     val isLoading: Boolean,
     private var _isDone: Boolean = false
 
@@ -145,7 +149,7 @@ private data class ViewModelState(
         return TaskFormUiState(
             durationOption = durationOption.first,
             description = description,
-            tagUis = tagUis,
+            tagUis = tags,
             title = title,
             isLoading = isLoading,
             isDone = isDone
@@ -154,26 +158,22 @@ private data class ViewModelState(
 }
 
 
-data class TagUi(
-    val name: String,
-    val code: Int
-)
 
 data class TaskFormUiState(
     val durationOption: Int = 0,
     val title: String = "",
     val description: String = "",
-    val tagUis: List<TagUi> = emptyList(),
-    val isLoading : Boolean = false,
+    val tagUis: List<Tag> = emptyList(),
+    val isLoading: Boolean = false,
     val isDone: Boolean = false
 )
 
 
 internal val defaultTagUis = listOf(
-    TagUi("Work", 1),
-    TagUi("Personal", 2),
-    TagUi("Workout", 3),
-    TagUi("Coding", 4),
+    Tag("Personal", "1"),
+    Tag("Work", "2"),
+    Tag("Relation", "3"),
+    Tag("Home", "4"),
 )
 
 

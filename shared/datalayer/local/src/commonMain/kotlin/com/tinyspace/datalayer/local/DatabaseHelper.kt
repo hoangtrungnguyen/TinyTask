@@ -5,7 +5,9 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.db.SqlDriver
 import com.tinyspace.datalayer.local.db.CountTotalDuration
+import com.tinyspace.datalayer.local.db.Tag
 import com.tinyspace.datalayer.local.db.Task
+import com.tinyspace.datalayer.local.db.TaskTag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 
@@ -16,18 +18,32 @@ class DatabaseHelper(
     private val dbRef: TaskDb = TaskDb(sqlDriver)
 
 
-    fun insertTask(id: String, title: String, description: String,
-                   completed: Long, createdTime: Long, duration: Long
+    fun insertTask(
+        id: String, title: String, description: String,
+        completed: Long, createdTime: Long, duration: Long
     ) {
 
-        //TODO: Handle exception here
         runBlocking(IOScope) {
             // Launch a coroutine to perform the I/O operation
             dbRef.taskQueries.insertTask(
                 id, title, description, completed, createdTime, duration
             )
         }
+
     }
+
+    fun getTaskTagRelation(taskId: String): List<TaskTag> {
+        return runBlocking(IOScope) {
+            dbRef.taskTagQueries.getRelation(
+                taskId
+            ).executeAsList()
+        }
+    }
+
+    fun getAllTag(): List<Tag> =
+        runBlocking(IOScope) {
+            dbRef.tagQueries.getAll().executeAsList()
+        }
 
     fun watchRecentTask(): Flow<List<Task>> {
         // Launch a coroutine to perform the I/O operation
@@ -47,10 +63,10 @@ class DatabaseHelper(
         }
     }
 
-    fun setCompleted(task: Task) {
+    fun setCompleted(taskId: String) {
         return dbRef.taskQueries.setCompleted(
-            id = task.id,
-            completed = task.completed
+            id = taskId,
+            completed = 1
         )
     }
 
@@ -85,6 +101,16 @@ class DatabaseHelper(
 
     fun countAllAsFlow(): Flow<Long> {
         return dbRef.taskQueries.countAll().asFlow().mapToOne(IOScope)
+    }
+
+    fun insertRelation(taskId: String, listTagId: List<String>) {
+        return runBlocking(IOScope) {
+            dbRef.transaction {
+                for (id in listTagId) {
+                    dbRef.taskTagQueries.insertRelation(taskId, id)
+                }
+            }
+        }
     }
 
 }

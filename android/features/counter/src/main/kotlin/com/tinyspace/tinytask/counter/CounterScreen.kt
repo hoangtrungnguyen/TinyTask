@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.tinyspace.compose.TagIcon
 import com.tinyspace.compose.TinyTaskTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -46,6 +45,7 @@ fun CounterScreen(
         Scaffold(
             topBar = {
                 CounterTopAppBar(
+                    uiState.title,
                     onNavigateBack = onNavigateBack
                 )
             }
@@ -58,7 +58,7 @@ fun CounterScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Category()
+                Category(uiState.tags)
 
                 CounterView(time = uiState.timer, progress = uiState.progress.progress())
 
@@ -145,11 +145,15 @@ private fun Actions(
 }
 
 @Composable
-private fun Category() {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        RingIndicator(size = 16f)
-        Box(Modifier.width(12.dp))
-        Text("UI Design")
+private fun Category(tags: List<String>) {
+    Column(horizontalAlignment = Alignment.Start) {
+        for (tag in tags) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RingIndicator(size = 16f)
+                Box(Modifier.width(12.dp))
+                Text(tag)
+            }
+        }
     }
 }
 
@@ -185,6 +189,7 @@ fun ActionButton(
 @ExperimentalMaterial3Api
 @Composable
 private fun CounterTopAppBar(
+    title: String,
     onNavigateBack: () -> Boolean
 ) {
     TopAppBar(
@@ -198,14 +203,13 @@ private fun CounterTopAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Rasion project", fontWeight = FontWeight.Medium)
+                Text(title, fontWeight = FontWeight.Medium)
             }
         },
         actions = {
-            TagIcon(title = "Work", code = 2)
-        },
-
-        )
+            Box(Modifier.width(48.dp))
+        }
+    )
 }
 
 

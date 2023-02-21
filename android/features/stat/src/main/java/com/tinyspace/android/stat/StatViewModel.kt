@@ -14,9 +14,6 @@ class StatViewModel(
     val getTotalDurationTaskUseCase: GetTotalDurationTaskUseCase
 ) : BaseViewModel<StatEvent, StatUIState, StatVMState>() {
 
-    private var initialized = false
-
-
     override val initialState: StatVMState
         get() = StatVMState(0, 0, 0)
     override val modelState = combine(
@@ -37,25 +34,6 @@ class StatViewModel(
             modelState.value.toUiState()
         )
 
-    fun initialize() {
-        if (!initialized) {
-//            viewModelScope.launch {
-//                delay(100)
-//                val finished = countTaskUseCase(CountType.All)
-//                val total = getTotalDurationTaskUseCase()
-//                modelState.update {
-//                    it.copy(
-//                        finished = finished,
-//                        totalDuration = total,
-//                    )
-//                }
-//            }
-//
-//            initialized = true
-        }
-    }
-
-
     override fun onEvent(event: StatEvent) {
         TODO("Not yet implemented")
     }
@@ -66,11 +44,6 @@ data class StatVMState(
     val finished: Int,
     val totalDuration: Int
 ) : BaseViewModelState<StatUIState> {
-
-    var initiate: Boolean = true
-        set(value) {
-            field = false
-        }
 
     override fun toUiState(): StatUIState {
         return StatUIState(

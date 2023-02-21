@@ -1,6 +1,6 @@
 package com.tinyspace.datalayer.repository
 
-import com.tinyspace.datalayer.local.db.Task
+import com.tinyspace.datalayer.repository.model.Task
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {

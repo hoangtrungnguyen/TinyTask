@@ -24,8 +24,6 @@ kotlin{
             dependencies {
                 implementation(Koin.koin_core)
                 implementation(project(":shared:datalayer:repository"))
-                implementation(project(":shared:datalayer:local"))
-                implementation(project(":shared:datalayer:network"))
                 implementation(UUID.benasher44)
                 implementation(JetBrains.kotlin_time)
                 implementation(JetBrains.kotlin_coroutine)

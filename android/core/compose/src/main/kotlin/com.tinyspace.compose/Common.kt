@@ -2,7 +2,6 @@ package com.tinyspace.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,10 +15,10 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun TagIcon(title: String, code: Int) {
+fun TagIcon(title: String) {
     return Box(
-
-        modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.padding(4.dp)
     ) {
         Surface(
             modifier = Modifier.clip(RoundedCornerShape(6.dp)),

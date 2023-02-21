@@ -92,7 +92,7 @@ fun TaskItem(
                     )
                     Row {
                         for (tag in task.tags) {
-                            TagIcon(title = tag.tag, code = tag.code)
+                            TagIcon(title = tag.tag)
                         }
                     }
                 }

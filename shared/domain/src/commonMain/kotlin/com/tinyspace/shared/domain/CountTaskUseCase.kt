@@ -9,8 +9,6 @@ enum class CountType {
     COMPLETED,
     UNFINISHED,
 }
-
-
 class CountTaskUseCase(
     private val taskRepositoryImpl: TaskRepository
 ) {

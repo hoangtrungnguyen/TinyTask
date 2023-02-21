@@ -7,4 +7,7 @@ val repositoryModules = module {
     single<TaskRepository> {
         TaskRepositoryImpl(get())
     }
+    single<TagRepository> {
+        TagRepository(get())
+    }
 }

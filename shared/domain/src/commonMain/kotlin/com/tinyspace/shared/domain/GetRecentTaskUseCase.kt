@@ -3,13 +3,17 @@ package com.tinyspace.shared.domain
 
 import com.tinyspace.datalayer.repository.TaskRepository
 import com.tinyspace.shared.domain.exception.InsertErrorException
+import com.tinyspace.shared.domain.model.Tag
+import com.tinyspace.shared.domain.model.Task
+import com.tinyspace.shared.domain.model.Task.Companion.fromRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import com.tinyspace.shared.domain.model.Task as TaskModel
 
 class GetRecentTaskUseCase(
-    private val taskRepositoryImpl: TaskRepository
+    private val taskRepositoryImpl: TaskRepository,
 ) {
+
+    val tags = mutableListOf<Tag>()
     suspend operator fun invoke() {
         try {
             taskRepositoryImpl.getRecentTasks()
@@ -18,9 +22,10 @@ class GetRecentTaskUseCase(
         }
     }
 
-    fun watchRecent(): Flow<List<TaskModel>> {
+    fun watchRecent(): Flow<List<Task>> {
+
         return taskRepositoryImpl.watchRecentTask().map {
-            it.map(TaskModel::fromDb)
+            it.map { task -> fromRepo(task) }
         }
     }
 }

@@ -7,8 +7,8 @@ import kotlinx.datetime.Clock
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import com.tinyspace.datalayer.local.db.Task as TaskDTO
-
+import com.tinyspace.datalayer.repository.model.Tag as TagDTO
+import com.tinyspace.datalayer.repository.model.Task as TaskDTO
 
 data class Task(
     private val _uuid: Uuid,
@@ -28,7 +28,8 @@ data class Task(
             completed,
             createdTime,
             duration.toLong(DurationUnit.SECONDS),
-            dueDate
+            dueDate,
+            tags.map { TagDTO(it.code, it.name) }
         )
     }
 
@@ -36,7 +37,8 @@ data class Task(
         fun createNew(
             title: String = "",
             description: String = "",
-            duration: Duration = 30.toDuration(DurationUnit.MINUTES)
+            duration: Duration = 30.toDuration(DurationUnit.MINUTES),
+            tags: List<Tag>
         ) = Task(
             _uuid = uuid4(),
             title,
@@ -44,10 +46,11 @@ data class Task(
             dueDate = Clock.System.now().epochSeconds,
             false,
             duration = duration,
-            createdTime = Clock.System.now().epochSeconds
+            createdTime = Clock.System.now().epochSeconds,
+            tags = tags
         )
 
-        fun fromDb(task: TaskDTO): Task {
+        fun fromRepo(task: TaskDTO): Task {
             return Task(
                 _uuid = uuidFrom(task.id),
                 task.title,
@@ -55,7 +58,8 @@ data class Task(
                 dueDate = task.dueDate ?: -1L,
                 false,
                 duration = task.duration.toDuration(DurationUnit.SECONDS),
-                createdTime = Clock.System.now().epochSeconds
+                createdTime = Clock.System.now().epochSeconds,
+                tags = task.tags.map { Tag(name = it.name, it.code) }
             )
         }
 
@@ -88,5 +92,5 @@ data class Task(
 
 data class Tag(
     val name: String,
-    val code: Int
+    val code: String
 )

@@ -24,13 +24,11 @@ class TinyTaskApplication: Application() {
                    viewModel {
                        TaskFormViewModel(get())
                    }
-                   viewModel { ToDoListViewModel(get<GetRecentTaskUseCase>()) }
+                   viewModel {
+                       ToDoListViewModel(get<GetRecentTaskUseCase>())
+                   }
                    viewModel { (taskId: String) ->
-                       CounterViewModel(
-                           taskId = taskId,
-                           get(),
-                           get()
-                       )
+                       CounterViewModel(taskId = taskId, get(), get())
                    }
                    viewModel {
                        StatViewModel(get(), get())

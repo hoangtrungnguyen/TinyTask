@@ -34,10 +34,17 @@ class ToDoListViewModel(
     init {
 
         viewModelScope.launch {
+            modelState.update {
+                it.copy(isLoading = true)
+            }
             watchCurrentTasks().collectLatest {
                 modelState.update { state ->
                     state.copy(tasks = it)
                 }
+            }
+        }.invokeOnCompletion {
+            modelState.update {
+                it.copy(isLoading = false)
             }
         }
     }
@@ -63,7 +70,6 @@ class ToDoListViewModel(
         }
     }
 
-
 }
 
 
@@ -75,10 +81,11 @@ data class ViewModelState(
 ) : BaseViewModelState<UiState> {
     override fun toUiState(): UiState {
         return UiState(
-            tasks.map {
-                UiTask(it.title, it.description, it.uuid)
+            tasks.map { task ->
+                UiTask(task.title, task.description, task.uuid,
+                    task.tags.map { it.name })
             },
-            selectedTask = selectedId
+            selectedTask = selectedId,
         )
     }
 
@@ -88,12 +95,13 @@ data class ViewModelState(
 data class UiTask(
     val title: String,
     val description: String,
-    val taskId: String
+    val taskId: String,
+    val tags: List<String> = emptyList()
 )
 
 data class UiState(
     val tasks: List<UiTask>,
     val isLoading: Boolean = false,
-    val selectedTask: String? = null
+    val selectedTask: String? = null,
 ) : BaseUiState
 

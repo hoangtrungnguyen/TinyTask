@@ -8,6 +8,7 @@ CREATE TABLE Task (
     dueDate INTEGER
 );
 
+
 selectAll:
 SELECT * FROM Task LIMIT(4);
 
@@ -16,8 +17,8 @@ getMostRecent:
 SELECT * FROM Task ORDER BY createdDate DESC LIMIT(4);
 
 insertTask:
-INSERT OR IGNORE INTO Task(id, title, description, completed, createdDate, duration)
-VALUES (?,?, ?,?,?, ?);
+INSERT OR IGNORE INTO Task(id, title, description, completed, createdDate, duration)VALUES (?,?, ?,?,?, ?);
+
 
 setDueDate:
 UPDATE Task SET dueDate = ? WHERE id = ? ;
@@ -39,6 +40,9 @@ SELECT COUNT(id) FROM Task WHERE completed = 0;
 
 countTotalDuration:
 SELECT SUM(duration) FROM Task;
+
+deleteTask:
+DELETE FROM Task WHERE EXISTS(SELECT taskId FROM TaskTag WHERE taskId = Task.id);
 
 
 
