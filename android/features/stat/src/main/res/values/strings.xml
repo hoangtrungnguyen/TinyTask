@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_completed">Task\nCompleted</string>
+    <string name="time_duration">Time\nDuration</string>
+    <string name="donation">Donation</string>
+</resources>

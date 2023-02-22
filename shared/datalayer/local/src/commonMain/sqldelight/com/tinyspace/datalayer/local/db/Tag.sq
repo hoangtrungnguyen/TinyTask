@@ -1,0 +1,19 @@
+CREATE TABLE Tag (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+
+INSERT INTO Tag (id, name) VALUES (1, 'Personal');
+INSERT INTO Tag (id, name) VALUES (2, 'Work');
+INSERT INTO Tag (id, name) VALUES (3, 'Relation');
+INSERT INTO Tag (id, name) VALUES (4, 'Home');
+
+create:
+INSERT OR IGNORE INTO Tag(id, name) VALUES (? , ? ) ;
+
+
+getAll:
+SELECT * FROM Tag;
+
+

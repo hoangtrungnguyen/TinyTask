@@ -2,6 +2,8 @@ plugins {
     kotlin("multiplatform")
     kotlin(cocopods)
     id("com.android.library")
+    id("com.chromaticnoise.multiplatform-swiftpackage") version "2.0.3"
+    id("app.cash.sqldelight")
 }
 
 kotlin {
@@ -13,24 +15,31 @@ kotlin {
         }
     }
 
-    
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "shared"
+    ios {
+        binaries {
+            framework {
+                baseName = "shared"
+            }
         }
     }
+
+
+    iosSimulatorArm64()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
 //                api("io.insert-koin:koin-core:3.1.2")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
-                implementation("io.insert-koin:koin-core:${rootProject.extra["koinVersion"]}")
+                implementation(JetBrains.kotlin_coroutine)
+                implementation(JetBrains.serialization)
+                implementation(JetBrains.kotlin_time)
+
+                implementation(project(":shared:domain"))
+                implementation(project(":shared:datalayer:local"))
+                implementation(project(":shared:datalayer:repository"))
+                implementation(project(":shared:core"))
+                implementation(Rushwolf.settings)
+                implementation(Koin.koin_core)
             }
         }
 
@@ -38,8 +47,8 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-                implementation("io.insert-koin:koin-test:${rootProject.ext["koinVersion"]}")
+                implementation(JetBrains.kotlin_coroutine_test)
+                implementation(Koin.koin_test)
             }
         }
 
@@ -55,46 +64,45 @@ kotlin {
             version = "1.11.3"
         }
 
-        val androidMain by getting
-        val androidUnitTest by getting
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting {
-            dependencies{
-                implementation("io.insert-koin:koin-core:${rootProject.ext["koinVersion"]}")
+        val androidMain by getting{
+            dependencies {
+                implementation(SQLDelight.slq_delight_android)
+                implementation(Koin.koin_android)
             }
         }
-        val iosMain by creating {
+        val androidUnitTest by getting
+
+        val iosSimulatorArm64Main by getting
+
+        val iosMain by getting {
             dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
+            dependencies {
+                implementation(SQLDelight.slq_delight_native)
+            }
             iosSimulatorArm64Main.dependsOn(this)
         }
-        val iosX64Test by getting
-        val iosArm64Test by getting
+
         val iosSimulatorArm64Test by getting
-        val iosTest by creating {
-            dependsOn(commonTest)
-            iosX64Test.dependsOn(this)
-            iosArm64Test.dependsOn(this)
-            iosSimulatorArm64Test.dependsOn(this)
-        }
+        val iosTest by getting {}
     }
 }
 
 android {
-    namespace = "com.tinyspace.tinytask"
+    namespace = "com.tinyspace.tinytask.android"
     compileSdk = Versions.compile_sdk
     defaultConfig {
         minSdk = Versions.min_sdk
-        targetSdk = Versions.target_sdk
     }
 }
 
-//multiplatformSwiftPackage {
-//    swiftToolsVersion("5.3")
-//    targetPlatforms {
-//        iOS { v("14.1") }
-//    }
-//    packageName("shared")
-//}
+multiplatformSwiftPackage {
+    swiftToolsVersion("5.3")
+    targetPlatforms {
+        iOS { v("14.1") }
+    }
+    packageName("shared")
+}
+
+dependencies {
+//    commonMainApi(project(":shared:core"))
+}
