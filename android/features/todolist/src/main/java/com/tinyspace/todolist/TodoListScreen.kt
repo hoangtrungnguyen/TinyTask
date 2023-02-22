@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
@@ -30,6 +31,10 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import org.koin.androidx.compose.koinViewModel
 import java.util.*
+
+
+const val IMAGE =
+    "https://images.unsplash.com/photo-1676202731475-afd55cddb97a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=627&q=80"
 
 @Composable
 fun TodoListScreen(
@@ -111,7 +116,7 @@ private fun TaskItemCard(
 
         Surface {
             AsyncImage(
-                model = "https://images.unsplash.com/photo-1676202731475-afd55cddb97a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=627&q=80",
+                model = IMAGE,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds,
@@ -148,7 +153,7 @@ private fun TaskItemCard(
                 Column {
                     Text(description)
                     Row {
-                        Text("Tag")
+                        Text(stringResource(id = R.string.tag))
                         for (name in tags) {
                             println("TAFFFFFFF $name")
                             TagIcon(title = name)
