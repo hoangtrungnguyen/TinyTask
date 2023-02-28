@@ -67,7 +67,7 @@ object ViewModel {
 
 
 object Ads {
-    const val admob = "com.google.android.gms:play-services-ads:21.5.0"
+//    const val admob = "com.google.android.gms:play-services-ads:21.5.0"
 }
 
 object AndroidTest {
@@ -111,3 +111,4 @@ object JetBrains {
     const val kotlin_coroutine_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     const val kotlin_time =   "org.jetbrains.kotlinx:kotlinx-datetime:0.4.0"
 }
+

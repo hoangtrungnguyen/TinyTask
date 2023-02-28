@@ -87,7 +87,8 @@ data class Task(
     }
 
     val uuid: String get() = _uuid.toString()
-    private val completed: Long get() = if (_completed) 1L else 0L
+    val completed: Long get() = if (_completed) 1L else 0L
+
 }
 
 data class Tag(

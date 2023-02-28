@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
 import coil.compose.AsyncImage
+import com.tinyspace.compose.EnterAnimation
 import com.tinyspace.compose.TagIcon
 import com.tinyspace.compose.TinyTaskTheme
 import kotlinx.coroutines.flow.filter
@@ -54,25 +55,27 @@ fun TodoListScreen(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
 
-    Scaffold { padding ->
-        Box(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(), contentAlignment = BiasAlignment(0f, -0.35f)
-        ) {
-            LazyRow(
-                Modifier.padding(),
-                contentPadding = PaddingValues(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+    EnterAnimation {
+        Scaffold { padding ->
+            Box(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize(), contentAlignment = BiasAlignment(0f, -0.35f)
             ) {
-                items(state.value.tasks) {
-                    TaskItemCard(it.title, it.description, it.taskId, it.tags) { id ->
-                        viewModel.onEvent(TodoListEvent.StartTask(id))
+                LazyRow(
+                    Modifier.padding(),
+                    contentPadding = PaddingValues(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    items(state.value.tasks) {
+                        TaskItemCard(it.title, it.description, it.taskId, it.tags) { id ->
+                            viewModel.onEvent(TodoListEvent.StartTask(id))
+                        }
                     }
                 }
             }
-        }
 
+        }
     }
 
     LaunchedEffect(viewModel, lifecycle) {

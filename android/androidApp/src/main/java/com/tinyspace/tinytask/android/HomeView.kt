@@ -51,6 +51,7 @@ fun HomeView(
         Surface(modifier = Modifier.padding(it)) {
 
             when (tab) {
+
                 0 -> TodoListScreen(onTaskSelected = { id ->
                     onTaskClick(id)
                 })

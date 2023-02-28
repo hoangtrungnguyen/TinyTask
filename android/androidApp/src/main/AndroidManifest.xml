@@ -9,6 +9,7 @@
         android:allowBackup="false"
         android:supportsRtl="true"
         android:name=".TinyTaskApplication"
+        android:icon="@drawable/ic_launcher"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"

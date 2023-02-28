@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tinyspace.compose.EnterAnimation
 import com.tinyspace.compose.TinyTaskTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -24,97 +25,99 @@ fun StatScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold { padding ->
-        Box(
-            modifier = Modifier.padding(padding),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center)
+    EnterAnimation {
+        Scaffold { padding ->
+            Box(
+                modifier = Modifier.padding(padding),
+                contentAlignment = Alignment.Center
             ) {
-                Row {
-                    ElevatedCard(
-                        Modifier
-                            .weight(1f)
-                            .height(132.dp)
-                            .padding(8.dp)
-                    ) {
-                        Box(
-                            Modifier.padding(8.dp)
-                        ) {
-                            Column {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Image(
-                                        painter = painterResource(R.drawable.icon_stopwatch),
-                                        "completed task"
-                                    )
-                                    Spacer(Modifier.width(4.dp))
-                                    Text(
-                                        stringResource(id = R.string.task_completed), style =
-                                        MaterialTheme.typography.labelLarge
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    "${uiState.finished}", style =
-                                    MaterialTheme.typography.headlineMedium.copy(
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                )
-                            }
-                        }
-                    }
-
-                    ElevatedCard(
-                        Modifier
-                            .weight(1f)
-                            .height(132.dp)
-                            .padding(8.dp)
-                    ) {
-                        Box(
-                            Modifier.padding(8.dp)
-                        ) {
-                            Column {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Image(
-                                        painter = painterResource(R.drawable.icon_stopwatch),
-                                        "completed task"
-                                    )
-                                    Spacer(Modifier.width(4.dp))
-                                    Text(
-                                        stringResource(id = R.string.time_duration),
-                                        style =
-                                        MaterialTheme.typography.labelLarge
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
-                                DurationText(
-                                    uiState.totalDuration.hour,
-                                    uiState.totalDuration.minute,
-                                )
-                            }
-                        }
-                    }
-
-                }
-
-                ElevatedCard(
+                Column(
                     Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
-                        .padding(
-                            8.dp
-                        )
+                        .align(Alignment.Center)
                 ) {
+                    Row {
+                        ElevatedCard(
+                            Modifier
+                                .weight(1f)
+                                .height(132.dp)
+                                .padding(8.dp)
+                        ) {
+                            Box(
+                                Modifier.padding(8.dp)
+                            ) {
+                                Column {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Image(
+                                            painter = painterResource(R.drawable.icon_stopwatch),
+                                            "completed task"
+                                        )
+                                        Spacer(Modifier.width(4.dp))
+                                        Text(
+                                            stringResource(id = R.string.task_completed), style =
+                                            MaterialTheme.typography.labelLarge
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text(
+                                        "${uiState.finished}", style =
+                                        MaterialTheme.typography.headlineMedium.copy(
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    )
+                                }
+                            }
+                        }
 
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(stringResource(id = R.string.donation))
+                        ElevatedCard(
+                            Modifier
+                                .weight(1f)
+                                .height(132.dp)
+                                .padding(8.dp)
+                        ) {
+                            Box(
+                                Modifier.padding(8.dp)
+                            ) {
+                                Column {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Image(
+                                            painter = painterResource(R.drawable.icon_stopwatch),
+                                            "completed task"
+                                        )
+                                        Spacer(Modifier.width(4.dp))
+                                        Text(
+                                            stringResource(id = R.string.time_duration),
+                                            style =
+                                            MaterialTheme.typography.labelLarge
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    DurationText(
+                                        uiState.totalDuration.hour,
+                                        uiState.totalDuration.minute,
+                                    )
+                                }
+                            }
+                        }
+
+                    }
+
+                    ElevatedCard(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(300.dp)
+                            .padding(
+                                8.dp
+                            )
+                    ) {
+
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(stringResource(id = R.string.donation))
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 }

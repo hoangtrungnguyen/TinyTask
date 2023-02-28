@@ -1,8 +1,8 @@
 package com.tinyspace.tinytask.counter
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,18 +37,35 @@ fun CounterScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    AnimatedVisibility(
-        true,
-        enter = fadeIn(initialAlpha = 0.3f),
-        exit = fadeOut(),
-    ) {
-        Scaffold(
-            topBar = {
+
+    when (uiState) {
+        is CounterUiState.Counting -> BackHandler(true) {}
+        else -> BackHandler(false) {}
+    }
+
+    Scaffold(
+        topBar = {
+            AnimatedVisibility(
+                visibleState = remember {
+                    MutableTransitionState(
+                        uiState is CounterUiState.Counting
+                    )
+                }
+                    .apply { targetState = uiState !is CounterUiState.Counting },
+                enter = slideInVertically(
+                    initialOffsetY = { -40 }
+                ) + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(initialAlpha = 0.3f),
+                exit = slideOutVertically() + shrinkVertically() + fadeOut(),
+
+                ) {
                 CounterTopAppBar(
                     uiState.title,
                     onNavigateBack = onNavigateBack
                 )
             }
+        }
         ) {
             Column(
                 modifier = Modifier
@@ -62,9 +79,8 @@ fun CounterScreen(
 
                 CounterView(time = uiState.timer, progress = uiState.progress.progress())
 
-                Actions(uiState.stop, uiState.finish, uiState.initial, viewModel)
+                Actions(uiState.stop, uiState.finished, uiState.initial, viewModel)
             }
-        }
     }
 
     SnackbarHost(hostState = snackbarHostState)

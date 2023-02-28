@@ -203,7 +203,8 @@ sealed class CounterUiState(
 ) : BaseUiState {
     abstract val counter: Int
     abstract val progress: Float
-    val finish: Boolean get() = counter <= 0
+    val counting: Boolean get() = progress > 0 && progress < 1
+    val finished: Boolean get() = counter <= 0
     val timer: String get() = counter.formatSeconds()
     val initial get() = progress >= 1f
 

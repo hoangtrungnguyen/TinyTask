@@ -5,8 +5,10 @@ package com.tinyspace.taskhistory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -16,21 +18,17 @@ import androidx.compose.ui.unit.dp
 import com.tinyspace.compose.TagIcon
 import com.tinyspace.compose.TinyTaskTheme
 import com.tinyspace.compose.home
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import org.koin.androidx.compose.koinViewModel
 
-
-val task = TaskUi(
-    "2", 1, "2",
-    listOf(Tag("Work", 2)),
-    30.toDuration(DurationUnit.SECONDS)
-)
 
 @Composable
 fun TaskHistoryScreen(
     onTaskClick: (String) -> Unit,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    viewModel: TaskViewModel = koinViewModel()
 ) {
+    val state = viewModel.uiState.collectAsState()
+
 
     Scaffold {
 
@@ -38,7 +36,7 @@ fun TaskHistoryScreen(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 8.dp), content = {
-                    items(10) {
+                    items(state.value.tasks) { task ->
                         TaskItem(
                             navigate = {
                                 onTaskClick(
@@ -92,7 +90,7 @@ fun TaskItem(
                     )
                     Row {
                         for (tag in task.tags) {
-                            TagIcon(title = tag.tag)
+                            TagIcon(title = tag.name)
                         }
                     }
                 }
@@ -103,7 +101,13 @@ fun TaskItem(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(task.timeSpent.toString(), style = MaterialTheme.typography.labelSmall)
+                Text(
+                    stringResource(
+                        id = R.string.time_spent,
+                        task.timeSpent.inWholeHours,
+                        task.timeSpent.inWholeMinutes
+                    ), style = MaterialTheme.typography.labelSmall
+                )
                 IconButton(
                     modifier = Modifier.size(24.dp),
                     onClick = {

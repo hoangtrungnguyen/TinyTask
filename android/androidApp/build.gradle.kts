@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
 }
 
+
 android {
     namespace = "com.tinyspace.tinytask.android"
     compileSdk = Versions.compile_sdk
@@ -10,7 +11,7 @@ android {
         applicationId = "com.tinyspace.tinytask.android"
         minSdk = Versions.min_sdk
         targetSdk = Versions.target_sdk
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
     }
     buildFeatures {
