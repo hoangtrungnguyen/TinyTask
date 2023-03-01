@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.tinyspace.common.BaseUiState
 import com.tinyspace.common.BaseViewModel
 import com.tinyspace.common.BaseViewModelState
-import com.tinyspace.common.CommonEvent
+import com.tinyspace.common.Event
 import com.tinyspace.shared.domain.GetTaskPaginationUseCase
 import com.tinyspace.shared.domain.model.Tag
 import com.tinyspace.shared.domain.model.Task
@@ -81,4 +81,4 @@ data class TaskUi(
     val description: String,
 )
 
-class HistoryScreenEvent : CommonEvent
+class HistoryScreenEvent : Event

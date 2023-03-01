@@ -151,6 +151,13 @@ class CounterViewModel(
                 it.copy(total = TOTAL, current = TOTAL, stop = false)
             }
         }
+        CounterEvent.Cancel -> {
+            modelState.update {
+                it.copy(
+                    isNavigateBack = true
+                )
+            }
+        }
     }
 }
 

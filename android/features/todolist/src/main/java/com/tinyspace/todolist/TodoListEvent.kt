@@ -1,8 +1,8 @@
 package com.tinyspace.todolist
 
-import com.tinyspace.common.CommonEvent
+import com.tinyspace.common.Event
 
-sealed interface TodoListEvent : CommonEvent {
+sealed interface TodoListEvent : Event {
     data class StartTask(val id: String) : TodoListEvent
 
 }

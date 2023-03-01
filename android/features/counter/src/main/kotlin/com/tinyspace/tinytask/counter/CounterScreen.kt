@@ -1,5 +1,7 @@
 package com.tinyspace.tinytask.counter
 
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
@@ -11,11 +13,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tinyspace.compose.TinyTaskTheme
 import org.koin.androidx.compose.koinViewModel
@@ -26,32 +30,42 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun CounterScreen(
     taskId: String,
-    viewModel: CounterViewModel = koinViewModel {
+    counterVM: CounterViewModel = koinViewModel {
         parametersOf(
             taskId
         )
     },
+    sensorVM: CounterSensorVM = viewModel(),
     onNavigateBack: () -> Boolean
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val counterState by counterVM.uiState.collectAsState()
+    val sensorState by sensorVM.uiState.collectAsState()
+
+    val context = LocalContext.current
+
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
 
-    when (uiState) {
+    when (counterState) {
         is CounterUiState.Counting -> BackHandler(true) {}
         else -> BackHandler(false) {}
     }
+
+    val sensorManager = getSystemService(context, SensorManager::class.java) as SensorManager
+    val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+    sensorVM.startSensor(sensor)
+
 
     Scaffold(
         topBar = {
             AnimatedVisibility(
                 visibleState = remember {
                     MutableTransitionState(
-                        uiState is CounterUiState.Counting
+                        counterState is CounterUiState.Counting
                     )
                 }
-                    .apply { targetState = uiState !is CounterUiState.Counting },
+                    .apply { targetState = counterState !is CounterUiState.Counting },
                 enter = slideInVertically(
                     initialOffsetY = { -40 }
                 ) + expandVertically(
@@ -61,7 +75,7 @@ fun CounterScreen(
 
                 ) {
                 CounterTopAppBar(
-                    uiState.title,
+                    counterState.title,
                     onNavigateBack = onNavigateBack
                 )
             }
@@ -75,28 +89,39 @@ fun CounterScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Category(uiState.tags)
+                Category(counterState.tags)
 
-                CounterView(time = uiState.timer, progress = uiState.progress.progress())
+                CounterView(time = counterState.timer, progress = counterState.progress.progress())
 
-                Actions(uiState.stop, uiState.finished, uiState.initial, viewModel)
+                Actions(counterState.stop, counterState.finished, counterState.initial, counterVM)
             }
     }
 
     SnackbarHost(hostState = snackbarHostState)
 
 
-    if (uiState is CounterUiState.NavigateBack) {
+    if (sensorState.shownWarning) {
+        counterVM.onEvent(CounterEvent.Stop)
+
+        WarningDialog {
+            counterVM.onEvent(CounterEvent.Resume)
+            sensorVM.onEvent(SensorVMEvent.StopSensor)
+        }
+    }
+
+    if (counterState is CounterUiState.NavigateBack) {
         LaunchedEffect(scope) {
             onNavigateBack()
         }
-    } else if (uiState is CounterUiState.Error) {
+    } else if (counterState is CounterUiState.Error) {
         LaunchedEffect(scope) {
             snackbarHostState.showSnackbar(
-                uiState.message
+                counterState.message
             )
         }
     }
+
+
 }
 
 private fun Float.progress(): Float = if (isNaN()) 0f else this
