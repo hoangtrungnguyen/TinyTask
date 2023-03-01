@@ -12,6 +12,7 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		45888436ECB3C99FE45708D1 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36708C19898603BD1F86718B /* Pods_iosApp.framework */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
+		AA64AEF4299C6AB40054FD23 /* Koin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA64AEF3299C6AB40054FD23 /* Koin.swift */; };
 		AA734F1629976507002A31BF /* domain in Resources */ = {isa = PBXBuildFile; fileRef = AA734F1529976506002A31BF /* domain */; };
 		AA734F18299765B6002A31BF /* domain in Resources */ = {isa = PBXBuildFile; fileRef = AA734F17299765B6002A31BF /* domain */; };
 /* End PBXBuildFile section */
@@ -38,6 +39,7 @@
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		85A5B8CF3A1852EBBE3E1423 /* Pods-iosApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.release.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.release.xcconfig"; sourceTree = "<group>"; };
+		AA64AEF3299C6AB40054FD23 /* Koin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Koin.swift; sourceTree = "<group>"; };
 		AA734F1529976506002A31BF /* domain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = domain; path = ../../shared/domain; sourceTree = "<group>"; };
 		AA734F17299765B6002A31BF /* domain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = domain; path = ../../shared/domain; sourceTree = "<group>"; };
 		B69C8ACCE8366B4D77B91F4F /* Pods-iosApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debug.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debug.xcconfig"; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				AA64AEF2299C6A7E0054FD23 /* Support */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF82242A565900829871 /* ContentView.swift */,
 				AA734F1529976506002A31BF /* domain */,
@@ -101,6 +104,14 @@
 				36708C19898603BD1F86718B /* Pods_iosApp.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AA64AEF2299C6A7E0054FD23 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				AA64AEF3299C6AB40054FD23 /* Koin.swift */,
+			);
+			path = Support;
 			sourceTree = "<group>";
 		};
 		E15B1DBAB2AB751D2DE57C58 /* Pods */ = {
@@ -238,7 +249,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n./gradlew :shared:domain:embedAndSignAppleFrameworkForXcode\n./gradlew :shared:core:embedAndSignAppleFrameworkForXcode\n./gradlew :shared:datalayer:local:embedAndSignAppleFrameworkForXcode\n./gradlew :shared:datalayer:network:embedAndSignAppleFrameworkForXcode\n./gradlew :shared:datalayer:repository:embedAndSignAppleFrameworkForXcode\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -247,6 +258,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA64AEF4299C6AB40054FD23 /* Koin.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 			);
@@ -379,9 +391,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/domain/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/datalayer/local/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/datalayer/repository/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/core/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/datalayer/network/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -411,6 +429,11 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/domain/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/datalayer/repository/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/core/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/datalayer/local/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../shared/datalayer/network/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

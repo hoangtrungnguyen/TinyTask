@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
     <application
         android:allowBackup="false"
         android:supportsRtl="true"
+        android:name=".TinyTaskApplication"
+        android:icon="@drawable/ic_launcher"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
@@ -13,5 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <!--                <meta-data-->
+        <!--                    android:name="com.google.android.gms.ads.APPLICATION_ID"-->
+        <!--                    android:value="ca-app-pub-7328666920989019~4127071362"/>-->
     </application>
+
+
 </manifest> 

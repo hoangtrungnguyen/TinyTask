@@ -1,0 +1,6 @@
+[versions]
+sqldelight = "2.0.0-alpha05"
+
+[libraries]
+
+squareup-sqldelight-driver-jvm = { module = "com.squareup.sqldelight:sqlite-driver", version.ref = "sqldelight" }

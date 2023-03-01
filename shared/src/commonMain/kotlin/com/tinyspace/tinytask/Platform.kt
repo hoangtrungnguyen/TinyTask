@@ -17,13 +17,3 @@ expect class ScreenInfo() {
     val height: Int
     val density: Int
 }
-
-val Platform.deviceInfo: String
-    get() {
-        var result = "($osName; $osVersion; $deviceModel; "
-        screen?.let {
-            result += "${it.width}x${it.height}@${it.density}x; "
-        }
-        result += "$cpuType)"
-        return result
-    }
