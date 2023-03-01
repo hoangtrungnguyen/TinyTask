@@ -5,16 +5,22 @@ import com.tinyspace.common.BaseUiState
 import com.tinyspace.common.BaseViewModel
 import com.tinyspace.common.BaseViewModelState
 import com.tinyspace.common.CommonEvent
+import com.tinyspace.shared.domain.GetTaskPaginationUseCase
 import com.tinyspace.shared.domain.model.Tag
 import com.tinyspace.shared.domain.model.Task
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
-class TaskViewModel : BaseViewModel<HistoryScreenEvent, HistoryUiState, HistoryVMState>() {
+class TaskHistoryViewModel(
+    getTaskPaginationUseCase: GetTaskPaginationUseCase
+) : BaseViewModel<HistoryScreenEvent, HistoryUiState, HistoryVMState>() {
     override val initialState: HistoryVMState
         get() = HistoryVMState()
-    override val modelState: StateFlow<HistoryVMState>
-        get() = MutableStateFlow(initialState)
+
+
+    override val modelState: MutableStateFlow<HistoryVMState> = MutableStateFlow(initialState)
+
     override val uiState: StateFlow<HistoryUiState>
         get() = modelState.map(HistoryVMState::toUiState).stateIn(
             viewModelScope,
@@ -23,6 +29,12 @@ class TaskViewModel : BaseViewModel<HistoryScreenEvent, HistoryUiState, HistoryV
         )
 
     init {
+        viewModelScope.launch {
+            val tasks = getTaskPaginationUseCase(1)
+            modelState.update { state ->
+                state.copy(tasks = tasks)
+            }
+        }
 
     }
 
@@ -46,7 +58,8 @@ data class HistoryVMState(
                         title,
                         tags,
                         completed = completed != 0L,
-                        duration
+                        duration,
+                        description = description
                     )
                 }
             }.toList()
@@ -65,6 +78,7 @@ data class TaskUi(
     val tags: List<Tag>,
     val completed: Boolean,
     val timeSpent: Duration,
+    val description: String,
 )
 
 class HistoryScreenEvent : CommonEvent

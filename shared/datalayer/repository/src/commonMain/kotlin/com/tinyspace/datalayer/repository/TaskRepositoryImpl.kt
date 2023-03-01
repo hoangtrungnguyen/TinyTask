@@ -91,9 +91,16 @@ class TaskRepositoryImpl(
         )
     }
 
-    override suspend fun getLimit(count: Int) {
-        TODO("Not yet implemented")
+    override suspend fun getLimit(count: Int): List<Task> {
+        val tags = databaseHelper.getAllTag()
+        return databaseHelper.getLimit(count.toLong()).map {
+            Task.fromDBModel(
+                it,
+                tags = mapTagToTask(it.id, tags)
+            )
+        }
     }
+
 
     override suspend fun countAll(): Long {
         return databaseHelper.countAll()

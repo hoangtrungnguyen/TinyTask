@@ -30,7 +30,7 @@ val destinations = listOf<Destination>(
 fun HomeView(
     onTaskClick: (taskId: String) -> Unit,
     onNavigateHistoryScreen: () -> Unit,
-    navigateToTaskForm: () -> Unit
+    onNavigateToTaskForm: () -> Unit
 ) {
     var tab by rememberSaveable {
         mutableStateOf(0)
@@ -43,7 +43,7 @@ fun HomeView(
             })
         },
         floatingActionButton = {
-            if (tab == 1) FloatingActionButton(onClick = { navigateToTaskForm() }) {
+            if (tab == 1) FloatingActionButton(onClick = { onNavigateToTaskForm() }) {
                 Icon(painterResource(id = R.drawable.add_24), contentDescription = "Adding")
             }
         }
@@ -55,7 +55,9 @@ fun HomeView(
                 0 -> TodoListScreen(onTaskSelected = { id ->
                     onTaskClick(id)
                 })
-                1 -> StatScreen()
+                1 -> StatScreen {
+                    onNavigateHistoryScreen()
+                }
                 else -> throw IllegalArgumentException()
             }
         }

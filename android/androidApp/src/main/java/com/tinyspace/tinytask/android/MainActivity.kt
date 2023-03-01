@@ -73,17 +73,26 @@ fun TinyTaskApp(
                 navController.navigateUp()
             }
         }
+        composable(history) {
+//            Text("Histor")
+            TaskHistoryScreen(onTaskClick = {
+
+            }, onNavigateBack = {
+                navController.navigateUp()
+            })
+        }
 
         composable(home) {
             HomeView(
                 onTaskClick = {
                     navController.navigate("$counter/${it}")
                 },
-            onNavigateHistoryScreen = {
-                navController.navigate(history)
-            }) {
-                navController.navigate(taskForm)
-            }
+                onNavigateHistoryScreen = {
+                    navController.navigate(history)
+                },
+                onNavigateToTaskForm = {
+                    navController.navigate(taskForm)
+                })
         }
 
         composable(taskForm){
@@ -91,13 +100,7 @@ fun TinyTaskApp(
                 navController.navigateUp()
             }
         }
-        composable(history){
-            TaskHistoryScreen(onTaskClick = {
 
-            }, onNavigateBack = {
-                navController.navigateUp()
-            })
-        }
         composable(todoList){
             TodoListScreen (onPopBack = {
                 navController.navigateUp()

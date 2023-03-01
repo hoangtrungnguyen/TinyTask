@@ -2,13 +2,18 @@
 
 package com.tinyspace.taskhistory
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -17,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tinyspace.compose.TagIcon
 import com.tinyspace.compose.TinyTaskTheme
-import com.tinyspace.compose.home
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -25,12 +29,24 @@ import org.koin.androidx.compose.koinViewModel
 fun TaskHistoryScreen(
     onTaskClick: (String) -> Unit,
     onNavigateBack: () -> Unit = {},
-    viewModel: TaskViewModel = koinViewModel()
+    viewModel: TaskHistoryViewModel = koinViewModel()
 ) {
     val state = viewModel.uiState.collectAsState()
 
-
-    Scaffold {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("History")
+                },
+                navigationIcon = {
+                    IconButton(onClick = { onNavigateBack() }) {
+                        Icon(Icons.Rounded.ArrowBack, "Back ")
+                    }
+                }
+            )
+        }
+    ) {
 
         Column(Modifier.padding(it)) {
             LazyColumn(
@@ -38,7 +54,7 @@ fun TaskHistoryScreen(
                 contentPadding = PaddingValues(horizontal = 8.dp), content = {
                     items(state.value.tasks) { task ->
                         TaskItem(
-                            navigate = {
+                            onNavigate = {
                                 onTaskClick(
                                     task.id
                                 )
@@ -54,13 +70,15 @@ fun TaskHistoryScreen(
 
 @Composable
 fun TaskItem(
-    navigate: (taskId: String) -> Unit,
-    task: TaskUi
+    task: TaskUi,
+    onNavigate: (taskId: String) -> Unit
 ) {
+    var expanded by rememberSaveable {
+        mutableStateOf(true)
+    }
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(84.dp),
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer
         )
@@ -70,8 +88,9 @@ fun TaskItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
                 .fillMaxSize()
+
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
@@ -84,10 +103,20 @@ fun TaskItem(
                     verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.padding(start = 16.dp)
                 ) {
-                    Text(
-                        stringResource(R.string.ui_design),
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    Column {
+                        Text(
+                            stringResource(R.string.ui_design),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            stringResource(
+                                id = R.string.time_spent,
+                                task.timeSpent.inWholeHours,
+                                task.timeSpent.inWholeMinutes
+                            ), style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+
                     Row {
                         for (tag in task.tags) {
                             TagIcon(title = tag.name)
@@ -101,22 +130,36 @@ fun TaskItem(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    stringResource(
-                        id = R.string.time_spent,
-                        task.timeSpent.inWholeHours,
-                        task.timeSpent.inWholeMinutes
-                    ), style = MaterialTheme.typography.labelSmall
-                )
+
                 IconButton(
                     modifier = Modifier.size(24.dp),
                     onClick = {
-                        navigate(home)
+                        expanded = !expanded
                     }) {
-                    Icon(painterResource(id = R.drawable.ic_play), "")
+                    Icon(Icons.Rounded.ArrowDropDown, "")
                 }
             }
         }
+
+        AnimatedVisibility(
+            visibleState = remember { MutableTransitionState(expanded) }
+                .apply { targetState = !expanded },
+            enter = slideInVertically(
+                initialOffsetY = { -40 }
+            ) + expandVertically(
+                expandFrom = Alignment.Top
+            ),
+            exit = slideOutVertically() + shrinkVertically() + fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp)
+            ) {
+                Text(task.description)
+            }
+        }
+
     }
 }
 
@@ -126,9 +169,23 @@ fun TaskItem(
 @Composable
 fun TasksTabPreview() {
     TinyTaskTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
             TaskHistoryScreen(onTaskClick = {})
         }
-
     }
 }
+
+//val previewModule = module {
+//    factory { Hello(text = "preview hello text") }
+//}
+//
+//@Preview
+//@Composable
+//fun HelloPreview() {
+//    Koin(appDeclaration = { modules(previewModule) }) {
+//        Hello()
+//    }
+//}

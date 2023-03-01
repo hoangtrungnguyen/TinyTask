@@ -44,7 +44,8 @@ SELECT SUM(duration) FROM Task;
 deleteTask:
 DELETE FROM Task WHERE EXISTS(SELECT taskId FROM TaskTag WHERE taskId = Task.id);
 
-
+getLimit:
+SELECT * FROM Task LIMIT ?;
 
 
 

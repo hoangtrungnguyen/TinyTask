@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.tinyspace.android.stat.StatViewModel
 import com.tinyspace.taskform.TaskFormViewModel
+import com.tinyspace.taskhistory.TaskHistoryViewModel
 import com.tinyspace.tinytask.counter.CounterViewModel
 import com.tinyspace.tinytask.initKoin
 import com.tinyspace.todolist.todoListViewModel
@@ -29,6 +30,10 @@ class TinyTaskApplication: Application() {
                    }
                    viewModel {
                        StatViewModel(get(), get())
+                   }
+
+                   viewModel {
+                       TaskHistoryViewModel(get())
                    }
 
 

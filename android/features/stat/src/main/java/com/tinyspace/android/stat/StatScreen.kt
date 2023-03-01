@@ -3,6 +3,7 @@
 package com.tinyspace.android.stat
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,7 +22,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun StatScreen(
-    viewModel: StatViewModel = koinViewModel()
+    viewModel: StatViewModel = koinViewModel(),
+    onNavigateToHistoryPage: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -42,6 +44,10 @@ fun StatScreen(
                                 .weight(1f)
                                 .height(132.dp)
                                 .padding(8.dp)
+                                .clickable {
+                                    onNavigateToHistoryPage()
+                                }
+
                         ) {
                             Box(
                                 Modifier.padding(8.dp)
@@ -54,7 +60,8 @@ fun StatScreen(
                                         )
                                         Spacer(Modifier.width(4.dp))
                                         Text(
-                                            stringResource(id = R.string.task_completed), style =
+                                            stringResource(id = R.string.task_completed),
+                                            style =
                                             MaterialTheme.typography.labelLarge
                                         )
                                     }
@@ -127,6 +134,6 @@ fun StatScreen(
 @Composable
 fun StatScreenPreview() {
     TinyTaskTheme {
-        StatScreen()
+        StatScreen {}
     }
 }

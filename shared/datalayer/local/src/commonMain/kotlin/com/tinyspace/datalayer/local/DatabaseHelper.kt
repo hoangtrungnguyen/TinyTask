@@ -113,6 +113,12 @@ class DatabaseHelper(
         }
     }
 
+    fun getLimit(limit: Long): List<Task> {
+        return runBlocking(IOScope) {
+            dbRef.taskQueries.getLimit(limit).executeAsList()
+        }
+    }
+
 }
 
 

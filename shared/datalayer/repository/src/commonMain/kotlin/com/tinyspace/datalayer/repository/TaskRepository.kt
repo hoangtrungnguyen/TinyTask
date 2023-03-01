@@ -12,7 +12,7 @@ interface TaskRepository {
 
     suspend fun getById(id: String): Task
 
-    suspend fun getLimit(count: Int)
+    suspend fun getLimit(count: Int): List<Task>
 
     suspend fun countAll(): Long
     suspend fun countCompleted(): Long
