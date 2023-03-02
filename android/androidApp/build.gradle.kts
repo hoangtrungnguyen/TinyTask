@@ -11,7 +11,7 @@ android {
         applicationId = "com.tinyspace.tinytask.android"
         minSdk = Versions.min_sdk
         targetSdk = Versions.target_sdk
-        versionCode = 3
+        versionCode = 4
         versionName = "1.0"
     }
     buildFeatures {

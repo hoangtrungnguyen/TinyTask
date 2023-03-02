@@ -42,7 +42,7 @@ fun StatScreen(
                         ElevatedCard(
                             Modifier
                                 .weight(1f)
-                                .height(132.dp)
+//                                .height(132.dp)
                                 .padding(8.dp)
                                 .clickable {
                                     onNavigateToHistoryPage()
@@ -79,7 +79,7 @@ fun StatScreen(
                         ElevatedCard(
                             Modifier
                                 .weight(1f)
-                                .height(132.dp)
+//                                .height(132.dp)
                                 .padding(8.dp)
                         ) {
                             Box(

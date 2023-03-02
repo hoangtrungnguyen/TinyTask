@@ -75,15 +75,7 @@ fun HomeTopAppBar(
                 else -> Text("Tiny Task")
             }
         },
-        actions = {
-            ElevatedButton(
-                onClick = {
-
-                }
-            ) {
-                Text("demo")
-            }
-        }
+        actions = {}
     )
 }
 
