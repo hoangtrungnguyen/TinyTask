@@ -1,7 +1,5 @@
 package com.tinyspace.tinytask.counter
 
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
@@ -13,14 +11,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tinyspace.compose.TinyTaskTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -35,26 +30,19 @@ fun CounterScreen(
             taskId
         )
     },
-    sensorVM: CounterSensorVM = viewModel(),
     onNavigateBack: () -> Boolean
 ) {
-    val counterState by counterVM.uiState.collectAsState()
-    val sensorState by sensorVM.uiState.collectAsState()
+    val counterUi by counterVM.uiState.collectAsState()
 
-    val context = LocalContext.current
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
 
-    when (counterState) {
-        is CounterUiState.Counting -> BackHandler(true) {}
+    when (counterUi.state) {
+        CounterState.Counting -> BackHandler(true) {}
         else -> BackHandler(false) {}
     }
-
-    val sensorManager = getSystemService(context, SensorManager::class.java) as SensorManager
-    val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-    sensorVM.startSensor(sensor)
 
 
     Scaffold(
@@ -62,10 +50,10 @@ fun CounterScreen(
             AnimatedVisibility(
                 visibleState = remember {
                     MutableTransitionState(
-                        counterState is CounterUiState.Counting
+                        counterUi.state != CounterState.Initialize
                     )
                 }
-                    .apply { targetState = counterState !is CounterUiState.Counting },
+                    .apply { targetState = counterUi.state == CounterState.Initialize },
                 enter = slideInVertically(
                     initialOffsetY = { -40 }
                 ) + expandVertically(
@@ -75,7 +63,7 @@ fun CounterScreen(
 
                 ) {
                 CounterTopAppBar(
-                    counterState.title,
+                    counterUi.title,
                     onNavigateBack = onNavigateBack
                 )
             }
@@ -89,34 +77,33 @@ fun CounterScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Category(counterState.tags)
+                Category(counterUi.tags)
 
-                CounterView(time = counterState.timer, progress = counterState.progress.progress())
+                CounterView(time = counterUi.timer, progress = counterUi.progress.progress())
 
-                Actions(counterState.stop, counterState.finished, counterState.initial, counterVM)
+                Actions(counterUi.state, counterVM)
             }
     }
 
     SnackbarHost(hostState = snackbarHostState)
 
 
-    if (sensorState.shownWarning) {
-        counterVM.onEvent(CounterEvent.Stop)
-
+    if (counterUi.state == CounterState.Pause) {
         WarningDialog {
-            counterVM.onEvent(CounterEvent.Resume)
-            sensorVM.onEvent(SensorVMEvent.StopSensor)
-        }
-    }
-
-    if (counterState is CounterUiState.NavigateBack) {
-        LaunchedEffect(scope) {
             onNavigateBack()
         }
-    } else if (counterState is CounterUiState.Error) {
+
+    } else if (counterUi.state != CounterState.Initialize) {
+        counterVM.onEvent(CounterEvent.Resume)
+    }
+    if (counterUi.isNavigateBack) {
+        onNavigateBack()
+    }
+
+    if (counterUi.message.isNotEmpty()) {
         LaunchedEffect(scope) {
             snackbarHostState.showSnackbar(
-                counterState.message
+                counterUi.message
             )
         }
     }
@@ -128,58 +115,56 @@ private fun Float.progress(): Float = if (isNaN()) 0f else this
 
 @Composable
 private fun Actions(
-    stop: Boolean,
-    finish: Boolean,
-    initial: Boolean,
-    viewModel: CounterViewModel
+    state: CounterState,
+    viewModel: CounterViewModel,
 ) {
-    if (finish) {
-        Column(verticalArrangement = Arrangement.Center) {
-            Button(
-                onClick = { viewModel.onEvent(CounterEvent.Finish) },
-                modifier = Modifier.width(width = 256.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            ) {
-                Text(stringResource(R.string.finish))
-            }
-            TextButton(
-                onClick = { viewModel.onEvent(CounterEvent.Restart) },
-                modifier = Modifier.width(width = 256.dp),
-                shape = RoundedCornerShape(12.dp),
-            ) {
-                Text(stringResource(R.string.restart))
+
+    when (state) {
+        CounterState.Pause -> {
+            Box {}
+        }
+        CounterState.Counting -> {
+            Box {}
+        }
+        CounterState.Finished -> {
+            Column(verticalArrangement = Arrangement.Center) {
+                Button(
+                    onClick = { viewModel.onEvent(CounterEvent.Finish) },
+                    modifier = Modifier.width(width = 256.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                ) {
+                    Text(stringResource(R.string.finish))
+                }/*
+                TextButton(
+                    onClick = { viewModel.onEvent(CounterEvent.Restart) },
+                    modifier = Modifier.width(width = 256.dp),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text(stringResource(R.string.restart))
+                }*/
             }
         }
-
-    } else {
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            ActionButton(
-                enabled = stop,
-                onClick = {
-                    if (initial) viewModel.onEvent(CounterEvent.Start)
-                    else viewModel.onEvent(CounterEvent.Resume)
-                },
-                title = if (initial) stringResource(id = R.string.start) else stringResource(R.string.resume)
+        CounterState.Initialize -> {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    painterResource(id = R.drawable.ic_play),
-                    contentDescription = stringResource(R.string.resume)
-                )
-            }
-            ActionButton(onClick = {
-                viewModel.onEvent(CounterEvent.Stop)
-            }, title = stringResource(R.string.pause), enabled = !stop) {
-                Icon(
-                    painterResource(id = R.drawable.ic_pause),
-                    contentDescription = stringResource(R.string.pause)
-                )
+                ActionButton(
+                    enabled = true,
+                    onClick = {
+                        viewModel.onEvent(CounterEvent.Start)
+                    },
+                    title = stringResource(id = R.string.start)
+                ) {
+                    Icon(
+                        painterResource(id = R.drawable.ic_play),
+                        contentDescription = stringResource(R.string.resume)
+                    )
+                }
             }
         }
     }
@@ -260,7 +245,7 @@ private fun CounterTopAppBar(
 fun ActionsTabPreview() {
     TinyTaskTheme {
         Surface {
-            Actions(stop = true, finish = false, initial = true, viewModel = viewModel())
+//            Actions(stop = true, finish = false, initial = true, viewModel = viewModel())
         }
     }
 }

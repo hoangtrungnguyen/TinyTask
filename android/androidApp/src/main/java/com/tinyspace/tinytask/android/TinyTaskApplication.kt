@@ -7,6 +7,7 @@ import com.tinyspace.android.stat.StatViewModel
 import com.tinyspace.taskform.TaskFormViewModel
 import com.tinyspace.taskhistory.TaskHistoryViewModel
 import com.tinyspace.tinytask.counter.CounterViewModel
+import com.tinyspace.tinytask.counter.sensor.CounterSensor
 import com.tinyspace.tinytask.initKoin
 import com.tinyspace.todolist.todoListViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,7 @@ class TinyTaskApplication: Application() {
                    }
                    includes(todoListViewModel)
                    viewModel { (taskId: String) ->
-                       CounterViewModel(taskId = taskId, get(), get())
+                       CounterViewModel(taskId = taskId, get(), get(), get())
                    }
                    viewModel {
                        StatViewModel(get(), get())
@@ -37,11 +38,15 @@ class TinyTaskApplication: Application() {
                    }
 
 
+
                },
             koinAppDeclaration = module {
                 single<Context> { this@TinyTaskApplication }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("TinyTaskApp", MODE_PRIVATE)
+                }
+                single<CounterSensor> {
+                    CounterSensor(get())
                 }
             },
 

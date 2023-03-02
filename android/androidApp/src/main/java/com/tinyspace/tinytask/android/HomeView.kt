@@ -2,8 +2,6 @@
 
 package com.tinyspace.tinytask.android
 
-import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -11,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,8 +35,6 @@ fun HomeView(
     var tab by rememberSaveable {
         mutableStateOf(0)
     }
-
-    val context = LocalContext.current
     Scaffold(
         topBar = { HomeTopAppBar(tab) },
         bottomBar = {
@@ -72,7 +67,6 @@ fun HomeView(
 @Composable
 fun HomeTopAppBar(
     tab: Int,
-    context: Context? = null
 ) {
     TopAppBar(
         title = {
@@ -84,7 +78,7 @@ fun HomeTopAppBar(
         actions = {
             ElevatedButton(
                 onClick = {
-                    context?.startActivity(Intent(context, RotationVectorDemo::class.java))
+
                 }
             ) {
                 Text("demo")

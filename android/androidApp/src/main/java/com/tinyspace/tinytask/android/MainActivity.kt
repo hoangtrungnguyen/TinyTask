@@ -20,7 +20,7 @@ import com.tinyspace.compose.*
 import com.tinyspace.taskform.TaskFormScreen
 import com.tinyspace.taskhistory.TaskHistoryScreen
 import com.tinyspace.tinytask.android.ui.onboard.OnBoardingScreen
-import com.tinyspace.tinytask.counter.DemoScreen
+import com.tinyspace.tinytask.counter.CounterScreen
 import com.tinyspace.todolist.TodoListScreen
 
 
@@ -68,12 +68,12 @@ fun TinyTaskApp(
         ) {
             val taskId = it.arguments?.getString("taskId") ?: ""
 
-            DemoScreen()
-//            CounterScreen(
-//                taskId = taskId
-//            ) {
-//                navController.navigateUp()
-//            }
+//            DemoScreen()
+            CounterScreen(
+                taskId = taskId
+            ) {
+                navController.navigateUp()
+            }
         }
         composable(history) {
 //            Text("Histor")
