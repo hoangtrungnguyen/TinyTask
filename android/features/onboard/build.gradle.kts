@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tinyspace.android.stat"
+    namespace = "com.tinyspace.feature.onboard"
     compileSdk = 33
 
     defaultConfig {
@@ -29,6 +29,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+
     buildFeatures {
         compose = true
     }
@@ -36,12 +41,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.compose_complier
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+
 }
 
 dependencies {
+
     implementation(project(":android:core:compose"))
     implementation(project(":android:core:common"))
     implementation(project(":shared:domain"))
@@ -62,20 +66,6 @@ dependencies {
         implementation(foundation)
         implementation(activity)
         implementation(runtim_compose)
-    }
-
-    with(Vico) {
-        implementation(graph_compose)
-        implementation(graph_core)
-    }
-
-    with(ViewModel) {
-        implementation(life_cycle)
-    }
-
-    with(Koin) {
-        implementation(koin_core)
-        implementation(koin_compose)
     }
 
 }

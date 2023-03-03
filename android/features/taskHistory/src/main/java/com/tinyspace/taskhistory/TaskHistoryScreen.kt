@@ -3,7 +3,6 @@
 package com.tinyspace.taskhistory
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -78,7 +77,8 @@ fun TaskItem(
     }
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .animateContentSize(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer
         )
@@ -141,16 +141,7 @@ fun TaskItem(
             }
         }
 
-        AnimatedVisibility(
-            visibleState = remember { MutableTransitionState(expanded) }
-                .apply { targetState = !expanded },
-            enter = slideInVertically(
-                initialOffsetY = { -40 }
-            ) + expandVertically(
-                expandFrom = Alignment.Top
-            ),
-            exit = slideOutVertically() + shrinkVertically() + fadeOut(),
-        ) {
+        if (expanded) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)

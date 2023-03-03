@@ -43,6 +43,13 @@ class CounterSensor(context: Context) {
                 }
 
                 override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+//                    SensorManager.SENSOR_STATUS_ACCURACY_LOW
+//                    if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
+//                        SensorManager.getQuaternionFromVector(mRotationMatrix, event.values)
+////                        Log.d("MY_APP",event.values.joinToString(", ") )
+////                        Log.d("MY_APP Rotation Matrix",mRotationMatrix.joinToString(", ") )
+//                        trySendBlocking(mRotationMatrix.copyOf())
+//                    }
                 }
 
             }

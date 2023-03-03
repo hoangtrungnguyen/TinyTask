@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.tinyspace.tinytask.android.ui.onboard
+package com.tinyspace.feature.onboard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.tinyspace.compose.TinyTaskTheme
-import com.tinyspace.tinytask.android.R
 
 
 @Composable
@@ -23,8 +22,7 @@ fun OnBoardingScreen(
 ) {
 
     AnimatedVisibility(true) {
-        Scaffold(
-        ) {
+        Scaffold {
             Surface(
                 modifier = Modifier
                     .fillMaxSize()

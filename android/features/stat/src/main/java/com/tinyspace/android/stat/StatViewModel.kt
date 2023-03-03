@@ -23,7 +23,7 @@ class StatViewModel(
         StatVMState(
             0,
             a,
-            b
+            b,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3000), initialState)
 
@@ -37,12 +37,15 @@ class StatViewModel(
     override fun onEvent(event: StatEvent) {
         TODO("Not yet implemented")
     }
+
+
 }
 
 data class StatVMState(
     val total: Int,
     val finished: Int,
-    val totalDuration: Int
+    val totalDuration: Int,
+    val hoursSpent: List<Float> = listOf(0f, 0f, 0f, 0f, 0f, 0f, 0f)
 ) : BaseViewModelState<StatUIState> {
 
     override fun toUiState(): StatUIState {

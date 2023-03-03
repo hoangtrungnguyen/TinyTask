@@ -34,6 +34,8 @@ object Versions {
     const val compose_complier = "1.4.0"
 
     const val sqlDelightVersion = "2.0.0-alpha05"
+
+    const val runtime_compose = "2.6.0-beta01"
 }
 
 class Dependencies
@@ -58,6 +60,18 @@ object Compose{
     const val foundation = "androidx.compose.foundation:foundation:${Versions.compose_version}"
 
     const val activity = "androidx.activity:activity-compose:${Versions.compose_activity}"
+
+    const val  runtim_compose = "androidx.lifecycle:lifecycle-runtime-compose:${Versions.runtime_compose}"
+
+
+}
+
+
+object Vico {
+
+    const val version = "1.6.4"
+    const val graph_core =  "com.patrykandpatrick.vico:core:${version}"
+    const val graph_compose = "com.patrykandpatrick.vico:compose-m3:${version}"
 
 }
 

@@ -61,6 +61,7 @@ dependencies {
     implementation(project(":android:features:taskForm"))
     implementation(project(":android:features:todolist"))
     implementation(project(":android:features:taskHistory"))
+    implementation(project(":android:features:onboard"))
     implementation(project(":android:features:stat"))
     implementation(project(":android:core:compose"))
     implementation(project(":android:core:common"))

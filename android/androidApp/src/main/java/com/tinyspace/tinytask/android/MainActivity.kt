@@ -17,9 +17,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tinyspace.compose.*
+import com.tinyspace.feature.onboard.OnBoardingScreen
 import com.tinyspace.taskform.TaskFormScreen
 import com.tinyspace.taskhistory.TaskHistoryScreen
-import com.tinyspace.tinytask.android.ui.onboard.OnBoardingScreen
 import com.tinyspace.tinytask.counter.CounterScreen
 import com.tinyspace.todolist.TodoListScreen
 

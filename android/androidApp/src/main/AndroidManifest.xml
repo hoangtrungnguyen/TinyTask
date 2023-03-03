@@ -11,6 +11,7 @@
     <application
         android:allowBackup="false"
         android:supportsRtl="true"
+        android:label="@string/app_name"
         android:name=".TinyTaskApplication"
         android:icon="@drawable/ic_launcher"
         android:theme="@style/AppTheme">

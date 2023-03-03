@@ -189,7 +189,7 @@ class CounterViewModel(
             .onEach {
 //                println("Matrix Rotation ${it.joinToString(", ")}")
 //                println("Matrix Rotation ${it[3]}")
-                if (it[3] > 9.4 || it[3] < -9.4) {
+                if (it[3] > 9 || it[3] < -9) {
                     onEvent(CounterEvent.Resume)
                 } else {
                     onEvent(CounterEvent.Stop)
