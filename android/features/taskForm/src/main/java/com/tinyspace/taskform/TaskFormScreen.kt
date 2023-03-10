@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.tinyspace.compose.TinyTaskTheme
 import com.tinyspace.shared.domain.model.Tag
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -38,67 +39,82 @@ private val projectOptions = listOf(
 
 @Composable
 fun TaskFormScreen(
-    viewModel: TaskFormViewModel = koinViewModel(),
+    isHighlight: Boolean = false,
+    viewModel: TaskFormViewModel = koinViewModel {
+        parametersOf(
+            isHighlight
+        )
+    },
     navigateBack: () -> Boolean,
 ) {
     val snackBarNavHostState: SnackbarHostState = remember { SnackbarHostState() }
     val state = viewModel.uiState.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TaskFormAppBar(
-                navigateBack
-            )
-        },
 
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackBarNavHostState
-            )
-        },
-    ) {
+    if (!state.value.lastStep) {
+        IntroFlow(state.value.step) {
+            viewModel.onEvent(TaskFormEvent.NextStep)
+        }
+    }
 
-        Column(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
+    if (state.value.lastStep) {
+        Scaffold(
+            topBar = {
+                TaskFormAppBar(
+                    navigateBack
+                )
+            },
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = snackBarNavHostState
+                )
+            },
         ) {
 
-            Header()
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(it)
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
 
-                TaskDescription({ title ->
-                    viewModel.onEvent(TaskFormEvent.InputTitle(title))
-                }, { description ->
-                    viewModel.onEvent(TaskFormEvent.InputDescription(description))
-                }, uiState = state.value
-                )
-                Box(Modifier.height(8.dp))
-                Title(title = stringResource(R.string.tags))
-                TagOptions(state.value.tagUis, onTagSelected = { tagOption ->
-                    viewModel.onEvent(TaskFormEvent.SelectTag(tagOption))
-                })
-                Box(Modifier.height(16.dp))
-                Title(stringResource(R.string.duration))
-                DurationOptions(selectedOption = state.value.durationOption,
-                    onOptionSelected = { option ->
-                        viewModel.onEvent(TaskFormEvent.SelectDuration(option))
+                Header()
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
 
+                    TaskDescription({ title ->
+                        viewModel.onEvent(TaskFormEvent.InputTitle(title))
+                    }, { description ->
+                        viewModel.onEvent(TaskFormEvent.InputDescription(description))
+                    }, uiState = state.value
+                    )
+                    Box(Modifier.height(8.dp))
+                    Title(title = stringResource(R.string.tags))
+                    TagOptions(state.value.tagUis, onTagSelected = { tagOption ->
+                        viewModel.onEvent(TaskFormEvent.SelectTag(tagOption))
                     })
-            }
+                    Box(Modifier.height(16.dp))
+                    Title(stringResource(R.string.duration))
+                    DurationOptions(selectedOption = state.value.durationOption,
+                        onOptionSelected = { option ->
+                            viewModel.onEvent(TaskFormEvent.SelectDuration(option))
 
-            Button(onClick = {
-                viewModel.onEvent(TaskFormEvent.CreateTask)
-            }) {
-                Text(stringResource(R.string.create))
+                        })
+                }
+
+                Button(onClick = {
+                    viewModel.onEvent(TaskFormEvent.CreateTask)
+                }) {
+                    Text(stringResource(R.string.create))
+                }
             }
         }
     }
+
+
 
     if (state.value.isLoading) {
         LaunchedEffect(snackBarNavHostState) {

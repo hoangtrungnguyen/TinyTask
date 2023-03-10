@@ -1,0 +1,7 @@
+CREATE TABLE Hightlight(
+ day TEXT NOT NULL,
+ taskId TEXT
+);
+
+insert:
+INSERT OR IGNORE INTO Hightlight(day, taskId) VALUES (? , ? ) ;

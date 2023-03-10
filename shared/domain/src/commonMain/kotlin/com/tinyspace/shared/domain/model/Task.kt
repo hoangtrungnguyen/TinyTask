@@ -18,7 +18,8 @@ data class Task(
     private val _completed: Boolean,
     val duration: Duration,
     val createdTime: Long,
-    val tags: List<Tag> = emptyList()
+    val tags: List<Tag> = emptyList(),
+    val isHighlight: Boolean = false
 ) {
     internal fun toDTO(): TaskDTO {
         return TaskDTO(
@@ -38,7 +39,8 @@ data class Task(
             title: String = "",
             description: String = "",
             duration: Duration = 30.toDuration(DurationUnit.MINUTES),
-            tags: List<Tag>
+            tags: List<Tag>,
+            isHighlight: Boolean,
         ) = Task(
             _uuid = uuid4(),
             title,
@@ -47,7 +49,8 @@ data class Task(
             false,
             duration = duration,
             createdTime = Clock.System.now().epochSeconds,
-            tags = tags
+            tags = tags,
+            isHighlight = isHighlight
         )
 
         fun fromRepo(task: TaskDTO): Task {

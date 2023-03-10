@@ -64,6 +64,11 @@ dependencies {
         implementation(koin_android)
     }
 
+    with(JetBrains) {
+        implementation(kotlin_time)
+        implementation(kotlin_coroutine)
+        implementation(serialization)
+    }
     implementation(Deps.coil)
 
     implementation(JetBrains.kotlin_coroutine)

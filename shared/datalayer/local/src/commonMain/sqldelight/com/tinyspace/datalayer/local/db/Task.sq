@@ -5,7 +5,8 @@ CREATE TABLE Task (
     completed INTEGER NOT NULL DEFAULT 0,
     createdDate INTEGER NOT NULL,
     duration INTEGER NOT NULL,
-    dueDate INTEGER
+    dueDate INTEGER,
+    isHighlight INTEGER NOT NULL DEFAULT 0
 );
 
 
@@ -47,5 +48,6 @@ DELETE FROM Task WHERE EXISTS(SELECT taskId FROM TaskTag WHERE taskId = Task.id)
 getLimit:
 SELECT * FROM Task LIMIT ?;
 
-
+countHours:
+SELECT SUM(duration) FROM Task WHERE createdDate > :start AND  createdDate < :end;
 

@@ -121,14 +121,14 @@ fun StatScreen(
 
                     }
 
-                    Row {
-                        ElevatedCard {
-                            Text("Week")
-                        }
-                        ElevatedCard {
-                            Text("Month")
-                        }
-                    }
+//                    Row {
+//                        ElevatedCard {
+//                            Text("Week")
+//                        }
+//                        ElevatedCard {
+//                            Text("Month")
+//                        }
+//                    }
                     StatisticGraph()
 
                 }

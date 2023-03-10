@@ -7,4 +7,5 @@ internal sealed interface TaskFormEvent {
     data class InputDescription(val description: String) : TaskFormEvent
     object CreateTask : TaskFormEvent
     object Done : TaskFormEvent
+    object NextStep : TaskFormEvent
 }

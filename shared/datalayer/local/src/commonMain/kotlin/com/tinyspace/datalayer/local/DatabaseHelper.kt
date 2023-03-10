@@ -119,6 +119,14 @@ class DatabaseHelper(
         }
     }
 
+    fun getTaskInRange(start: Long, end: Long) {
+        return runBlocking(IOScope) {
+            dbRef.taskQueries.countHours(
+                start, end
+            )
+        }
+    }
+
 }
 
 

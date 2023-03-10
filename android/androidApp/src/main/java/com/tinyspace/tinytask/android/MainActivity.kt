@@ -25,6 +25,7 @@ import com.tinyspace.todolist.TodoListScreen
 
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,6 +39,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
 }
 
 
@@ -76,7 +79,6 @@ fun TinyTaskApp(
             }
         }
         composable(history) {
-//            Text("Histor")
             TaskHistoryScreen(onTaskClick = {
 
             }, onNavigateBack = {

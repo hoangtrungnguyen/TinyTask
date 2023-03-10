@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import com.tinyspace.android.stat.StatViewModel
+import com.tinyspace.common.SHARE_PREF
 import com.tinyspace.taskform.TaskFormViewModel
 import com.tinyspace.taskhistory.TaskHistoryViewModel
 import com.tinyspace.tinytask.counter.CounterViewModel
@@ -43,7 +44,7 @@ class TinyTaskApplication: Application() {
             koinAppDeclaration = module {
                 single<Context> { this@TinyTaskApplication }
                 single<SharedPreferences> {
-                    get<Context>().getSharedPreferences("TinyTaskApp", MODE_PRIVATE)
+                    get<Context>().getSharedPreferences(SHARE_PREF, MODE_PRIVATE)
                 }
                 single<CounterSensor> {
                     CounterSensor(get())
