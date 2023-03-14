@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.tinyspace.taskform
 
 import android.util.DisplayMetrics
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,6 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 val questions: List<Pair<String, String>> = listOf(
@@ -34,19 +40,21 @@ val questions: List<Pair<String, String>> = listOf(
 @Composable
 fun IntroFlow(
     step: Int,
+    scope: CoroutineScope = rememberCoroutineScope(),
     onNextStep: () -> Unit,
 ) {
     var timer by rememberSaveable {
-        mutableStateOf(42)
+        mutableStateOf(3)
     }
+
+    var trigger = true
 
     val displayMetrics = DisplayMetrics()
     val height = displayMetrics.heightPixels
     val width = displayMetrics.widthPixels
-
+    var enable by rememberSaveable { mutableStateOf(false) }
 
     AnimatedBox(1080)
-
 
     Column(
         verticalArrangement = Arrangement.Center, modifier = Modifier
@@ -55,16 +63,38 @@ fun IntroFlow(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(
-            questions[step].first,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium
-        )
+        AnimatedContent(
+            targetState = step,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(durationMillis = 500)).with(
+                    fadeOut(animationSpec = tween(durationMillis = 500))
+                )
+            }
+        ) { targetState ->
+            if (targetState >= questions.size) return@AnimatedContent
+
+            Text(
+                questions[targetState].first,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
+
         Box(modifier = Modifier.height(50.dp))
-        Text(
-            questions[step].second,
-            textAlign = TextAlign.Center
-        )
+        AnimatedContent(
+            targetState = step,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(durationMillis = 500)).with(
+                    fadeOut(animationSpec = tween(durationMillis = 500))
+                )
+            }
+        ) { targetState ->
+            if (targetState >= questions.size) return@AnimatedContent
+            Text(
+                questions[targetState].second,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 
     Box(
@@ -74,16 +104,24 @@ fun IntroFlow(
         contentAlignment = Alignment.BottomEnd
     ) {
         ElevatedButton(
+            enabled = enable,
             onClick = {
                 onNextStep()
-                if (step == questions.size + 1) {
-                    onNextStep()
-                }
+                enable = false
             }) {
             Text("Next")
         }
 
     }
+
+
+    LaunchedEffect(enable) {
+        scope.launch {
+            delay(3000)
+            enable = true
+        }
+    }
+
 }
 
 
@@ -120,10 +158,10 @@ fun AnimatedBox(maxSize: Int) {
 fun IntroFlowPreview() {
     MaterialTheme {
         Surface(color = Color.White) {
-            IntroFlow(
-                2,
-                {}
-            )
+//            IntroFlow(
+//                2,
+//                {}
+//            )
         }
     }
 }

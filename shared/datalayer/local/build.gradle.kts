@@ -77,8 +77,7 @@ sqldelight {
         create("TaskDb") {
             packageName.set("com.tinyspace.datalayer.local")
             sourceFolders.set(listOf("sqldelight"))
-
-
+            version = 2
             schemaOutputDirectory.set(file("src/main/sqldelight/databases"))
         }
     }

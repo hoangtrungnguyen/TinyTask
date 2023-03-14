@@ -5,3 +5,6 @@ CREATE TABLE Hightlight(
 
 insert:
 INSERT OR IGNORE INTO Hightlight(day, taskId) VALUES (? , ? ) ;
+
+getCurrent:
+SELECT * FROM Hightlight ORDER BY day LIMIT(1);

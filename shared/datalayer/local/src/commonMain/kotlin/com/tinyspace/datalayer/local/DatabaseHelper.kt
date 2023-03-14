@@ -127,6 +127,24 @@ class DatabaseHelper(
         }
     }
 
+    fun getTodayHighlight(): Task? {
+        return runBlocking(IOScope) {
+            val highlight = dbRef.highlightQueries.getCurrent().executeAsOneOrNull()
+            highlight?.taskId?.let {
+                return@runBlocking dbRef.taskQueries.getById(highlight.taskId).executeAsOne()
+            }
+            null
+        }
+    }
+
+    fun saveTodayHighlight(day: String, taskId: String) {
+        runBlocking(IOScope) {
+            dbRef.highlightQueries.insert(day, taskId)
+            println("insert highlight ok")
+        }
+    }
+
+
 }
 
 

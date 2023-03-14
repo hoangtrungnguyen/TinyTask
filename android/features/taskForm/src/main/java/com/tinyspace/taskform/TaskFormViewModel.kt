@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tinyspace.common.SHARE_PREF
-import com.tinyspace.common.SharedPref
+import com.tinyspace.shared.domain.GetTodayHighlightUseCase
 import com.tinyspace.shared.domain.SaveTaskUseCase
 import com.tinyspace.shared.domain.exception.InsertErrorException
 import com.tinyspace.shared.domain.model.Tag
@@ -20,7 +20,10 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), KoinComponent {
+class TaskFormViewModel(
+    val saveTaskUseCase: SaveTaskUseCase,
+    val getTodayHighlightUseCase: GetTodayHighlightUseCase,
+) : ViewModel(), KoinComponent {
 
     private val sharedPreferences by inject<SharedPreferences> {
         parametersOf(SHARE_PREF)
@@ -44,7 +47,8 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
 
     init {
         viewModelScope.launch {
-            if (sharedPreferences.getBoolean(SharedPref.HIGHLIGHT, false)) {
+            val result = getTodayHighlightUseCase()
+            if (result == null) {
                 modelState.value = ViewModelState(
                     0 to durations[0],
                     title = "",
@@ -54,6 +58,7 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                     step = MAX_STEP,
                     isHighlight = true
                 )
+
             } else {
                 modelState.value = ViewModelState(
                     0 to durations[0],
@@ -65,7 +70,6 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                     isHighlight = false
                 )
             }
-
         }
     }
 
@@ -85,22 +89,24 @@ class TaskFormViewModel( val saveTaskUseCase: SaveTaskUseCase): ViewModel(), Koi
                 )
             }
             saveTaskUseCase(task)
-        }.invokeOnCompletion {completable ->
+        }.invokeOnCompletion { completable ->
 
-            when(completable){
+            when (completable) {
                 null -> {
                     modelState.update {
                         it.copy(
-                            isLoading =  false,
+                            isLoading = false,
                         ).apply {
                             isDone = true
                         }
                     }
+
+
                 }
                 is InsertErrorException -> {
                     modelState.update {
                         it.copy(
-                            isLoading =  false,
+                            isLoading = false,
                         )
                     }
                 }
@@ -184,11 +190,11 @@ private data class ViewModelState(
 
     // can only call one time
     var isDone: Boolean
-        set(value)  {
+        set(value) {
             assert(!_isDone)
             _isDone = true
         }
-    get() = _isDone
+        get() = _isDone
 
     fun toUiState(): TaskFormUiState {
         return TaskFormUiState(

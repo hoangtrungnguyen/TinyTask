@@ -1,7 +1,6 @@
 package com.tinyspace.datalayer.repository
 
 import com.tinyspace.datalayer.local.DatabaseHelper
-import com.tinyspace.datalayer.repository.model.Tag
 import com.tinyspace.datalayer.repository.model.Task
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +41,7 @@ class TaskRepositoryImpl(
         return tasks.map {
             Task.fromDBModel(
                 it,
-                tags = mapTagToTask(it.id, tags)
+                tags = databaseHelper.mapTagToTask(it.id, tags)
             )
         }
     }
@@ -53,20 +52,6 @@ class TaskRepositoryImpl(
         return mapTaskFromDb(tasks)
     }
 
-    private fun mapTagToTask(
-        taskId: String,
-        tags: List<com.tinyspace.datalayer.local.db.Tag>
-    ): List<Tag> {
-        val relations = databaseHelper.getTaskTagRelation(taskId)
-        return tags.filter { tag ->
-            relations.any { relation -> relation.tagId == tag.id }
-        }.map { tag ->
-            Tag(
-                code = tag.id,
-                name = tag.name
-            )
-        }
-    }
 
     override suspend fun setCompleted(task: Task) {
         return databaseHelper.setCompleted(task.id)
@@ -87,7 +72,7 @@ class TaskRepositoryImpl(
         val tags = databaseHelper.getAllTag()
         return Task.fromDBModel(
             databaseHelper.getById(id),
-            tags = this.mapTagToTask(id, tags)
+            tags = databaseHelper.mapTagToTask(id, tags)
         )
     }
 
@@ -96,7 +81,7 @@ class TaskRepositoryImpl(
         return databaseHelper.getLimit(count.toLong()).map {
             Task.fromDBModel(
                 it,
-                tags = mapTagToTask(it.id, tags)
+                tags = databaseHelper.mapTagToTask(it.id, tags)
             )
         }
     }
@@ -130,3 +115,4 @@ class TaskRepositoryImpl(
         return databaseHelper.countCompletedAsFlow()
     }
 }
+

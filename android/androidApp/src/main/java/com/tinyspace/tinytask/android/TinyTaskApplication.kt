@@ -24,7 +24,7 @@ class TinyTaskApplication: Application() {
             viewModel =
                module {
                    viewModel {
-                       TaskFormViewModel(get())
+                       TaskFormViewModel(get(), get())
                    }
                    includes(todoListViewModel)
                    viewModel { (taskId: String) ->

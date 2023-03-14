@@ -1,14 +1,18 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 
 package com.tinyspace.taskform
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Task
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -50,84 +54,127 @@ fun TaskFormScreen(
     val snackBarNavHostState: SnackbarHostState = remember { SnackbarHostState() }
     val state = viewModel.uiState.collectAsState()
 
+    AnimatedContent(targetState = state.value.isLoading,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(durationMillis = 500)).with(
+                fadeOut(animationSpec = tween(durationMillis = 500))
+            )
+        }) { isLoading ->
 
-    if (!state.value.lastStep) {
-        IntroFlow(state.value.step) {
-            viewModel.onEvent(TaskFormEvent.NextStep)
+        if (isLoading) {
+            CircularProgressIndicator()
+            return@AnimatedContent
         }
-    }
-
-    if (state.value.lastStep) {
-        Scaffold(
-            topBar = {
-                TaskFormAppBar(
-                    navigateBack
+        AnimatedContent(
+            targetState = state.value.lastStep,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(durationMillis = 500)).with(
+                    fadeOut(animationSpec = tween(durationMillis = 500))
                 )
-            },
-            snackbarHost = {
-                SnackbarHost(
-                    hostState = snackBarNavHostState
+            }
+        ) { targetState ->
+            if (targetState) {
+                TaskFormUi(
+                    snackBarNavHostState = snackBarNavHostState,
+                    onEvent = {
+                        viewModel.onEvent(it)
+                    },
+                    tagUis = state.value.tagUis,
+                    title = state.value.title,
+                    description = state.value.description,
+                    durationOption = state.value.durationOption,
+                    navigateBack = navigateBack
                 )
-            },
-        ) {
-
-            Column(
-                modifier = Modifier
-                    .padding(it)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                Header()
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-
-                    TaskDescription({ title ->
-                        viewModel.onEvent(TaskFormEvent.InputTitle(title))
-                    }, { description ->
-                        viewModel.onEvent(TaskFormEvent.InputDescription(description))
-                    }, uiState = state.value
-                    )
-                    Box(Modifier.height(8.dp))
-                    Title(title = stringResource(R.string.tags))
-                    TagOptions(state.value.tagUis, onTagSelected = { tagOption ->
-                        viewModel.onEvent(TaskFormEvent.SelectTag(tagOption))
-                    })
-                    Box(Modifier.height(16.dp))
-                    Title(stringResource(R.string.duration))
-                    DurationOptions(selectedOption = state.value.durationOption,
-                        onOptionSelected = { option ->
-                            viewModel.onEvent(TaskFormEvent.SelectDuration(option))
-
-                        })
-                }
-
-                Button(onClick = {
-                    viewModel.onEvent(TaskFormEvent.CreateTask)
-                }) {
-                    Text(stringResource(R.string.create))
+            } else {
+                IntroFlow(state.value.step) {
+                    viewModel.onEvent(TaskFormEvent.NextStep)
                 }
             }
         }
+
+
     }
 
 
 
-    if (state.value.isLoading) {
-        LaunchedEffect(snackBarNavHostState) {
-            snackBarNavHostState.showSnackbar(
-                "Loading ... "
-            )
-        }
-    }
+
+
+
 
     if (state.value.isDone) {
         navigateBack()
     }
 
+}
+
+
+@Composable
+internal fun TaskFormUi(
+    snackBarNavHostState: SnackbarHostState,
+    onEvent: (event: TaskFormEvent) -> Unit,
+    tagUis: List<Tag> = emptyList(),
+    durationOption: Int,
+    navigateBack: () -> Boolean,
+    title: String,
+    description: String
+) {
+    Scaffold(
+        topBar = {
+            TaskFormAppBar(
+                navigateBack
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackBarNavHostState
+            )
+        },
+    ) {
+
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+
+            Header()
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+                TaskDescription({ title ->
+                    onEvent(TaskFormEvent.InputTitle(title))
+                }, { description ->
+                    onEvent(TaskFormEvent.InputDescription(description))
+                },
+
+                    title = title,
+                    description = description
+                )
+                Box(Modifier.height(8.dp))
+                Title(title = stringResource(R.string.tags))
+                TagOptions(tagUis, onTagSelected = { tagOption ->
+                    onEvent(TaskFormEvent.SelectTag(tagOption))
+                })
+                Box(Modifier.height(16.dp))
+                Title(stringResource(R.string.duration))
+                DurationOptions(selectedOption = durationOption,
+                    onOptionSelected = { option ->
+                        onEvent(TaskFormEvent.SelectDuration(option))
+
+                    })
+            }
+
+            Button(onClick = {
+                onEvent(TaskFormEvent.CreateTask)
+            }) {
+                Text(stringResource(R.string.create))
+            }
+        }
+    }
 }
 
 
@@ -175,11 +222,13 @@ private fun Title(title: String) {
 private fun TaskDescription(
     onTitleChanged: (title: String) -> Unit,
     onDescriptionChanged: (description: String) -> Unit,
-    uiState: TaskFormUiState
+    title: String,
+    description: String,
 ) {
     Column(modifier = Modifier.padding(horizontal = 32.dp)) {
         //Title
-        OutlinedTextField(value = uiState.title,
+        OutlinedTextField(
+            value = title,
             onValueChange = { onTitleChanged(it) },
             label = { Text(stringResource(R.string.title)) },
             modifier = Modifier.fillMaxWidth()
@@ -189,7 +238,7 @@ private fun TaskDescription(
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth(),
-            value = uiState.description,
+            value = description,
             onValueChange = {
                 onDescriptionChanged(it)
             },
