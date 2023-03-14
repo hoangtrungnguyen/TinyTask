@@ -13,4 +13,7 @@ val repositoryModules = module {
     single<HighlightRepository> {
         HighlightRepositoryImpl(get())
     }
+    single {
+        PurchaseRepository()
+    }
 }

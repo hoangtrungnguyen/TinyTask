@@ -1,10 +1,10 @@
 package com.tinyspace.taskhistory
 
 import androidx.lifecycle.viewModelScope
-import com.tinyspace.common.BaseUiState
 import com.tinyspace.common.BaseViewModel
-import com.tinyspace.common.BaseViewModelState
 import com.tinyspace.common.Event
+import com.tinyspace.common.UiState
+import com.tinyspace.common.ViewModelState
 import com.tinyspace.shared.domain.GetTaskPaginationUseCase
 import com.tinyspace.shared.domain.model.Tag
 import com.tinyspace.shared.domain.model.Task
@@ -48,7 +48,7 @@ class TaskHistoryViewModel(
 
 data class HistoryVMState(
     val tasks: List<Task> = emptyList()
-) : BaseViewModelState<HistoryUiState> {
+) : ViewModelState<HistoryUiState> {
     override fun toUiState(): HistoryUiState {
         return HistoryUiState(
             tasks = tasks.map {
@@ -70,7 +70,7 @@ data class HistoryVMState(
 data class HistoryUiState(
     val tasks: List<TaskUi>,
     val currentTask: TaskUi? = null
-) : BaseUiState
+) : UiState
 
 data class TaskUi(
     val id: String,

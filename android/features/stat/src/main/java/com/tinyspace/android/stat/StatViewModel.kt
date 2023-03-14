@@ -1,9 +1,9 @@
 package com.tinyspace.android.stat
 
 import androidx.lifecycle.viewModelScope
-import com.tinyspace.common.BaseUiState
 import com.tinyspace.common.BaseViewModel
-import com.tinyspace.common.BaseViewModelState
+import com.tinyspace.common.UiState
+import com.tinyspace.common.ViewModelState
 import com.tinyspace.shared.domain.CountTaskUseCase
 import com.tinyspace.shared.domain.CountType
 import com.tinyspace.shared.domain.GetTotalDurationTaskUseCase
@@ -46,7 +46,7 @@ data class StatVMState(
     val finished: Int,
     val totalDuration: Int,
     val hoursSpent: List<Float> = listOf(0f, 0f, 0f, 0f, 0f, 0f, 0f)
-) : BaseViewModelState<StatUIState> {
+) : ViewModelState<StatUIState> {
 
     override fun toUiState(): StatUIState {
         return StatUIState(
@@ -64,7 +64,7 @@ data class StatVMState(
 data class StatUIState(
     val finished: Int,
     val totalDuration: TotalDurationUi
-) : BaseUiState
+) : UiState
 
 data class TotalDurationUi(
     val hour: Int,

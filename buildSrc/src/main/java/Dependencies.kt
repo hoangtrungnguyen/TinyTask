@@ -11,6 +11,7 @@ object Libs {
 object Versions {
 
 
+    const val billing_version = "5.1.0"
     const val rushwolf: String = "1.0.0"
     const val view_model: String = "2.5.1"
     const val espresso: String = "3.5.1"
@@ -36,6 +37,9 @@ object Versions {
     const val sqlDelightVersion = "2.0.0-alpha05"
 
     const val runtime_compose = "2.6.0-beta01"
+
+    const val kotlin = "1.8.0"
+    const val kotlin_coroutine ="1.6.4"
 }
 
 class Dependencies
@@ -119,10 +123,32 @@ object UUID {
 }
 
 object JetBrains {
-    val kotlin_coroutine_test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
+    val kotlin_coroutine_test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlin_coroutine}"
     const val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC"
-    const val kotlin_coroutine = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
-    const val kotlin_coroutine_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+
+    const val kotlin_coroutine = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlin_coroutine}"
+    const val kotlin_coroutine_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlin_coroutine}"
     const val kotlin_time =   "org.jetbrains.kotlinx:kotlinx-datetime:0.4.0"
+
+    const val kotlin_reflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}"
+
+}
+
+object Billing {
+
+    //implementation("com.android.billingclient:billing-ktx:$billing_version")
+    const val billing = "com.android.billingclient:billing-ktx:${Versions.billing_version}"
+}
+
+
+object Ktor {
+    val ktor_version = "2.2.3"
+    val client_core ="io.ktor:ktor-client-core:$ktor_version"
+    val client_cio ="io.ktor:ktor-client-cio:$ktor_version"
+    val client_loggin ="io.ktor:ktor-client-logging:$ktor_version"
+    val client_json = "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
+
+    val content_negotiation = "io.ktor:ktor-client-content-negotiation:$ktor_version"
+
 }
 

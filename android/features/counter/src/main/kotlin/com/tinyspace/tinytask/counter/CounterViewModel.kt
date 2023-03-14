@@ -2,9 +2,9 @@ package com.tinyspace.tinytask.counter
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.tinyspace.common.BaseUiState
 import com.tinyspace.common.BaseViewModel
-import com.tinyspace.common.BaseViewModelState
+import com.tinyspace.common.UiState
+import com.tinyspace.common.ViewModelState
 import com.tinyspace.common.formatSeconds
 import com.tinyspace.shared.core.AppCountDownTimer
 import com.tinyspace.shared.domain.GetTaskUseCase
@@ -208,7 +208,7 @@ data class CounterVMState(
     val isLoading: Boolean,
     val message: String,
     val tags: List<Tag> = emptyList()
-) : BaseViewModelState<CounterUiState> {
+) : ViewModelState<CounterUiState> {
 
     private val progress: Float get() = (current / total).toFloat()
     private val finish: Boolean get() = total > ZERO && current <= ZERO
@@ -240,7 +240,7 @@ class CounterUiState(
     var counter: Int = 0,
     var progress: Float = 0f,
     val isNavigateBack: Boolean = false
-) : BaseUiState {
+) : UiState {
     val timer: String get() = counter.formatSeconds()
 }
 

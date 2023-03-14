@@ -1,24 +1,29 @@
-# How to use this project
-
-## Must have library in every android modules
-
-```kotlin
-// build.gradle.kts
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
 }
 
 android {
-    namespace = "${change package name}"
-    compileSdk = Versions.compile_sdk
+    namespace = "com.tinyspace.payment"
+    compileSdk = 33
 
     defaultConfig {
-        minSdk = Versions.min_sdk
+        minSdk = 30
+        targetSdk = 33
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -37,7 +42,7 @@ android {
 }
 
 dependencies {
-    //common android feature's dependencies
+
     implementation(project(":android:core:compose"))
     implementation(project(":android:core:common"))
     implementation(project(":shared:domain"))
@@ -49,10 +54,9 @@ dependencies {
     }
 
     testImplementation(Junit.junit4)
-    
-    
-    //dependencies for android feature
-    with(Compose){
+
+
+    with(Compose) {
         implementation(material_icons)
         implementation(material3)
         implementation(material3_window)
@@ -78,10 +82,8 @@ dependencies {
         implementation(kotlin_coroutine)
         implementation(serialization)
     }
-    implementation(Deps.coil)
 
-    implementation(JetBrains.kotlin_coroutine)
-
+    with(Billing) {
+        implementation(billing)
+    }
 }
-
-```

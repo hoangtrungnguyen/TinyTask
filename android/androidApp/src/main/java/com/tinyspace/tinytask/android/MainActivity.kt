@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tinyspace.compose.*
 import com.tinyspace.feature.onboard.OnBoardingScreen
+import com.tinyspace.payment.PaymentUi
 import com.tinyspace.taskform.TaskFormScreen
 import com.tinyspace.taskhistory.TaskHistoryScreen
 import com.tinyspace.tinytask.counter.CounterScreen
@@ -96,6 +97,9 @@ fun TinyTaskApp(
                 },
                 onNavigateToTaskForm = {
                     navController.navigate(taskForm)
+                },
+                onNavigateToPaymentScreen = {
+                    navController.navigate(Router.payment)
                 })
         }
 
@@ -105,13 +109,18 @@ fun TinyTaskApp(
             }
         }
 
-        composable(todoList){
-            TodoListScreen (onPopBack = {
+        composable(todoList) {
+            TodoListScreen(onPopBack = {
                 navController.navigateUp()
             }, onTaskSelected = {
                 navController.navigate("$counter/${it}")
             })
         }
 
+        composable(Router.payment) {
+            PaymentUi {
+                navController.navigateUp()
+            }
+        }
     }
 }

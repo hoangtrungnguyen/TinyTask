@@ -13,6 +13,7 @@ class Koin {
             factory { GetTotalDurationTaskUseCase(get()) }
             factory { GetTaskPaginationUseCase(get()) }
             factory { GetTodayHighlightUseCase(get()) }
+            factory { VerifySuccessPurchaseUseCase(get()) }
         }
     }
 }

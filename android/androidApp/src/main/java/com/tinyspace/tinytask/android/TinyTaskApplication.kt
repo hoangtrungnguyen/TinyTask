@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.tinyspace.android.stat.StatViewModel
 import com.tinyspace.common.SHARE_PREF
+import com.tinyspace.payment.PaymentBuilder
+import com.tinyspace.payment.PaymentVM
 import com.tinyspace.taskform.TaskFormViewModel
 import com.tinyspace.taskhistory.TaskHistoryViewModel
 import com.tinyspace.tinytask.counter.CounterViewModel
@@ -33,13 +35,12 @@ class TinyTaskApplication: Application() {
                    viewModel {
                        StatViewModel(get(), get())
                    }
-
                    viewModel {
                        TaskHistoryViewModel(get())
                    }
-
-
-
+                   viewModel {
+                       PaymentVM(get(), get())
+                   }
                },
             koinAppDeclaration = module {
                 single<Context> { this@TinyTaskApplication }
@@ -49,8 +50,10 @@ class TinyTaskApplication: Application() {
                 single<CounterSensor> {
                     CounterSensor(get())
                 }
+                single<PaymentBuilder> {
+                    PaymentBuilder(get())
+                }
             },
-
             )
     }
 }

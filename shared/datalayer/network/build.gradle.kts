@@ -2,6 +2,7 @@ plugins {
     kotlin("native.cocoapods")
     kotlin("multiplatform")
     id("com.android.library")
+    id("kotlinx-serialization")
 }
 
 kotlin{
@@ -20,7 +21,19 @@ kotlin{
     }
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                with(Ktor) {
+                    implementation(client_core)
+                    implementation(client_cio)
+                    implementation(client_loggin)
+                    implementation(client_json)
+                    implementation(content_negotiation)
+                }
+
+                implementation(JetBrains.kotlin_reflect)
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))

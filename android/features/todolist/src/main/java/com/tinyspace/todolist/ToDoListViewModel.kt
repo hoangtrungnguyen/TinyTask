@@ -1,9 +1,9 @@
 package com.tinyspace.todolist
 
 import androidx.lifecycle.viewModelScope
-import com.tinyspace.common.BaseUiState
 import com.tinyspace.common.BaseViewModel
-import com.tinyspace.common.BaseViewModelState
+import com.tinyspace.common.UiState
+import com.tinyspace.common.ViewModelState
 import com.tinyspace.shared.domain.GetRecentTaskUseCase
 import com.tinyspace.shared.domain.model.Task
 import kotlinx.coroutines.delay
@@ -14,16 +14,16 @@ import org.koin.core.component.KoinComponent
 class ToDoListViewModel(
     private val getRecentTasksUseCase: GetRecentTaskUseCase
 ) : KoinComponent,
-    BaseViewModel<TodoListEvent, UiState, ViewModelState>() {
+    BaseViewModel<TodoListEvent, TodoListUiState, TodoListVM>() {
 
-    override val initialState: ViewModelState = ViewModelState(
+    override val initialState: TodoListVM = TodoListVM(
         emptyList(),
         isLoading = false,
         message = ""
     )
 
-    override val modelState: MutableStateFlow<ViewModelState> = MutableStateFlow(initialState)
-    override val uiState: StateFlow<UiState> = modelState.map(ViewModelState::toUiState)
+    override val modelState: MutableStateFlow<TodoListVM> = MutableStateFlow(initialState)
+    override val uiState: StateFlow<TodoListUiState> = modelState.map(TodoListVM::toUiState)
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -73,15 +73,15 @@ class ToDoListViewModel(
 }
 
 
-data class ViewModelState(
+data class TodoListVM(
     val tasks: List<Task>,
     val selectedId: String? = null,
     val isLoading: Boolean,
     val message: String,
-) : BaseViewModelState<UiState> {
-    override fun toUiState(): UiState {
-        return UiState(
-            tasks.map { task ->
+) : ViewModelState<TodoListUiState> {
+    override fun toUiState(): TodoListUiState {
+        return TodoListUiState(
+            tasks = tasks.map { task ->
                 UiTask(task.title, task.description, task.uuid,
                     task.tags.map { it.name })
             },
@@ -99,9 +99,9 @@ data class UiTask(
     val tags: List<String> = emptyList()
 )
 
-data class UiState(
+data class TodoListUiState(
     val tasks: List<UiTask>,
     val isLoading: Boolean = false,
     val selectedTask: String? = null,
-) : BaseUiState
+) : UiState
 

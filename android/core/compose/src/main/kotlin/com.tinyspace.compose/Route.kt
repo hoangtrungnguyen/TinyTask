@@ -6,3 +6,8 @@ const val counter = "counter"
 const val taskForm = "taskForm"
 const val todoList = "todoList"
 const val history = "history"
+
+
+object Router {
+    const val payment = "payment"
+}

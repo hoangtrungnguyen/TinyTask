@@ -3,7 +3,7 @@ package com.tinyspace.common
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.StateFlow
 
-abstract class BaseViewModel<Event : com.tinyspace.common.Event, Ui : BaseUiState, State : BaseViewModelState<Ui>> :
+abstract class BaseViewModel<Event : com.tinyspace.common.Event, Ui : UiState, State : ViewModelState<Ui>> :
     ViewModel() {
 
     abstract val initialState: State
@@ -36,8 +36,8 @@ interface Event {
 }
 
 
-interface BaseViewModelState<Ui : BaseUiState> {
+interface ViewModelState<Ui : UiState> {
     fun toUiState(): Ui
 }
 
-interface BaseUiState
+interface UiState
