@@ -15,7 +15,7 @@ class SaveTaskUseCase(
     suspend operator fun invoke(task: Task) {
         try {
             taskRepository.save(task = task.toDTO())
-            highlightRepository.saveTodayHighlight(task.uuid, "2023-03-12")
+            highlightRepository.saveTodayHighlight(task.uuid, task.createdTime)
         } catch (e: Exception) {
             throw InsertErrorException()
         }

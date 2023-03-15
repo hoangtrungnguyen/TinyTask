@@ -2,6 +2,8 @@ package com.tinyspace.datalayer.repository
 
 import com.tinyspace.datalayer.local.DatabaseHelper
 import com.tinyspace.datalayer.repository.model.Tag
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toLocalDateTime
 
 internal fun DatabaseHelper.mapTagToTask(
     taskId: String,
@@ -17,4 +19,13 @@ internal fun DatabaseHelper.mapTagToTask(
             name = tag.name
         )
     }
+}
+
+
+internal fun LocalDateTime.toSQLRow(): String {
+    return "${this.year}-${this.month}-${this.dayOfMonth}"
+}
+
+internal fun String.fromSQLRow(): LocalDateTime {
+    return "${this}T00:00:00 ".toLocalDateTime()
 }
