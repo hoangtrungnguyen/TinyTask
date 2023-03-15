@@ -14,6 +14,7 @@ class Koin {
             factory { GetTaskPaginationUseCase(get()) }
             factory { GetTodayHighlightUseCase(get()) }
             factory { VerifySuccessPurchaseUseCase(get()) }
+            factory { GetTagUseCase(get()) }
         }
     }
 }

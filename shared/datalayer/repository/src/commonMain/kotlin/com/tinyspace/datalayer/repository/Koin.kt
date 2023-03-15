@@ -16,4 +16,5 @@ val repositoryModules = module {
     single {
         PurchaseRepository()
     }
+
 }

@@ -2,6 +2,7 @@ package com.tinyspace.datalayer.repository
 
 import com.tinyspace.datalayer.local.DatabaseHelper
 import com.tinyspace.datalayer.repository.model.Task
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -11,7 +12,8 @@ class HighlightRepositoryImpl(
 ) : HighlightRepository {
 
     override suspend fun getTodayHighlight(): Task? {
-        val todayHighlight = databaseHelper.getTodayHighlight()
+        val row = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toSQLRow()
+        val todayHighlight = databaseHelper.getTodayHighlight(row)
         return todayHighlight?.let {
             Task.fromDBModel(data = it, databaseHelper.mapTagToTask(it.id))
         }

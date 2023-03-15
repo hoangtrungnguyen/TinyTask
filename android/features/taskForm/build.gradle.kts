@@ -63,5 +63,9 @@ dependencies {
     with(Koin) {
         implementation(koin_core)
         implementation(koin_compose)
+
     }
+
+    implementation(Timber.logger)
+
 }

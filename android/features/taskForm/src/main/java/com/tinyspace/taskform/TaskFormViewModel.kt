@@ -1,15 +1,18 @@
 package com.tinyspace.taskform
 
 import android.content.SharedPreferences
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tinyspace.common.BaseViewModel
 import com.tinyspace.common.SHARE_PREF
+import com.tinyspace.common.UiState
+import com.tinyspace.common.ViewModelState
+import com.tinyspace.shared.domain.GetTagUseCase
 import com.tinyspace.shared.domain.GetTodayHighlightUseCase
 import com.tinyspace.shared.domain.SaveTaskUseCase
-import com.tinyspace.shared.domain.exception.InsertErrorException
+import com.tinyspace.shared.domain.exception.DatabaseException
 import com.tinyspace.shared.domain.model.Tag
 import com.tinyspace.shared.domain.model.Task
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -23,22 +26,17 @@ import kotlin.time.toDuration
 class TaskFormViewModel(
     val saveTaskUseCase: SaveTaskUseCase,
     val getTodayHighlightUseCase: GetTodayHighlightUseCase,
-) : ViewModel(), KoinComponent {
+    val getTagUseCase: GetTagUseCase
+) : BaseViewModel<TaskFormEvent, TaskFormUiState, TaskFormVMState>(), KoinComponent {
 
     private val sharedPreferences by inject<SharedPreferences> {
         parametersOf(SHARE_PREF)
     }
 
-    private val initialState: ViewModelState = ViewModelState(
-        0 to 0.toDuration(DurationUnit.MINUTES), "", "", emptyList(),
-        isLoading = true,
-        step = 0,
-        isHighlight = false
-    )
+    override val initialState: TaskFormVMState = TaskFormVMState()
+    override val modelState = MutableStateFlow(initialState)
 
-    private val modelState = MutableStateFlow(initialState)
-
-    val uiState: StateFlow<TaskFormUiState> = modelState.map(ViewModelState::toUiState)
+    override val uiState: StateFlow<TaskFormUiState> = modelState.map(TaskFormVMState::toUiState)
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -47,28 +45,30 @@ class TaskFormViewModel(
 
     init {
         viewModelScope.launch {
-            val result = getTodayHighlightUseCase()
-            if (result == null) {
-                modelState.value = ViewModelState(
-                    0 to durations[0],
-                    title = "",
-                    description = "",
-                    emptyList(),
-                    isLoading = false,
-                    step = MAX_STEP,
-                    isHighlight = true
-                )
+            try {
+                modelState.update {
+                    it.copy(isLoading = true)
+                }
+                val result = getTodayHighlightUseCase()
+                val tags = getTagUseCase()
 
-            } else {
-                modelState.value = ViewModelState(
-                    0 to durations[0],
-                    title = "",
-                    description = "",
-                    emptyList(),
-                    isLoading = false,
-                    step = 0,
-                    isHighlight = false
-                )
+                if (result == null) {
+                    modelState.value = TaskFormVMState()
+                } else {
+                    modelState.value = TaskFormVMState(
+                        step = questions.size
+                    )
+                }
+
+                modelState.update {
+                    it.copy(tagOptions = tags)
+                }
+            } catch (e: Exception) {
+
+            } finally {
+                modelState.update {
+                    it.copy(isLoading = false)
+                }
             }
         }
     }
@@ -81,82 +81,79 @@ class TaskFormViewModel(
                     isLoading = true
                 )
             }
+
+
             val task = modelState.value.run {
                 Task.createNew(
-                    title, description, durations[durationOption.first],
-                    tags,
+                    title, description,
+                    durationOptions[0],
+                    tagOptions,
                     isHighlight
                 )
             }
-            saveTaskUseCase(task)
-        }.invokeOnCompletion { completable ->
 
-            when (completable) {
-                null -> {
+
+            try {
+                if (task.isValid()) {
+                    saveTaskUseCase(task)
+
                     modelState.update {
                         it.copy(
-                            isLoading = false,
-                        ).apply {
                             isDone = true
+                        )
+                    }
+                } else {
+
+                    viewModelScope.launch {
+                        modelState.update {
+                            it.copy(
+                                message = "Invalid form"
+                            )
+                        }
+                        delay(1000)
+                        modelState.update {
+                            it.copy(
+                                message = ""
+                            )
                         }
                     }
 
+                }
+            } catch (e: DatabaseException) {
 
-                }
-                is InsertErrorException -> {
-                    modelState.update {
-                        it.copy(
-                            isLoading = false,
-                        )
-                    }
-                }
-                is CancellationException -> {
-
-                }
-                else -> {
-
-                }
+            }
+        }.invokeOnCompletion {
+            modelState.update {
+                it.copy(
+                    isLoading = false,
+                )
             }
         }
     }
 
 
-    internal fun onEvent(event: TaskFormEvent) = when (event) {
-        is TaskFormEvent.CreateTask -> {
-            create()
-        }
-        is TaskFormEvent.InputDescription -> {
-            modelState.update { state ->
-                state.copy(description = event.description)
+    override fun onEvent(event: TaskFormEvent) =
+        when (event) {
+            is TaskFormEvent.CreateTask -> {
+                create()
             }
-        }
-        is TaskFormEvent.SelectDuration -> {
-            modelState.update { state ->
+            is TaskFormEvent.InputDescription -> {
+                modelState.update { state ->
+                    state.copy(description = event.description)
+                }
+            }
+            is TaskFormEvent.SelectDuration -> {
+                modelState.update { state ->
                 state.copy(
-                    durationOption = Pair<Int, Duration>(
-                        event.choice, durations[event.choice]
-                    )
+                    selectedDuration = event.choice,
                 )
             }
         }
         is TaskFormEvent.SelectTag -> {
-            val tagOption = event.tagOption
+            val selected = event.tagOption
 
             modelState.update {
-                val innerTagUis = mutableListOf<Tag>()
-                var isContain = false
-                for (tagUi: Tag in it.tags) {
-                    if (tagUi != defaultTagUis[tagOption]) {
-                        innerTagUis.add(tagUi)
-                    } else {
-                        isContain = true
-                    }
-                }
-                if (!isContain) {
-                    innerTagUis.add(defaultTagUis[tagOption])
-                }
-
-                it.copy(tags = innerTagUis)
+                it.copy(selectedTag = selected)
             }
         }
         is TaskFormEvent.InputTitle -> {
@@ -176,67 +173,82 @@ class TaskFormViewModel(
 }
 
 
-private data class ViewModelState(
-    val durationOption: Pair<Int, Duration>,
-    val title: String,
-    val description: String,
-    val tags: List<Tag>,
-    val isLoading: Boolean,
-    private var _isDone: Boolean = false,
-    val step: Int,
-    val isHighlight: Boolean = false
-) {
-
-
-    // can only call one time
-    var isDone: Boolean
-        set(value) {
-            assert(!_isDone)
-            _isDone = true
-        }
-        get() = _isDone
-
-    fun toUiState(): TaskFormUiState {
-        return TaskFormUiState(
-            durationOption = durationOption.first,
-            description = description,
-            tagUis = tags,
-            title = title,
-            isLoading = isLoading,
-            isDone = isDone,
-            step = step,
-        )
-    }
-}
-
-
-const val MAX_STEP = 4
-
-data class TaskFormUiState(
-    val durationOption: Int = 0,
-    val title: String = "",
-    val description: String = "",
-    val tagUis: List<Tag> = emptyList(),
-    val isLoading: Boolean = false,
-    val isDone: Boolean = false,
-    val step: Int = 0,
-) {
-
-    val lastStep: Boolean = step == MAX_STEP
-}
-
-
-internal val defaultTagUis = listOf(
-    Tag("Personal", "1"),
-    Tag("Work", "2"),
-    Tag("Relation", "3"),
-    Tag("Home", "4"),
-)
-
-
-private val durations = listOf<Duration>(
+private val DURATION_OPTIONS = listOf<Duration>(
     30.toDuration(DurationUnit.MINUTES),
     60.toDuration(DurationUnit.MINUTES),
     90.toDuration(DurationUnit.MINUTES),
     120.toDuration(DurationUnit.MINUTES),
 )
+
+data class TaskFormVMState(
+    val durationOptions: List<Duration> = DURATION_OPTIONS,
+    val selectedDuration: Int? = null,
+    val title: String = "",
+    val description: String = "",
+    val tagOptions: List<Tag> = emptyList(),
+    val isLoading: Boolean = false,
+    val isDone: Boolean = false,
+    val step: Int = 0,
+    val isHighlight: Boolean = false,
+    val selectedTag: Int? = null,
+    val message: String = "",
+) : ViewModelState<TaskFormUiState> {
+    // can only call one time
+    override fun toUiState(): TaskFormUiState {
+        return if (step < questions.size) {
+            TaskFormUiState.Intro(
+                step = step
+            )
+        } else {
+            TaskFormUiState.Editing(
+                isDone = isDone,
+                selectedTag = selectedTag,
+                tagOptions = tagOptions,
+                isLoading = isLoading,
+                description = description,
+                title = title,
+                durationOptions = durationOptions,
+                selectedDuration = selectedDuration ?: 1,
+                message = message,
+                headline = if (isHighlight) R.string.highlight else R.string.prioritize_task
+            )
+        }
+    }
+}
+
+
+sealed class TaskFormUiState(
+    open val isLoading: Boolean,
+    open val isDone: Boolean,
+    open val message: String
+) : UiState {
+    data class Intro(
+        val step: Int
+    ) : TaskFormUiState(
+        isLoading = false,
+        isDone = false,
+        message = "",
+    )
+
+    data class Editing(
+        val selectedTag: Int?,
+        val tagOptions: List<Tag>,
+        val selectedDuration: Int,
+        val durationOptions: List<Duration>,
+        val title: String,
+        val description: String,
+        val headline: Int,
+        override val isLoading: Boolean,
+        override val isDone: Boolean,
+        override val message: String
+    ) : TaskFormUiState(
+        isLoading = isLoading,
+        isDone = isDone,
+        message = message
+    )
+
+}
+
+
+
+

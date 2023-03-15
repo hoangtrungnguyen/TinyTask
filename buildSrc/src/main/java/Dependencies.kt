@@ -152,3 +152,6 @@ object Ktor {
 
 }
 
+object Timber{
+    val logger = "com.jakewharton.timber:timber:5.0.1"
+}

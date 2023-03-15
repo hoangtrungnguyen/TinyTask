@@ -34,6 +34,10 @@ data class Task(
         )
     }
 
+    fun isValid(): Boolean {
+        return title.isNotEmpty() && description.isNotEmpty() && tags.isNotEmpty()
+    }
+
     companion object {
         fun createNew(
             title: String = "",
@@ -97,4 +101,10 @@ data class Task(
 data class Tag(
     val name: String,
     val code: String
-)
+) {
+    companion object {
+        fun fromDTO(tag: TagDTO): Tag {
+            return Tag(tag.name, tag.code)
+        }
+    }
+}

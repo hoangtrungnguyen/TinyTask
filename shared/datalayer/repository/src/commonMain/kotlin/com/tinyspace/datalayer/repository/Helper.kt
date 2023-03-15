@@ -23,9 +23,9 @@ internal fun DatabaseHelper.mapTagToTask(
 
 
 internal fun LocalDateTime.toSQLRow(): String {
-    return "${this.year}-${this.month}-${this.dayOfMonth}"
+    return "${this.year}-${this.monthNumber}-${this.dayOfMonth}"
 }
 
 internal fun String.fromSQLRow(): LocalDateTime {
-    return "${this}T00:00:00 ".toLocalDateTime()
+    return "${this}T00:00:00".toLocalDateTime()
 }

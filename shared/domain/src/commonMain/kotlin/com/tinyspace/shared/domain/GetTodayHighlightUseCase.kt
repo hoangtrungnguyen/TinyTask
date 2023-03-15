@@ -14,6 +14,7 @@ class GetTodayHighlightUseCase(
                 Task.fromRepo(result)
             }
         } catch (ex: Exception) {
+            println("Exception $ex")
             null
         }
     }

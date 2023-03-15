@@ -37,6 +37,7 @@ val questions: List<Pair<String, String>> = listOf(
     Pair("Joy", "When I reflect on today, what will bring me the most joy?"),
 )
 
+const val DELAY_DURATION: Long = 100L
 @Composable
 fun IntroFlow(
     step: Int,
@@ -117,7 +118,7 @@ fun IntroFlow(
 
     LaunchedEffect(enable) {
         scope.launch {
-            delay(3000)
+            delay(DELAY_DURATION)
             enable = true
         }
     }
