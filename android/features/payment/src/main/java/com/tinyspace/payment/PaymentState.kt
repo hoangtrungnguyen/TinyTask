@@ -5,31 +5,47 @@ import com.tinyspace.common.Event
 import com.tinyspace.common.UiState
 import com.tinyspace.common.ViewModelState
 
+data class PaymentVMState(
+    val subscriptions: List<Subscription> = emptyList(),
+    val connected: Boolean = false,
+    val activated: Boolean = false,
+    val currentSubscription: Subscription?
+) : ViewModelState<PaymentUiState> {
+    override fun toUiState(): PaymentUiState {
+        return if (activated) {
+            PaymentUiState.SubscriptionActivated(
+                currentSubscription ?: Subscription.empty()
+            )
+        } else {
+            PaymentUiState.ListSubscription(
+                subscriptions
+            )
+        }
+    }
+}
 
-data class ListPackageUiState(
-    val packages: List<Package>,
-    val connected: Boolean,
-    val activated: Boolean
-) : UiState
+sealed class PaymentUiState : UiState {
+    data class SubscriptionActivated(
+        val subscription: Subscription,
+    ) : PaymentUiState()
+
+    data class ListSubscription(
+        val subscriptions: List<Subscription>
+    ) : PaymentUiState()
+}
 
 class PaymentEvent : Event
 
 
-data class Package(
+data class Subscription(
     val name: String,
     val price: String,
     val prodDetail: ProductDetails?,
-    val offerToken: String,
-    val available: Boolean = false
-)
-
-
-data class ListPackageVMState(
-    val packages: List<Package>,
-    val connected: Boolean,
-    val activated: Boolean
-) : ViewModelState<ListPackageUiState> {
-    override fun toUiState(): ListPackageUiState {
-        return ListPackageUiState(packages, connected, activated)
+    val offerToken: String
+) {
+    companion object {
+        fun empty() = Subscription(
+            "", "", null, ""
+        )
     }
 }

@@ -6,7 +6,8 @@ class VerifySuccessPurchaseUseCase(
     private val purchaseRepository: PurchaseRepository
 ) {
 
-    suspend operator fun invoke(purchaseId: String) {
+    suspend operator fun invoke(purchaseId: String): Boolean {
         purchaseRepository.verify(purchaseId)
+        return true
     }
 }
