@@ -54,6 +54,10 @@ fun PaymentUi(
                                     style = MaterialTheme.typography.headlineMedium
                                 )
                             }
+
+                            TextButton(onClick = { viewModel.cancelSubscription() }) {
+                                Text("Cancel donation")
+                            }
                         }
 
                     }
@@ -71,7 +75,7 @@ fun PaymentUi(
                                         horizontal = 16.dp
                                     ),
                                     onClick = {
-                                        viewModel.subscribePackage(e) { billingClient, billingFlowParams ->
+                                        viewModel.subscribe(e) { billingClient, billingFlowParams ->
                                             val billingResult = billingClient.launchBillingFlow(
                                                 context as Activity,
                                                 billingFlowParams

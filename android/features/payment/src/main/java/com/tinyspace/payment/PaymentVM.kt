@@ -1,16 +1,22 @@
 package com.tinyspace.payment
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.*
 import com.tinyspace.common.BaseViewModel
 import com.tinyspace.shared.domain.VerifySuccessPurchaseUseCase
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class PaymentVM constructor(
     billingClientBuilder: PaymentBuilder,
-    private val verifySuccessPurchaseUseCase: VerifySuccessPurchaseUseCase
+    private val CHPlayInterface: CHPlayInterfaceImpl,
+    private val verifySuccessPurchaseUseCase: VerifySuccessPurchaseUseCase,
+    val handle: SavedStateHandle
 
 ) : BaseViewModel<PaymentEvent, PaymentUiState, PaymentVMState>() {
 
@@ -60,6 +66,25 @@ class PaymentVM constructor(
             .build()
 
 
+        _modelState.combine(handle.getStateFlow(NAVIGATE_TO_CH_PLAY, false)) { vmState, cancel ->
+            {
+                if (cancel) {
+                    getCurrentSubscription()
+                }
+                vmState
+            }
+        }
+
+
+//
+//        viewModelScope.launch {
+//            _modelState.collectLatest {
+//                if(it.)
+//            }
+//        }
+//
+
+
         startConnection()
         viewModelScope.launch {
             delay(300)
@@ -69,13 +94,13 @@ class PaymentVM constructor(
         }
     }
 
-    fun subscribePackage(
+    fun subscribe(
         subscriptionSubscription: Subscription, startFlow: (
             billingClient: BillingClient, flowParams: BillingFlowParams
         ) -> Unit
     ) {
         subscriptionSubscription.prodDetail?.let {
-            runBlocking(Dispatchers.IO) {
+            viewModelScope.launch {
                 val productDetailsParamsList = listOf(
                     BillingFlowParams.ProductDetailsParams.newBuilder()
                         .setProductDetails(subscriptionSubscription.prodDetail)
@@ -245,8 +270,16 @@ class PaymentVM constructor(
             }
         }
     }
+
+    fun cancelSubscription() {
+        viewModelScope.launch {
+            handle[NAVIGATE_TO_CH_PLAY] = true
+            CHPlayInterface.openActiveSubscription()
+        }
+    }
 }
 
 
+const val NAVIGATE_TO_CH_PLAY = "navigated_to_CHPlay_cancel"
 
 

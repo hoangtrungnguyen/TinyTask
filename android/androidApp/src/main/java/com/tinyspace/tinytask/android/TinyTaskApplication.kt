@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.tinyspace.android.stat.StatViewModel
 import com.tinyspace.common.SHARE_PREF
+import com.tinyspace.payment.CHPlayInterfaceImpl
 import com.tinyspace.payment.PaymentBuilder
 import com.tinyspace.payment.PaymentVM
 import com.tinyspace.taskform.TaskFormViewModel
@@ -23,25 +24,6 @@ class TinyTaskApplication: Application() {
         Dispatchers.IO
         super.onCreate()
         initKoin(
-            viewModel =
-               module {
-                   viewModel {
-                       TaskFormViewModel(get(), get(), get())
-                   }
-                   includes(todoListViewModel)
-                   viewModel { (taskId: String) ->
-                       CounterViewModel(taskId = taskId, get(), get(), get())
-                   }
-                   viewModel {
-                       StatViewModel(get(), get())
-                   }
-                   viewModel {
-                       TaskHistoryViewModel(get())
-                   }
-                   viewModel {
-                       PaymentVM(get(), get())
-                   }
-               },
             koinAppDeclaration = module {
                 single<Context> { this@TinyTaskApplication }
                 single<SharedPreferences> {
@@ -53,7 +35,29 @@ class TinyTaskApplication: Application() {
                 single<PaymentBuilder> {
                     PaymentBuilder(get())
                 }
+                factory<CHPlayInterfaceImpl> {
+                    CHPlayInterfaceImpl(get())
+                }
             },
+            viewModel =
+            module {
+                viewModel {
+                    TaskFormViewModel(get(), get(), get())
+                }
+                includes(todoListViewModel)
+                viewModel { (taskId: String) ->
+                    CounterViewModel(taskId = taskId, get(), get(), get())
+                }
+                viewModel {
+                       StatViewModel(get(), get())
+                   }
+                   viewModel {
+                       TaskHistoryViewModel(get())
+                   }
+                   viewModel {
+                       PaymentVM(get(), get(), get(), get())
+                   }
+               },
             )
     }
 }

@@ -9,6 +9,7 @@ data class PaymentVMState(
     val subscriptions: List<Subscription> = emptyList(),
     val connected: Boolean = false,
     val activated: Boolean = false,
+    val canceled: Boolean = false,
     val currentSubscription: Subscription?
 ) : ViewModelState<PaymentUiState> {
     override fun toUiState(): PaymentUiState {
