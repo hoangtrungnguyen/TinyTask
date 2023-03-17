@@ -129,7 +129,7 @@ fun StatScreen(
 //                            Text("Month")
 //                        }
 //                    }
-                    StatisticGraph()
+//                    StatisticGraph()
 
                 }
 

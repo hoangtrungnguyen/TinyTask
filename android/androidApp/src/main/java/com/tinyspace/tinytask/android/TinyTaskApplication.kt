@@ -49,7 +49,7 @@ class TinyTaskApplication: Application() {
                     CounterViewModel(taskId = taskId, get(), get(), get())
                 }
                 viewModel {
-                       StatViewModel(get(), get())
+                       StatViewModel(get(), get(), get())
                    }
                    viewModel {
                        TaskHistoryViewModel(get())

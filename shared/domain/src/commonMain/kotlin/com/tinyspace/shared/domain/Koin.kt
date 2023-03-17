@@ -15,6 +15,7 @@ class Koin {
             factory { GetTodayHighlightUseCase(get()) }
             factory { VerifySuccessPurchaseUseCase(get()) }
             factory { GetTagUseCase(get()) }
+            factory { GetWeekDayTimeSpent(get()) }
         }
     }
 }

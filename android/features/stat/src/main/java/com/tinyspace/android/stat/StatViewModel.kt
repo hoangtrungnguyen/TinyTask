@@ -2,16 +2,17 @@ package com.tinyspace.android.stat
 
 import androidx.lifecycle.viewModelScope
 import com.tinyspace.common.BaseViewModel
-import com.tinyspace.common.UiState
-import com.tinyspace.common.ViewModelState
 import com.tinyspace.shared.domain.CountTaskUseCase
 import com.tinyspace.shared.domain.CountType
 import com.tinyspace.shared.domain.GetTotalDurationTaskUseCase
+import com.tinyspace.shared.domain.GetWeekDayTimeSpent
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class StatViewModel(
     val countTaskUseCase: CountTaskUseCase,
-    val getTotalDurationTaskUseCase: GetTotalDurationTaskUseCase
+    val getTotalDurationTaskUseCase: GetTotalDurationTaskUseCase,
+    val getWeekDayTimeSpent: GetWeekDayTimeSpent
 ) : BaseViewModel<StatEvent, StatUIState, StatVMState>() {
 
     override val initialState: StatVMState
@@ -34,6 +35,13 @@ class StatViewModel(
             modelState.value.toUiState()
         )
 
+    init {
+
+        viewModelScope.launch {
+            getWeekDayTimeSpent()
+        }
+    }
+
     override fun onEvent(event: StatEvent) {
         TODO("Not yet implemented")
     }
@@ -41,32 +49,3 @@ class StatViewModel(
 
 }
 
-data class StatVMState(
-    val total: Int,
-    val finished: Int,
-    val totalDuration: Int,
-    val hoursSpent: List<Float> = listOf(0f, 0f, 0f, 0f, 0f, 0f, 0f)
-) : ViewModelState<StatUIState> {
-
-    override fun toUiState(): StatUIState {
-        return StatUIState(
-            finished,
-            TotalDurationUi(
-                (totalDuration / 60).toInt(),
-                (totalDuration % 60).toInt()
-            )
-        )
-    }
-
-
-}
-
-data class StatUIState(
-    val finished: Int,
-    val totalDuration: TotalDurationUi
-) : UiState
-
-data class TotalDurationUi(
-    val hour: Int,
-    val minute: Int
-)
