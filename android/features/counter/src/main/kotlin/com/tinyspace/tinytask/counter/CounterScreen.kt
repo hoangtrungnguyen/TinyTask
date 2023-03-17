@@ -1,8 +1,8 @@
 package com.tinyspace.tinytask.counter
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tinyspace.compose.TinyTaskTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -26,29 +25,49 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun CounterScreen(
     taskId: String,
-    viewModel: CounterViewModel = koinViewModel {
+    counterVM: CounterViewModel = koinViewModel {
         parametersOf(
             taskId
         )
     },
     onNavigateBack: () -> Boolean
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val counterUi by counterVM.uiState.collectAsState()
+
+
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    AnimatedVisibility(
-        true,
-        enter = fadeIn(initialAlpha = 0.3f),
-        exit = fadeOut(),
-    ) {
-        Scaffold(
-            topBar = {
+
+    when (counterUi.state) {
+        CounterState.Counting -> BackHandler(true) {}
+        else -> BackHandler(false) {}
+    }
+
+
+    Scaffold(
+        topBar = {
+            AnimatedVisibility(
+                visibleState = remember {
+                    MutableTransitionState(
+                        counterUi.state != CounterState.Initialize
+                    )
+                }
+                    .apply { targetState = counterUi.state == CounterState.Initialize },
+                enter = slideInVertically(
+                    initialOffsetY = { -40 }
+                ) + expandVertically(
+                    expandFrom = Alignment.Top
+                ) + fadeIn(initialAlpha = 0.3f),
+                exit = slideOutVertically() + shrinkVertically() + fadeOut(),
+
+                ) {
                 CounterTopAppBar(
-                    uiState.title,
+                    counterUi.title,
                     onNavigateBack = onNavigateBack
                 )
             }
+        }
         ) {
             Column(
                 modifier = Modifier
@@ -58,87 +77,94 @@ fun CounterScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Category(uiState.tags)
+                Category(counterUi.tags)
 
-                CounterView(time = uiState.timer, progress = uiState.progress.progress())
+                CounterView(time = counterUi.timer, progress = counterUi.progress.progress())
 
-                Actions(uiState.stop, uiState.finish, uiState.initial, viewModel)
+                Actions(counterUi.state, counterVM)
             }
-        }
     }
 
     SnackbarHost(hostState = snackbarHostState)
 
 
-    if (uiState is CounterUiState.NavigateBack) {
-        LaunchedEffect(scope) {
+    if (counterUi.state == CounterState.Pause) {
+        WarningDialog {
             onNavigateBack()
         }
-    } else if (uiState is CounterUiState.Error) {
+
+    } else if (counterUi.state != CounterState.Initialize) {
+        counterVM.onEvent(CounterEvent.Resume)
+    }
+    if (counterUi.isNavigateBack) {
+        onNavigateBack()
+    }
+
+    if (counterUi.message.isNotEmpty()) {
         LaunchedEffect(scope) {
             snackbarHostState.showSnackbar(
-                uiState.message
+                counterUi.message
             )
         }
     }
+
+
 }
 
 private fun Float.progress(): Float = if (isNaN()) 0f else this
 
 @Composable
 private fun Actions(
-    stop: Boolean,
-    finish: Boolean,
-    initial: Boolean,
-    viewModel: CounterViewModel
+    state: CounterState,
+    viewModel: CounterViewModel,
 ) {
-    if (finish) {
-        Column(verticalArrangement = Arrangement.Center) {
-            Button(
-                onClick = { viewModel.onEvent(CounterEvent.Finish) },
-                modifier = Modifier.width(width = 256.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            ) {
-                Text(stringResource(R.string.finish))
-            }
-            TextButton(
-                onClick = { viewModel.onEvent(CounterEvent.Restart) },
-                modifier = Modifier.width(width = 256.dp),
-                shape = RoundedCornerShape(12.dp),
-            ) {
-                Text(stringResource(R.string.restart))
+
+    when (state) {
+        CounterState.Pause -> {
+            Box {}
+        }
+        CounterState.Counting -> {
+            Box {}
+        }
+        CounterState.Finished -> {
+            Column(verticalArrangement = Arrangement.Center) {
+                Button(
+                    onClick = { viewModel.onEvent(CounterEvent.Finish) },
+                    modifier = Modifier.width(width = 256.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                ) {
+                    Text(stringResource(R.string.finish))
+                }/*
+                TextButton(
+                    onClick = { viewModel.onEvent(CounterEvent.Restart) },
+                    modifier = Modifier.width(width = 256.dp),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text(stringResource(R.string.restart))
+                }*/
             }
         }
-
-    } else {
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            ActionButton(
-                enabled = stop,
-                onClick = {
-                    if (initial) viewModel.onEvent(CounterEvent.Start)
-                    else viewModel.onEvent(CounterEvent.Resume)
-                },
-                title = if (initial) stringResource(id = R.string.start) else stringResource(R.string.resume)
+        CounterState.Initialize -> {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    painterResource(id = R.drawable.ic_play),
-                    contentDescription = stringResource(R.string.resume)
-                )
-            }
-            ActionButton(onClick = {
-                viewModel.onEvent(CounterEvent.Stop)
-            }, title = stringResource(R.string.pause), enabled = !stop) {
-                Icon(
-                    painterResource(id = R.drawable.ic_pause),
-                    contentDescription = stringResource(R.string.pause)
-                )
+                ActionButton(
+                    enabled = true,
+                    onClick = {
+                        viewModel.onEvent(CounterEvent.Start)
+                    },
+                    title = stringResource(id = R.string.start)
+                ) {
+                    Icon(
+                        painterResource(id = R.drawable.ic_play),
+                        contentDescription = stringResource(R.string.resume)
+                    )
+                }
             }
         }
     }
@@ -219,7 +245,7 @@ private fun CounterTopAppBar(
 fun ActionsTabPreview() {
     TinyTaskTheme {
         Surface {
-            Actions(stop = true, finish = false, initial = true, viewModel = viewModel())
+//            Actions(stop = true, finish = false, initial = true, viewModel = viewModel())
         }
     }
 }

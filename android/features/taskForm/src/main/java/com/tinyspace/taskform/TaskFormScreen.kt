@@ -1,16 +1,25 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 
 package com.tinyspace.taskform
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Task
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,22 +28,6 @@ import com.tinyspace.compose.TinyTaskTheme
 import com.tinyspace.shared.domain.model.Tag
 import org.koin.androidx.compose.koinViewModel
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-
-
-private val durationOptions = listOf<Duration>(
-    30.toDuration(DurationUnit.MINUTES),
-    60.toDuration(DurationUnit.MINUTES),
-    90.toDuration(DurationUnit.MINUTES),
-    120.toDuration(DurationUnit.MINUTES),
-)
-
-
-//TODO Change to query from database later
-private val projectOptions = listOf(
-    "Workout", "Personal", "Coding", "Teaching"
-)
 
 @Composable
 fun TaskFormScreen(
@@ -42,22 +35,99 @@ fun TaskFormScreen(
     navigateBack: () -> Boolean,
 ) {
     val snackBarNavHostState: SnackbarHostState = remember { SnackbarHostState() }
-    val state = viewModel.uiState.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
+
+
+    when (uiState.value) {
+        is TaskFormUiState.Editing -> {
+            TaskFormUi(
+                snackBarNavHostState = snackBarNavHostState,
+                onEvent = {
+                    viewModel.onEvent(it)
+                },
+                uiState = (uiState.value) as TaskFormUiState.Editing,
+                navigateBack = navigateBack,
+
+                )
+        }
+        else -> {
+            IntroFlow(
+                (uiState.value as TaskFormUiState.Intro).step
+            ) {
+                viewModel.onEvent(TaskFormEvent.NextStep)
+            }
+        }
+    }
+
+
+
+    LaunchedEffect(uiState.value.isDone) {
+        if (uiState.value.isDone) {
+            navigateBack()
+        }
+    }
+
+    LaunchedEffect(uiState.value.message) {
+        if (uiState.value.message.isNotEmpty()) {
+            snackBarNavHostState.showSnackbar(uiState.value.message)
+        }
+    }
+
+    if (uiState.value.isLoading) {
+        AlertDialog(
+            onDismissRequest = { /* Dismiss the dialog */ },
+            text = { Text(text = "Loading...") },
+            confirmButton = {}
+        )
+    }
+
+}
+
+
+@Composable
+internal fun TaskFormUi(
+    uiState: TaskFormUiState.Editing,
+    snackBarNavHostState: SnackbarHostState,
+    onEvent: (event: TaskFormEvent) -> Unit,
+    navigateBack: () -> Boolean,
+) {
+
+    val title = uiState.title
+    val description = uiState.description
+    val headLine = uiState.headline
+
+    val selectedTag = uiState.selectedTag
+    val tagOptions = uiState.tagOptions
+
+    val durationOptions = uiState.durationOptions
+    val selectedOption = uiState.selectedDuration
+
+    val scale = animateFloatAsState(
+        targetValue = 1f, // final scale value
+        animationSpec = tween(durationMillis = 5000) // animation duration
+    ).value
+
+    val alpha = animateIntAsState(
+        targetValue = 255, // final alpha value (opaque)
+        animationSpec = tween(durationMillis = 5000) // animation duration
+    ).value
+
 
     Scaffold(
+        modifier = Modifier
+            .scale(scale)
+            .alpha(alpha / 255f),
         topBar = {
             TaskFormAppBar(
                 navigateBack
             )
         },
-
         snackbarHost = {
             SnackbarHost(
                 hostState = snackBarNavHostState
             )
         },
     ) {
-
         Column(
             modifier = Modifier
                 .padding(it)
@@ -65,51 +135,45 @@ fun TaskFormScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-
             Header()
+            Text(stringResource(id = headLine))
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
 
                 TaskDescription({ title ->
-                    viewModel.onEvent(TaskFormEvent.InputTitle(title))
+                    onEvent(TaskFormEvent.InputTitle(title))
                 }, { description ->
-                    viewModel.onEvent(TaskFormEvent.InputDescription(description))
-                }, uiState = state.value
+                    onEvent(TaskFormEvent.InputDescription(description))
+                },
+
+                    title = title,
+                    description = description
                 )
                 Box(Modifier.height(8.dp))
                 Title(title = stringResource(R.string.tags))
-                TagOptions(state.value.tagUis, onTagSelected = { tagOption ->
-                    viewModel.onEvent(TaskFormEvent.SelectTag(tagOption))
-                })
+                TagOptions(
+                    selectedTag, tagOptions, onTagSelected = { tagOption ->
+                        onEvent(TaskFormEvent.SelectTag(tagOption))
+                    })
                 Box(Modifier.height(16.dp))
                 Title(stringResource(R.string.duration))
-                DurationOptions(selectedOption = state.value.durationOption,
+                DurationOptions(
+                    selectedOption = selectedOption,
+                    durationOptions = durationOptions,
                     onOptionSelected = { option ->
-                        viewModel.onEvent(TaskFormEvent.SelectDuration(option))
-
+                        onEvent(TaskFormEvent.SelectDuration(option))
                     })
             }
 
             Button(onClick = {
-                viewModel.onEvent(TaskFormEvent.CreateTask)
+                onEvent(TaskFormEvent.CreateTask)
             }) {
                 Text(stringResource(R.string.create))
             }
         }
-    }
-
-    if (state.value.isLoading) {
-        LaunchedEffect(snackBarNavHostState) {
-            snackBarNavHostState.showSnackbar(
-                "Loading ... "
-            )
-        }
-    }
-
-    if (state.value.isDone) {
-        navigateBack()
     }
 
 }
@@ -138,7 +202,7 @@ private fun Header() {
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(56.dp)
         )
-        Text("TinyTask", style = MaterialTheme.typography.headlineMedium)
+//        Text("TinyTask", style = MaterialTheme.typography.headlineMedium)
     }
 }
 
@@ -159,11 +223,13 @@ private fun Title(title: String) {
 private fun TaskDescription(
     onTitleChanged: (title: String) -> Unit,
     onDescriptionChanged: (description: String) -> Unit,
-    uiState: TaskFormUiState
+    title: String,
+    description: String,
 ) {
     Column(modifier = Modifier.padding(horizontal = 32.dp)) {
         //Title
-        OutlinedTextField(value = uiState.title,
+        OutlinedTextField(
+            value = title,
             onValueChange = { onTitleChanged(it) },
             label = { Text(stringResource(R.string.title)) },
             modifier = Modifier.fillMaxWidth()
@@ -173,7 +239,7 @@ private fun TaskDescription(
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth(),
-            value = uiState.description,
+            value = description,
             onValueChange = {
                 onDescriptionChanged(it)
             },
@@ -185,7 +251,11 @@ private fun TaskDescription(
 
 
 @Composable
-private fun DurationOptions(selectedOption: Int, onOptionSelected: (option: Int) -> Unit) {
+private fun DurationOptions(
+    selectedOption: Int,
+    durationOptions: List<Duration>,
+    onOptionSelected: (option: Int) -> Unit
+) {
     Row {
         durationOptions.forEachIndexed { index, it ->
             LabelledCheckbox(index = index, duration = it, selected = selectedOption == index) {
@@ -212,13 +282,13 @@ fun LabelledCheckbox(
 
 
 @Composable
-fun TagOptions(selectedTagUis: List<Tag>, onTagSelected: (index: Int) -> Unit) {
+fun TagOptions(selectedTag: Int?, tagOptions: List<Tag>, onTagSelected: (index: Int) -> Unit) {
 
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        projectOptions.forEachIndexed { index, option ->
-            InputChip(selected = selectedTagUis.contains(defaultTagUis[index]), onClick = {
+        tagOptions.forEachIndexed { index, option ->
+            InputChip(selected = selectedTag == index, onClick = {
                 onTagSelected(index)
-            }, label = { Text(option) })
+            }, label = { Text(option.name) })
         }
     }
 

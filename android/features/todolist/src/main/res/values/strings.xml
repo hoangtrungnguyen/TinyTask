@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tag">Tag</string>
+    <string name="finished_headline">You have finished everything</string>
 </resources>

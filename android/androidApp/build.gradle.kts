@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
 }
 
+
 android {
     namespace = "com.tinyspace.tinytask.android"
     compileSdk = Versions.compile_sdk
@@ -10,7 +11,7 @@ android {
         applicationId = "com.tinyspace.tinytask.android"
         minSdk = Versions.min_sdk
         targetSdk = Versions.target_sdk
-        versionCode = 1
+        versionCode = 6
         versionName = "1.0"
     }
     buildFeatures {
@@ -60,6 +61,8 @@ dependencies {
     implementation(project(":android:features:taskForm"))
     implementation(project(":android:features:todolist"))
     implementation(project(":android:features:taskHistory"))
+    implementation(project(":android:features:onboard"))
+    implementation(project(":android:features:payment"))
     implementation(project(":android:features:stat"))
     implementation(project(":android:core:compose"))
     implementation(project(":android:core:common"))

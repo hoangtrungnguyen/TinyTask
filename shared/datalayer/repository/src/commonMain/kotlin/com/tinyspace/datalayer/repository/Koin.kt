@@ -10,4 +10,11 @@ val repositoryModules = module {
     single<TagRepository> {
         TagRepository(get())
     }
+    single<HighlightRepository> {
+        HighlightRepositoryImpl(get())
+    }
+    single {
+        PurchaseRepository()
+    }
+
 }

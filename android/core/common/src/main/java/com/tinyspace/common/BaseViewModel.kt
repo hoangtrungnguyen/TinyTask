@@ -3,12 +3,12 @@ package com.tinyspace.common
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.StateFlow
 
-abstract class BaseViewModel<T : CommonEvent, Ui : BaseUiState, S : BaseViewModelState<Ui>> :
+abstract class BaseViewModel<Event : com.tinyspace.common.Event, Ui : UiState, State : ViewModelState<Ui>> :
     ViewModel() {
 
-    abstract val initialState: S
+    abstract val initialState: State
 
-    abstract val modelState: StateFlow<S>
+    abstract val modelState: StateFlow<State>
 
 
     /**
@@ -25,15 +25,19 @@ abstract class BaseViewModel<T : CommonEvent, Ui : BaseUiState, S : BaseViewMode
      * **/
     abstract val uiState: StateFlow<Ui>
 
-    abstract fun onEvent(event: T)
+    abstract fun onEvent(event: Event)
 
 }
 
-interface CommonEvent
+interface Event {
+    interface VMEvent
+
+    interface UiEvent
+}
 
 
-interface BaseViewModelState<Ui : BaseUiState> {
+interface ViewModelState<Ui : UiState> {
     fun toUiState(): Ui
 }
 
-interface BaseUiState
+interface UiState

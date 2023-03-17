@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    //common android feature's dependencies
     implementation(project(":android:core:compose"))
     implementation(project(":android:core:common"))
     implementation(project(":shared:domain"))
@@ -48,6 +49,39 @@ dependencies {
     }
 
     testImplementation(Junit.junit4)
+    
+    
+    //dependencies for android feature
+    with(Compose){
+        implementation(material_icons)
+        implementation(material3)
+        implementation(material3_window)
+        implementation(ui)
+        implementation(ui_tooling)
+        implementation(ui_tooling_preview)
+        implementation(foundation)
+        implementation(activity)
+    }
+
+    with(ViewModel) {
+        implementation(life_cycle)
+    }
+
+    with(Koin) {
+        implementation(koin_core)
+        implementation(koin_compose)
+        implementation(koin_android)
+    }
+
+    with(JetBrains) {
+        implementation(kotlin_time)
+        implementation(kotlin_coroutine)
+        implementation(serialization)
+    }
+    implementation(Deps.coil)
+
+    implementation(JetBrains.kotlin_coroutine)
+
 }
 
 ```

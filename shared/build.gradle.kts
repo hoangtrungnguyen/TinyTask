@@ -88,7 +88,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.tinyspace.tinytask.android"
+    namespace = "com.tinyspace.tinytask.shared.android"
     compileSdk = Versions.compile_sdk
     defaultConfig {
         minSdk = Versions.min_sdk

@@ -61,6 +61,12 @@ dependencies {
         implementation(ui_tooling_preview)
         implementation(foundation)
         implementation(activity)
+        implementation(runtim_compose)
+    }
+
+    with(Vico) {
+        implementation(graph_compose)
+        implementation(graph_core)
     }
 
     with(ViewModel) {
@@ -72,5 +78,4 @@ dependencies {
         implementation(koin_compose)
     }
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
 }

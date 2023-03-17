@@ -25,6 +25,7 @@ kotlin {
             dependencies {
                 implementation(Koin.koin_core)
                 implementation(JetBrains.kotlin_coroutine)
+                implementation(JetBrains.kotlin_time)
             }
         }
         val commonTest by getting {

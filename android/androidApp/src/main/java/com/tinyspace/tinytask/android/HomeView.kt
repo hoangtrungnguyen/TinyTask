@@ -1,13 +1,20 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 
 package com.tinyspace.tinytask.android
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,20 +37,22 @@ val destinations = listOf<Destination>(
 fun HomeView(
     onTaskClick: (taskId: String) -> Unit,
     onNavigateHistoryScreen: () -> Unit,
-    navigateToTaskForm: () -> Unit
+    onNavigateToTaskForm: () -> Unit,
+    onNavigateToPaymentScreen: () -> Unit
 ) {
     var tab by rememberSaveable {
         mutableStateOf(0)
     }
     Scaffold(
-        topBar = { HomeTopAppBar(tab) },
+        topBar = { HomeTopAppBar(tab, onNavigateToPaymentScreen) },
+
         bottomBar = {
             HomeBottomAppBar(tab, onChangeTab = {
                 tab = it
             })
         },
         floatingActionButton = {
-            if (tab == 1) FloatingActionButton(onClick = { navigateToTaskForm() }) {
+            if (tab == 1) FloatingActionButton(onClick = { onNavigateToTaskForm() }) {
                 Icon(painterResource(id = R.drawable.add_24), contentDescription = "Adding")
             }
         }
@@ -51,10 +60,13 @@ fun HomeView(
         Surface(modifier = Modifier.padding(it)) {
 
             when (tab) {
+
                 0 -> TodoListScreen(onTaskSelected = { id ->
                     onTaskClick(id)
                 })
-                1 -> StatScreen()
+                1 -> StatScreen {
+                    onNavigateHistoryScreen()
+                }
                 else -> throw IllegalArgumentException()
             }
         }
@@ -64,6 +76,7 @@ fun HomeView(
 @Composable
 fun HomeTopAppBar(
     tab: Int,
+    navigateToPaymentPage: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -72,6 +85,19 @@ fun HomeTopAppBar(
                 else -> Text("Tiny Task")
             }
         },
+        actions = {
+            AnimatedContent(targetState = tab) {
+                when (it) {
+                    0 -> Box(Modifier)
+                    1 -> IconButton(onClick = {
+                        navigateToPaymentPage()
+                    }) {
+                        Icon(Icons.Rounded.Star, contentDescription = "Donation")
+                    }
+                }
+            }
+
+        }
     )
 }
 
@@ -103,7 +129,7 @@ fun HomeBottomAppBar(tab: Int, onChangeTab: (tab: Int) -> Unit) {
 @Composable
 fun HomeScreenPreview() {
     TinyTaskTheme {
-        HomeView(onTaskClick = {} , onNavigateHistoryScreen = {}) {
+        HomeView(onTaskClick = {}, onNavigateHistoryScreen = {}, {}) {
 
         }
     }
@@ -112,16 +138,13 @@ fun HomeScreenPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HomeScreenDarkModePreview() {
-    TinyTaskTheme {
-        HomeView(onTaskClick = {}, onNavigateHistoryScreen = {}) {
-        }
-    }
+    TinyTaskTheme {}
 }
 
 @Preview
 @Composable
 fun HomeTopAppBarPreview() {
     TinyTaskTheme {
-        HomeTopAppBar(tab = 0)
+        HomeTopAppBar(tab = 0) {}
     }
 }

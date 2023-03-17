@@ -27,6 +27,7 @@ kotlin{
                 implementation(UUID.benasher44)
                 implementation(JetBrains.kotlin_time)
                 implementation(JetBrains.kotlin_coroutine)
+                implementation(Timber.logger)
             }
         }
 

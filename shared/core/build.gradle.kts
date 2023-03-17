@@ -36,6 +36,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
+                implementation("androidx.startup:startup-runtime:1.1.1")
             }
         }
         val androidUnitTest by getting
@@ -62,7 +63,6 @@ android {
 
     defaultConfig {
         minSdk = Versions.min_sdk
-        manifestPlaceholders["appAuthRedirectScheme"] = "empty"
     }
 
     compileOptions {

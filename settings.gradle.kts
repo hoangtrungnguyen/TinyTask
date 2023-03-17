@@ -10,6 +10,7 @@ pluginManagement {
 
 
 
+
 dependencyResolutionManagement {
     repositories {
         google()
@@ -45,3 +46,5 @@ include(":android:features:taskHistory")
 include(":android:core:common")
 include(":android:features:stat")
 include(":android:core:logging")
+include(":android:features:onboard")
+include(":android:features:payment")

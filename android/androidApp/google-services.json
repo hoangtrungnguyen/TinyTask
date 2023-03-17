@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "738966248332",
+    "project_id": "tinytask-683be",
+    "storage_bucket": "tinytask-683be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738966248332:android:5b08acadd2686f429494a9",
+        "android_client_info": {
+          "package_name": "com.tinyspace.tinytask.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "738966248332-6au1s48ca6i30m3pehmro9fc5dteoin2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBorsM-QTqzV3fI9WoC-jpK7oKydsb0Sjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738966248332-6au1s48ca6i30m3pehmro9fc5dteoin2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -52,12 +52,20 @@ dependencies {
         implementation(activity)
     }
 
-    with(ViewModel){
+    with(JetBrains) {
+        implementation(kotlin_time)
+    }
+
+    with(ViewModel) {
         implementation(life_cycle)
     }
 
-    with(Koin){
+    with(Koin) {
         implementation(koin_core)
         implementation(koin_compose)
+
     }
+
+    implementation(Timber.logger)
+
 }

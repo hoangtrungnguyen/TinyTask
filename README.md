@@ -4,9 +4,9 @@
 <p>Tiny Task is an app help manage tasks of a day</p>
 
 <section>
-<image href="/screenshots/tinytask_1.png"></image>
-<image href="/screenshots/tinytask_2.png"></image>
-<image href="/screenshots/tinytask_3.png"></image>
+<img src="/screenshots/tinytask_1.png"/>
+<img src="/screenshots/tinytask_2.png"/>
+<img src="/screenshots/tinytask_3.png"/>
 </section>
 
 ## Tech stack & Open-source libraries

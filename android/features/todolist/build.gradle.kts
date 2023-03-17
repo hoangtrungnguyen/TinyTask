@@ -7,6 +7,7 @@ android {
     namespace = "com.tinyspace.todolist"
     compileSdk = Versions.compile_sdk
 
+
     defaultConfig {
         minSdk = Versions.min_sdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -60,8 +61,14 @@ dependencies {
     with(Koin) {
         implementation(koin_core)
         implementation(koin_compose)
+        implementation(koin_android)
     }
 
+    with(JetBrains) {
+        implementation(kotlin_time)
+        implementation(kotlin_coroutine)
+        implementation(serialization)
+    }
     implementation(Deps.coil)
 
     implementation(JetBrains.kotlin_coroutine)

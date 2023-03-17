@@ -2,6 +2,7 @@
 
 package com.tinyspace.todolist
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -20,11 +21,13 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
 import coil.compose.AsyncImage
+import com.tinyspace.compose.EnterAnimation
 import com.tinyspace.compose.TagIcon
 import com.tinyspace.compose.TinyTaskTheme
 import kotlinx.coroutines.flow.filter
@@ -50,29 +53,50 @@ fun TodoListScreen(
 
     val state = viewModel.uiState.collectAsState()
 
-
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
 
-    Scaffold { padding ->
-        Box(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(), contentAlignment = BiasAlignment(0f, -0.35f)
-        ) {
-            LazyRow(
-                Modifier.padding(),
-                contentPadding = PaddingValues(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+    EnterAnimation {
+        Scaffold { padding ->
+            Box(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize(), contentAlignment = BiasAlignment(0f, -0.35f)
             ) {
-                items(state.value.tasks) {
-                    TaskItemCard(it.title, it.description, it.taskId, it.tags) { id ->
-                        viewModel.onEvent(TodoListEvent.StartTask(id))
+
+                if (state.value.tasks.isEmpty()) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ) {
+                        Box(Modifier.padding(horizontal = 24.dp)) {
+                            Image(
+                                painter = painterResource(id = R.drawable.confirmation),
+                                contentDescription = "empty",
+                                colorFilter = ColorFilter.tint(Color.White)
+                            )
+                        }
+                        Box(Modifier.height(16.dp))
+                        Text(
+                            stringResource(id = R.string.finished_headline),
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
+                }
+                LazyRow(
+                    Modifier.padding(),
+                    contentPadding = PaddingValues(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    items(state.value.tasks) {
+                        TaskItemCard(it.title, it.description, it.taskId, it.tags) { id ->
+                            viewModel.onEvent(TodoListEvent.StartTask(id))
+                        }
                     }
                 }
             }
-        }
 
+        }
     }
 
     LaunchedEffect(viewModel, lifecycle) {

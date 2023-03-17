@@ -1,5 +1,5 @@
 package com.tinyspace.android.stat
 
-import com.tinyspace.common.CommonEvent
+import com.tinyspace.common.Event
 
-class StatEvent : CommonEvent
+class StatEvent : Event

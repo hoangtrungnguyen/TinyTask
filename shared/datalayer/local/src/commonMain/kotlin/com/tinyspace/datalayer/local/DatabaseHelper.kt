@@ -113,6 +113,38 @@ class DatabaseHelper(
         }
     }
 
+    fun getLimit(limit: Long): List<Task> {
+        return runBlocking(IOScope) {
+            dbRef.taskQueries.getLimit(limit).executeAsList()
+        }
+    }
+
+    fun getTaskInRange(start: Long, end: Long) {
+        return runBlocking(IOScope) {
+            dbRef.taskQueries.countHours(
+                start, end
+            )
+        }
+    }
+
+    fun getTodayHighlight(day: String): Task? {
+        return runBlocking(IOScope) {
+            val highlight = dbRef.highlightQueries.selectSingle(day).executeAsOneOrNull()
+            highlight?.taskId?.let {
+                return@runBlocking dbRef.taskQueries.getById(highlight.taskId).executeAsOne()
+            }
+            null
+        }
+    }
+
+    fun saveTodayHighlight(day: String, taskId: String) {
+        runBlocking(IOScope) {
+            dbRef.highlightQueries.insert(day, taskId)
+            println("insert highlight ok")
+        }
+    }
+
+
 }
 
 

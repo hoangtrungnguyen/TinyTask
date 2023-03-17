@@ -23,7 +23,7 @@ data class Task(
                 title = data.title,
                 description = data.description,
                 completed = data.completed,
-                createdDate = data.createdDate,
+                createdDate = data.createdTime,
                 duration = data.duration,
                 dueDate = data.dueDate,
                 tags = tags

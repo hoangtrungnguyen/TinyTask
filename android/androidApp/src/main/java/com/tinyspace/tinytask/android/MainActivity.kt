@@ -17,14 +17,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tinyspace.compose.*
+import com.tinyspace.compose.Router.taskForm
+import com.tinyspace.feature.onboard.OnBoardingScreen
+import com.tinyspace.payment.PaymentUi
 import com.tinyspace.taskform.TaskFormScreen
 import com.tinyspace.taskhistory.TaskHistoryScreen
-import com.tinyspace.tinytask.android.ui.onboard.OnBoardingScreen
 import com.tinyspace.tinytask.counter.CounterScreen
 import com.tinyspace.todolist.TodoListScreen
 
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,6 +41,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
 }
 
 
@@ -67,11 +72,20 @@ fun TinyTaskApp(
             })
         ) {
             val taskId = it.arguments?.getString("taskId") ?: ""
+
+//            DemoScreen()
             CounterScreen(
                 taskId = taskId
             ) {
                 navController.navigateUp()
             }
+        }
+        composable(history) {
+            TaskHistoryScreen(onTaskClick = {
+
+            }, onNavigateBack = {
+                navController.navigateUp()
+            })
         }
 
         composable(home) {
@@ -79,11 +93,15 @@ fun TinyTaskApp(
                 onTaskClick = {
                     navController.navigate("$counter/${it}")
                 },
-            onNavigateHistoryScreen = {
-                navController.navigate(history)
-            }) {
-                navController.navigate(taskForm)
-            }
+                onNavigateHistoryScreen = {
+                    navController.navigate(history)
+                },
+                onNavigateToTaskForm = {
+                    navController.navigate(taskForm)
+                },
+                onNavigateToPaymentScreen = {
+                    navController.navigate(Router.payment)
+                })
         }
 
         composable(taskForm){
@@ -91,20 +109,19 @@ fun TinyTaskApp(
                 navController.navigateUp()
             }
         }
-        composable(history){
-            TaskHistoryScreen(onTaskClick = {
 
-            }, onNavigateBack = {
-                navController.navigateUp()
-            })
-        }
-        composable(todoList){
-            TodoListScreen (onPopBack = {
+        composable(todoList) {
+            TodoListScreen(onPopBack = {
                 navController.navigateUp()
             }, onTaskSelected = {
                 navController.navigate("$counter/${it}")
             })
         }
 
+        composable(Router.payment) {
+            PaymentUi {
+                navController.navigateUp()
+            }
+        }
     }
 }
